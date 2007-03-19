@@ -10,13 +10,6 @@
       </language>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.parser">
-      <parser
-            class="prefspecs.safari.parser.PrefspecsParseController"
-            language="prefspecs">
-      </parser>
-   </extension>
-   <extension
          point="org.eclipse.uide.runtime.tokenColorer">
       <tokenColorer
             class="prefspecs.safari.tokenColorer.PrefspecsTokenColorer"
@@ -59,20 +52,6 @@
       </hoverhelper>
    </extension>
    <extension
-         id="safari.builder"
-         name="prefspecs builder"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run
-               class="prefspecs.safari.builders.PrefspecsBuilder">
-            <parameter
-                  name="foo"
-                  value="bar">
-            </parameter>
-         </run>
-      </builder>
-   </extension>
-   <extension
          id="safari.nature"
          name="prefspecs Nature"
          point="org.eclipse.core.resources.natures">
@@ -107,6 +86,55 @@
                id="prefspecs.safari.actions.enableNatureAction">
          </action>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.parser">
+      <parser
+            class="prefspecs.safari.parser.PrefspecsParseController"
+            language="prefspecs">
+      </parser>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.documentationProvider">
+      <docProvider
+            class="prefspecs.safari.documentationProvider.PrefspecsDocumentationProvider"
+            language="prefspecs">
+      </docProvider>
+   </extension>
+   <extension
+         id="prefspecs.safari.builder"
+         name="prefspecs builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="prefspecs.safari.builders.PrefspecsBuilder">
+            <parameter
+                  name="foo"
+                  value="bar">
+            </parameter>
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="safari.nature"
+         name="prefspecs Nature"
+         point="org.eclipse.core.resources.natures">
+      <builder
+            id="prefspecs.safari.builder">
+      </builder>
+      <runtime>
+         <run
+               class="prefspecs.safari.builders.PrefspecsNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         id="problem"
+         name="prefspecs Error"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
    </extension>
 
 </plugin>

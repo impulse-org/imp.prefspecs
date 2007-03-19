@@ -24,7 +24,7 @@ public class PrefspecsNature extends ProjectNatureBase {
         super.addToProject(project);
         new SmapiProjectNature("prefspecs").addToProject(project);
     };
-    
+
     protected void refreshPrefs() {
         // TODO implement preferences and hook in here
     }

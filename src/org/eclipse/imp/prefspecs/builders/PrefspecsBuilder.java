@@ -1,6 +1,7 @@
 package prefspecs.safari.builders;
 
 import java.io.*;
+import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -11,6 +12,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.uide.core.SAFARIBuilderBase;
 import org.eclipse.uide.runtime.SAFARIPluginBase;
 
+import prefspecs.PrefspecsPlugin;
 
 import org.eclipse.uide.core.Language;
 import org.eclipse.uide.core.LanguageRegistry;
@@ -18,8 +20,6 @@ import org.eclipse.uide.core.LanguageRegistry;
 import org.eclipse.uide.builder.BuilderUtils;
 import org.eclipse.uide.builder.MarkerCreator;
 import org.eclipse.uide.parser.IParseController;
-
-import prefspecs.PrefspecsPlugin;
 import prefspecs.safari.parser.PrefspecsParseController;
 
 /**
@@ -84,7 +84,7 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
     {
     	// TODO:  If your language has non-root source files (e.g., header files), then
     	// reimplement this method to test for those
-        System.out.println("PrefspecsBuilder.isNonRootSourceFile(..) returning FALSE by default");
+        System.err.println("PrefspecsBuilder.isNonRootSourceFile(..) returning FALSE by default");
         return false;
     }
 
@@ -132,11 +132,11 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
 
             // Marker creator handles error messages from the parse controller (and
             // uses the parse controller to get additional information about the errors)
-            MarkerCreator markerCreator = new MarkerCreator(file, parseController, "prefspecs.problem");
+            MarkerCreator markerCreator = new MarkerCreator(file, parseController, "org.eclipse.uide.prefspecs.problem");
 
             // Need to tell the parse controller which file in which project to parse
             // and also the message handler to which to report errors
-            parseController.initialize(file.getProjectRelativePath().toString(), file.getProject(), markerCreator);
+            parseController.initialize(file.getProjectRelativePath()/*.toString()*/, file.getProject(), markerCreator);
 	
             // Get file contents for parsing
             String contents = BuilderUtils.extractContentsToString(file.getLocation().toString());
