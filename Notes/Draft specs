@@ -1,0 +1,37 @@
+
+
+Page MyPreferences {
+
+	tabs {
+		DEFAULT out;
+		CONFIGURATION in;
+		INSTANCE out;
+		PROJECT in;
+	}
+	
+	
+	fields {
+		BOOLEAN fieldBoolean ;
+		COMBO fieldCombo [SPECIAL] ;
+		DIRLIST fieldDirlist ;
+		INT field3 [RANGE x .. y] ;
+		FILE fieldFile;
+		RADIO fieldRadio [SPECIAL x] ;
+		STRING fieldString 	;
+	}
+
+
+	custom {
+		PROJECT field1 editable false;
+		CONFIGURATION field2 emptyallowed false;
+		CONFIGURATION field2 hasspecial "Little Expression Grammar"
+		PROJECT field3 (asdf, true, false, "blah blah blah")
+	}
+
+	conditionals {
+		field2 with field1;
+		field3 against field1;
+	}
+
+
+}

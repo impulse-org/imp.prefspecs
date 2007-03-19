@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.uide.runtime.languageDescription">
+      <language
+            extensions="pfsp"
+            description="Specification language for SAFARI preference pages"
+            language="prefspecs">
+      </language>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.parser">
+      <parser
+            class="prefspecs.safari.parser.PrefspecsParseController"
+            language="prefspecs">
+      </parser>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.tokenColorer">
+      <tokenColorer
+            class="prefspecs.safari.tokenColorer.PrefspecsTokenColorer"
+            language="prefspecs">
+      </tokenColorer>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.foldingUpdater">
+      <foldingUpdater
+            class="prefspecs.safari.foldingUpdater.PrefspecsFoldingUpdater"
+            language="prefspecs">
+      </foldingUpdater>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.outliner">
+      <outliner
+            class="prefspecs.safari.outliner.PrefspecsOutliner"
+            language="prefspecs">
+      </outliner>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.referenceResolvers">
+      <referenceResolver
+            class="prefspecs.safari.referenceResolvers.PrefspecsReferenceResolver"
+            language="prefspecs">
+      </referenceResolver>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.contentProposer">
+      <proposer
+            class="prefspecs.safari.contentProposer.PrefspecsContentProposer"
+            language="prefspecs">
+      </proposer>
+   </extension>
+   <extension
+         point="org.eclipse.uide.runtime.hoverHelper">
+      <hoverhelper
+            class="prefspecs.safari.hoverHelper.PrefspecsHoverHelper"
+            language="prefspecs">
+      </hoverhelper>
+   </extension>
+   <extension
+         id="safari.builder"
+         name="prefspecs builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="prefspecs.safari.builders.PrefspecsBuilder">
+            <parameter
+                  name="foo"
+                  value="bar">
+            </parameter>
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="safari.nature"
+         name="prefspecs Nature"
+         point="org.eclipse.core.resources.natures">
+      <builder
+            id="org.eclipse.uide.prefspecs.safari.builder">
+      </builder>
+      <runtime>
+         <run
+               class="prefspecs.safari.builders.PrefspecsNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         id="problem"
+         name="prefspecs Error"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.jdt.core.IJavaProject"
+            adaptable="false"
+            nameFilter="*"
+            id="prefspecs.safari.projectContextMenu">
+         <action
+               label="Enable prefspecs Builder"
+               tooltip="Enable the prefspecs builder for this project"
+               class="prefspecs.safari.actions.EnableNature"
+               id="prefspecs.safari.actions.enableNatureAction">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
