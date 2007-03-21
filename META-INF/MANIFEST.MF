@@ -1,8 +1,16 @@
-Bundle-SymbolicName: org.eclipse.uide.prefspecs; singleton=true
 Bundle-Vendor: 
-Bundle-Version: 0.0.0
+Bundle-SymbolicName: org.eclipse.uide.prefspecs; singleton=true
 Bundle-Activator: prefspecs.PrefspecsPlugin
-Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.uide.runtime,lpg.runtime,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.ui.workbench.texteditor,org.eclipse.safari.jikespg.runtime,com.ibm.watson.smapifier,org.eclipse.jdt.core
-Bundle-Localization: plugin
-Bundle-Name: Prefspecs Plug-in
 Eclipse-AutoStart: true
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.uide.runtime,
+ org.eclipse.ui,
+ lpg.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ com.ibm.watson.smapifier,
+ org.eclipse.jdt.core
+Bundle-Name: Prefspecs Plug-in
+Bundle-Version: 0.0.0
