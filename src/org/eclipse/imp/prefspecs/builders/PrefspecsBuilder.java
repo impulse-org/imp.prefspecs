@@ -30,8 +30,8 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
      * Extension ID of the Prefspecs builder. Must match the ID in the corresponding
      * extension definition in plugin.xml.
      */
-    public static final String BUILDER_ID= PrefspecsPlugin.kPluginID + ".safari.builder";
-
+    public static final String BUILDER_ID= "froufrou.safari.builder"	;	//PrefspecsPlugin.kPluginID + ".safari.builder";
+	
     public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".problem";
 
     // SMS 11 May 2006
