@@ -197,7 +197,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
         				return("No field spec found; no hover help possible");
         			}
         		} else {
-        			return("This is some kind of crazy AST node!");
+        			return null;
         		}
         		
         	default:				 // Below depends on JikesPG-specific types 
@@ -205,7 +205,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
 		        if (def != null)
 		            return getSubstring(parseController, def.getLeftIToken().getStartOffset(), def.getRightIToken().getEndOffset());
 		        else
-		        	return "Abandon hope";
+		        	return "No help available";
         	}
         }
         return getSubstring(parseController, token);
