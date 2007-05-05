@@ -7,34 +7,22 @@ import org.eclipse.uide.runtime.IPluginLog;
 
 import com.ibm.watson.smapifier.builder.SmapiProjectNature;
 
-import prefspecs.PrefspecsPlugin;
+//import prefspecs.PrefspecsPlugin;
+//import prefspecs.PrefspecsPlugin;
+import prefspecs.PrefspecsPlugin;	// SMS 27 Mar 2007
 
 public class PrefspecsNature extends ProjectNatureBase {
-    public static final String k_natureID = PrefspecsPlugin.kPluginID + ".safari.nature";
-
-    String projectName = "org.eclipse.uide.prefspecs";
-    
-    // SMS 20 Mar 2007
-    // Added
-    public PrefspecsNature() {
-    	super();
-    	setProjectName(projectName);
-    }
-    
-    
+	// SMS 28 Mar 2007:  plugin class now totally parameterized
+	public static final String k_natureID = PrefspecsPlugin.kPluginID + ".safari.nature";
+ 
     public String getNatureID() {
         return k_natureID;
     }
 
-    // SMS 20 Mar 2007
-    // BUILDER_ID is the unqualfied ID of the builder; for use by
-    // others it needs to be referenced by its project-qualified name
-    // (just as the Nature extension itself needs to refer to the
-    // builder by its project-qualified name).  
     public String getBuilderID() {
-        //return PrefspecsBuilder.BUILDER_ID;
-    	return projectName + "." + PrefspecsBuilder.BUILDER_ID;
+        return PrefspecsBuilder.BUILDER_ID;
     }
+    
 
     public void addToProject(IProject project) {
         super.addToProject(project);
@@ -46,6 +34,7 @@ public class PrefspecsNature extends ProjectNatureBase {
     }
 
     public IPluginLog getLog() {
+    	// SMS 28 Mar 2007:  plugin class now totally parameterized
         return PrefspecsPlugin.getInstance();
     }
 
