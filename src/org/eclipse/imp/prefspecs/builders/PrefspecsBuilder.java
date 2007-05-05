@@ -1,25 +1,20 @@
 package prefspecs.safari.builders;
 
-import java.io.*;
-import java.io.InputStream;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.uide.builder.BuilderUtils;
+import org.eclipse.uide.builder.MarkerCreator;
+import org.eclipse.uide.core.Language;
+import org.eclipse.uide.core.LanguageRegistry;
 import org.eclipse.uide.core.SAFARIBuilderBase;
+import org.eclipse.uide.parser.IParseController;
+import org.eclipse.uide.parser.IParseControllerWithMarkerTypes;
 import org.eclipse.uide.runtime.SAFARIPluginBase;
 
 import prefspecs.PrefspecsPlugin;
-
-import org.eclipse.uide.core.Language;
-import org.eclipse.uide.core.LanguageRegistry;
-
-import org.eclipse.uide.builder.BuilderUtils;
-import org.eclipse.uide.builder.MarkerCreator;
-import org.eclipse.uide.parser.IParseController;
+import prefspecs.safari.compiler.PrefspecsCompiler;
 import prefspecs.safari.parser.PrefspecsParseController;
 
 /**
@@ -29,11 +24,16 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
     /**
      * Extension ID of the Prefspecs builder. Must match the ID in the corresponding
      * extension definition in plugin.xml.
+     * SMS 22 Mar 2007:  If that ID is set through the NewBuilder wizard, then so must this one be.
      */
-    public static final String BUILDER_ID= "froufrou.safari.builder"	;	//PrefspecsPlugin.kPluginID + ".safari.builder";
-	
-    public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".problem";
-
+	// SMS 28 Mar 2007:  Make plugin class name totally parameterized
+	public static final String BUILDER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.safari.builder";
+	// SMS 28 Mar 2007:  Make problem id parameterized (rather than just ".problem") so that
+	// it can be given a builde-specific value (not simply composed here using the builder id
+	// because the problem id is also needed in ExtensionPointEnabler for adding the marker
+	// extension to the plugin.xml file)
+    public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.safari.builder.problem";
+    
     // SMS 11 May 2006
     public static final String LANGUAGE_NAME = "prefspecs";
     public static final Language LANGUAGE = LanguageRegistry.findLanguage(LANGUAGE_NAME);
@@ -41,6 +41,7 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
 
 
     protected SAFARIPluginBase getPlugin() {
+        //return PrefspecsPlugin.getInstance();
         return PrefspecsPlugin.getInstance();
     }
 
@@ -110,12 +111,12 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
         try {
             // START_HERE
             System.out.println("Builder.compile with file = " + file.getName());
-            //PrefspecsCompiler compiler= new PrefspecsCompiler();
-            //compiler.compile(file, monitor);
+            PrefspecsCompiler compiler= new PrefspecsCompiler(PROBLEM_MARKER_ID);
+            compiler.compile(file, monitor);
             // Here we provide a substitute for the compile method that simply
             // runs the parser in place of the compiler but creates problem
             // markers for errors that will show up in the problems view
-            runParserForCompiler(file, monitor);
+            //runParserForCompiler(file, monitor);
 
             doRefresh(file.getParent());
         } catch (Exception e) {
@@ -132,8 +133,14 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
 
             // Marker creator handles error messages from the parse controller (and
             // uses the parse controller to get additional information about the errors)
-            MarkerCreator markerCreator = new MarkerCreator(file, parseController, "org.eclipse.uide.prefspecs.problem");
+            MarkerCreator markerCreator = new MarkerCreator(file, parseController, 	PROBLEM_MARKER_ID);
 
+            // If we have a kind of parser that might be receptive, tell it
+            // what types of problem marker the builder will create
+            if (parseController instanceof IParseControllerWithMarkerTypes) {
+                ((IParseControllerWithMarkerTypes)parseController).addProblemMarkerType(getErrorMarkerID());
+            }
+            
             // Need to tell the parse controller which file in which project to parse
             // and also the message handler to which to report errors
             parseController.initialize(file.getProjectRelativePath()/*.toString()*/, file.getProject(), markerCreator);
