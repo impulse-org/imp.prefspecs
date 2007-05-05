@@ -12,6 +12,8 @@ import prefspecs.safari.parser.Ast.ASTNode;
 import prefspecs.safari.parser.Ast.ASTNodeToken;
 import prefspecs.safari.parser.Ast.IASTNodeToken;
 import prefspecs.safari.parser.Ast.IfieldSpec;
+import prefspecs.safari.parser.Ast.tabSpecs;
+import prefspecs.safari.parser.Ast.*;
 
 
 
@@ -23,32 +25,24 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
 	
         if (node == null)
             return null;
-	
+        
         if (node instanceof IASTNodeToken	
         		|| node instanceof ASTNodeToken)
-        {
+        {      
         	int tokenKind = ((IASTNodeToken) node).getLeftIToken().getKind();
         	
         	switch (tokenKind) {
         	
         	case PrefspecsLexer.TK_TABS:
-        		return "In this section list each of the four tabs:  'default', 'configuration', 'instance', and 'project',	" +
-        				"and, for eack, indicate whether it is 'in' or 'out' of the preference page and assign tab-wide attributes, " +
-        				"'iseditable' and/or 'isremovable', as appropriate";
+        		return "Introduces required section for specifying participation of tabs on the preference page " +
+        				"and optionally specifying certain properties of fields on those tabs";
         	case PrefspecsLexer.TK_FIELDS:
-        		return "In this section list the fields that will appear on the generated preferences page (each field will appear" +
-        				"on each included tab).  To list a field, give its type and name, and optionally set any properties specific " +
-        				"to that field (applicable properties depend on field type).  The name of each field should be unique.";
+        		return "Introduces required section for specifying fields for tabs on the preference page " +
+						"and optionally specifying certain properties of those fields";
         	case PrefspecsLexer.TK_CUSTOM:
-        		return "In this section provide property values that apply to specific fields on specific tabs.  " +
-        				"Designate fields by 'tab-name' 'field-name'; " +
-        				"applicable properties depend on field type.  " +
-        				"Field names should have been introduced in the 'fields' section.  " +
-        				"Specific fields (specific tab-field combinations) may appear multiple times " +
-        				"with any subset of applicable properties (later assignments override earlier ones).";
+        		return "Introduces optional section for specifying fiel-property values that apply to specific fields on specific tabs.";
         	case PrefspecsLexer.TK_CONDITIONALS:
-        		return "In this section list fields of any type whose enabled state depends on the state of another field of boolean type." +
-        				"E.g., 'nameOfDependentField with nameOfBooleanField' or 'nameOfDependentField against nameOfBooleanField'";
+        		return "Introduces optional section for specifying fields that are enabled depending on the states other fields.";
  
         	case PrefspecsLexer.TK_DEFAULT:
         		return "Designates the 'default' level preferences tab";
@@ -59,7 +53,6 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         	case PrefspecsLexer.TK_PROJECT:
         		return "Designates the 'project' level preferences tab";
 
-        		 
         	case PrefspecsLexer.TK_BOOLEAN:
         		return "Designates the 'boolean' (checkbox) field type";
         	case PrefspecsLexer.TK_COMBO:
@@ -75,7 +68,6 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         	case PrefspecsLexer.TK_STRING:
         		return "Designates the 'string' field type";
 
-        		
         	case PrefspecsLexer.TK_EMPTYALLOWED:
         		return "'emptyallowed' indicates whether the field has, and is allowed to take on, " +
         				"an 'empty' value; this attribute takes a boolean value; if 'true' then a value " +
@@ -116,7 +108,7 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         		// Comment tokens may not appear as such, and I don't want
         		// to go digging around in the adjuncts of "real" tokens,
         		// so don't expect much here
-        		return "Comment (no effect on pagegeneration)";
+        		return "Comment (no effect on page generation)";
         	
            	case PrefspecsLexer.TK_IN:
         		return "'in' means that the associated tab will be included in the generated preferences page";
@@ -130,73 +122,16 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
        		
         	case PrefspecsLexer.TK_PAGE:
         		return "This designates the beginning of a preference-page specification";
-           		
-        	case PrefspecsLexer.TK_LEFTBRACE:
-        	case PrefspecsLexer.TK_RIGHTBRACE:
-        		// getParent() returns an IAst, but prefspecs ASTNode implements that
-        		ASTNode grandParentNode = (ASTNode) ((ASTNode)node).getParent().getParent();
-        		if (grandParentNode == null) {
-        			if (tokenKind == PrefspecsLexer.TK_LEFTBRACE)
-        				return "This is the beginning of the body of the specification";
-        			else
-        				return "This is the end of the body of the specification";
-        		}
-        		
-        		String parentTypeName = grandParentNode.getClass().getName();
-        		if (parentTypeName.endsWith("tabSpecs")) {
-        			return "Specify tab properties within braces; these properties by default apply to " +
-        					"all fields in the tab.  There are two optional properties:  " +
-        					"'iseditable' (boolean) indicates whether fields in the tab are editable; " +
-        					"'isremovable' (boolean) indicates whether values stored in fields on the tab " +
-        					"can be removed (triggering inheritance).  When both are used 'iseditable' " +
-        					"must appear first.  Each should be followed by a ';'.";
-        		} else if (parentTypeName.endsWith("fieldSpecs")) {
-        			ASTNode specNode = getFieldSpecNode((ASTNode) node);
-        			if (specNode != null) {
-        				if (specNode.getClass().toString().endsWith("booleanFieldSpec")) {
-            				return "Specify attributes for a boolean field:  three optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'hasspecial' (boolean), 'isremovable' (boolean).";
-        				} else if (specNode.getClass().toString().endsWith("comboFieldSpec")) {
-            				return "Specify attributes for a combo-box field:  four optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'hasspecial' (string), " +
-            						"'emptyallowed' (boolean--plus a string if 'true'), and 'isremovable' (boolean).";
-        				} else if (specNode.getClass().toString().endsWith("dirListFieldSpec")) {
-            				return "Specify attributes for a directory-list field:   four optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'hasspecial' (string), " +
-            						"'emptyallowed' (boolean--plus a string if 'true'), and 'isremovable' (boolean).";
-        				} else if (specNode.getClass().toString().endsWith("fileFieldSpec")) {
-            				return "Specify attributes for a file-name field:   four optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'hasspecial' (string), " +
-    								"'emptyallowed' (boolean--plus a string if 'true'), and 'isremovable' (boolean).";
-        				} else if (specNode.getClass().toString().endsWith("intFieldSpec")) {
-            				return "Specify attributes for an integer field:   four optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'range' (lowval .. highval), " +
-            						"'hasspecial' (int), and 'isremovable' (boolean).";
-        				} else if (specNode.getClass().toString().endsWith("radioFieldSpec")) {
-            				return "Specify attributes for a radio-button field:   three optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'hasspecial' (int), " +
-									"and 'isremovable' (boolean).";
-        				} else if (specNode.getClass().toString().endsWith("stringFieldSpec")) {
-            				return "Specify attributes for a string	field:   four optional, semicolon-separated attributes, " +
-            						"in this order, if used:  'iseditable' (boolean), 'hasspecial' (string), " +
-    								"'emptyallowed' (boolean--plus a string if 'true'), and 'isremovable' (boolean).";
-        				}	
-        				return "Unrecognized field-spec type; no hover help available";
-        			} else {
-        				return "No field spec found; no hover help possible";
-        			}
-        		} else {
-        			return"No help for AST node:  '" + node.toString() + "'";
-        		}
-        		
+      		
         	default:
-        	    return "No help for AST node:  '" + node.toString() + "'";
+        		return null;
         	}
         }
-        return "No help for AST node:  '" + node.toString() + "'";
+        
+        return null;
     }
 
-   
+  
 	protected ASTNode getFieldSpecNode(ASTNode node)
 	{
    		ASTNode grandParentNode = (ASTNode) node.getParent().getParent();
