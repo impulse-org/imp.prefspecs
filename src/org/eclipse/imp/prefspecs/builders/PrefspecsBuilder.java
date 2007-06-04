@@ -9,6 +9,7 @@ import org.eclipse.uide.builder.MarkerCreator;
 import org.eclipse.uide.core.Language;
 import org.eclipse.uide.core.LanguageRegistry;
 import org.eclipse.uide.core.SAFARIBuilderBase;
+import org.eclipse.uide.model.SourceProject;
 import org.eclipse.uide.parser.IParseController;
 import org.eclipse.uide.parser.IParseControllerWithMarkerTypes;
 import org.eclipse.uide.runtime.SAFARIPluginBase;
@@ -143,7 +144,7 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
             
             // Need to tell the parse controller which file in which project to parse
             // and also the message handler to which to report errors
-            parseController.initialize(file.getProjectRelativePath()/*.toString()*/, file.getProject(), markerCreator);
+            parseController.initialize(file.getProjectRelativePath()/*.toString()*/, new SourceProject(file.getProject()), markerCreator);
 	
             // Get file contents for parsing
             String contents = BuilderUtils.extractContentsToString(file.getLocation().toString());
