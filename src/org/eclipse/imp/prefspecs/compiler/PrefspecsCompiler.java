@@ -1,37 +1,39 @@
 package prefspecs.safari.compiler;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.internal.IPreferenceConstants;
 import org.eclipse.uide.builder.MarkerCreator;
+import org.eclipse.uide.model.SourceProject;
 import org.eclipse.uide.parser.IParseController;
 import org.eclipse.uide.parser.IParseControllerWithMarkerTypes;
 import org.eclipse.uide.preferences.ISafariPreferencesService;
+import org.eclipse.uide.preferences.pageinfo.ConcreteBooleanFieldInfo;
+import org.eclipse.uide.preferences.pageinfo.PreferencesPageInfo;
+import org.eclipse.uide.preferences.pageinfo.PreferencesTabInfo;
+import org.eclipse.uide.preferences.pageinfo.VirtualBooleanFieldInfo;
 
 import prefspecs.safari.parser.PrefspecsParseController;
 import prefspecs.safari.parser.Ast.ASTNode;
 import prefspecs.safari.parser.Ast.AbstractVisitor;
+import prefspecs.safari.parser.Ast.booleanDefValueSpec;
 import prefspecs.safari.parser.Ast.booleanFieldPropertySpecs;
 import prefspecs.safari.parser.Ast.booleanFieldSpec;
 import prefspecs.safari.parser.Ast.booleanSpecialSpec;
 import prefspecs.safari.parser.Ast.configurationTabSpec;
 import prefspecs.safari.parser.Ast.defaultTabSpec;
+import prefspecs.safari.parser.Ast.generalSpecs;
 import prefspecs.safari.parser.Ast.instanceTabSpec;
 import prefspecs.safari.parser.Ast.isEditableSpec;
 import prefspecs.safari.parser.Ast.isRemovableSpec;
 import prefspecs.safari.parser.Ast.pageSpec;
 import prefspecs.safari.parser.Ast.projectTabSpec;
-import prefspecs.safari.parser.Ast.tabPropertySpecs;
 import prefspecs.safari.parser.PrefspecsParser.SymbolTable;
 
 public class PrefspecsCompiler {
@@ -45,7 +47,7 @@ public class PrefspecsCompiler {
 
     private static final String sTemplateFooter= "}\n";
 
-    Stack/*<String>*/ fTranslationStack= new Stack();
+    //Stack/*<String>*/ fTranslationStack= new Stack();
     
     //public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".$PROBLEM_ID$";
     public String PROBLEM_MARKER_ID;
@@ -83,16 +85,21 @@ public class PrefspecsCompiler {
         
         public boolean visit(defaultTabSpec tabSpec) {
         	PreferencesTabInfo tab = new PreferencesTabInfo(prefsPage, tabSpec.getDEFAULT().toString());
-        	tabPropertySpecs propSpecs = tabSpec.gettabPropertySpecs();
+        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
 
-        	
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
         	if (editableSpec != null) {
         		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
         	}
         	isRemovableSpec removableSpec = propSpecs.getisRemovableSpec();
         	if (removableSpec != null) {
-            	tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+        		try {
+        			tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+        		} catch (IllegalArgumentException e) {
+        			System.err.println("PrefspecsCompiler.TranslatorVisitor.visit(defaultTabSpec:  \n" +
+        					"\tattempt to set isRemovable to illegal value 'true'; substituting 'false'.");
+        			tab.setIsRemovable(false);
+        		}
         	}
         	// Should always have an inout spec
         	tab.setIsUsed(tabSpec.getinout().toString().equals("in"));
@@ -104,9 +111,8 @@ public class PrefspecsCompiler {
         public boolean visit(configurationTabSpec tabSpec) {
         	PreferencesTabInfo tab = new PreferencesTabInfo(prefsPage, tabSpec.getCONFIGURATION
         			().toString());
-        	tabPropertySpecs propSpecs = tabSpec.gettabPropertySpecs();
+        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
 
-        	
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
         	if (editableSpec != null) {
         		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
@@ -124,9 +130,8 @@ public class PrefspecsCompiler {
         
         public boolean visit(instanceTabSpec tabSpec) {
         	PreferencesTabInfo tab = new PreferencesTabInfo(prefsPage, tabSpec.getINSTANCE().toString());
-        	tabPropertySpecs propSpecs = tabSpec.gettabPropertySpecs();
+        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
 
-        	
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
         	if (editableSpec != null) {
         		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
@@ -143,8 +148,7 @@ public class PrefspecsCompiler {
        
         public boolean visit(projectTabSpec tabSpec) {
         	PreferencesTabInfo tab = new PreferencesTabInfo(prefsPage, tabSpec.getPROJECT().toString());
-        	tabPropertySpecs propSpecs = tabSpec.gettabPropertySpecs();
-
+        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
         	
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
         	if (editableSpec != null) {
@@ -165,23 +169,26 @@ public class PrefspecsCompiler {
         	VirtualBooleanFieldInfo vBool = new VirtualBooleanFieldInfo(prefsPage, boolField.getidentifier().toString());
         	booleanFieldPropertySpecs propSpecs = boolField.getbooleanFieldPropertySpecs();
         	
-            isEditableSpec editableSpec = propSpecs.getisEditableSpec();
+        	// Create a virtual field
+            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
         	if (editableSpec != null) {
         		vBool.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
         	}
-        	isRemovableSpec removableSpec = propSpecs.getisRemovableSpec();
+        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
         	if (removableSpec != null) {
             	vBool.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         	}
         	
-        	booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecialSpec();
+        	booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecificSpec().getbooleanCustomSpec();
         	if (specialSpec != null) {
         		vBool.setHasSpecial(true);
             	vBool.setSpecial(specialSpec.getbooleanValue().toString().equals("true"));
         	}
 
+        	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
+        	
         	// Create an instance of a concrete field for each tab on the page
-        	Iterator tabs = prefsPage.getTabs();
+        	Iterator tabs = prefsPage.getTabInfos();
         	while (tabs.hasNext()) {
         		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
         		if (!tab.getIsUsed())
@@ -237,7 +244,7 @@ public class PrefspecsCompiler {
         }
     }
 
-    public void compile(IFile file, IProgressMonitor mon) {
+    public PreferencesPageInfo compile(IFile file, IProgressMonitor mon) {
         IProject project= file.getProject();
         IParseController parseController= new PrefspecsParseController();
         
@@ -250,33 +257,25 @@ public class PrefspecsCompiler {
             ((IParseControllerWithMarkerTypes)parseController).addProblemMarkerType(PROBLEM_MARKER_ID);
         }
         
-        parseController.initialize(file.getProjectRelativePath()/*.toString()*/, project, markerCreator);
+        parseController.initialize(file.getProjectRelativePath()/*.toString()*/, new SourceProject(project), markerCreator);
         parseController.parse(getFileContents(file), false, mon);
 
         ASTNode currentAst= (ASTNode) parseController.getCurrentAst();
 
         if (currentAst == null) {
             System.err.println("PrefspecsCompiler.compile:  current AST is null (parse errors?); unable to compile.");
-        	return;
+        	return null;
         }
 
         String fileExten= file.getFileExtension();
         String fileBase= file.getName().substring(0, file.getName().length() - fileExten.length() - 1);
 
-        currentAst.accept(new TranslatorVisitor());
+        TranslatorVisitor visitor = new TranslatorVisitor();
+        
+        currentAst.accept(visitor);
 
-//        IFile javaFile= project.getFile(file.getProjectRelativePath().removeFileExtension().addFileExtension("java"));
-//        String javaSource= sTemplateHeader.replaceAll(sClassNameMacro.replaceAll("\\$", "\\\\\\$"), fileBase) + fTranslationStack.pop() + sTemplateFooter;
-//        ByteArrayInputStream bais = new ByteArrayInputStream(javaSource.getBytes());
-//
-//        try {
-//            if (!javaFile.exists())
-//                javaFile.create(bais, true, mon);
-//            else
-//                javaFile.setContents(bais, true, false, mon);
-//        } catch (CoreException ce) {
-//            System.err.println(ce.getMessage());
-//        }
+        return prefsPage;
+
     }
     
     public PreferencesPageInfo getPageInfo(IFile file, IProgressMonitor mon) {
@@ -292,7 +291,7 @@ public class PrefspecsCompiler {
             ((IParseControllerWithMarkerTypes)parseController).addProblemMarkerType(PROBLEM_MARKER_ID);
         }
         
-        parseController.initialize(file.getProjectRelativePath()/*.toString()*/, project, markerCreator);
+        parseController.initialize(file.getProjectRelativePath()/*.toString()*/, new SourceProject(project), markerCreator);
         parseController.parse(getFileContents(file), false, mon);
 
         ASTNode currentAst= (ASTNode) parseController.getCurrentAst();
