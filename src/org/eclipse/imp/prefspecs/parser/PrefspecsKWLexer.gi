@@ -45,12 +45,13 @@ $Export
     -- For field specifications
     --SPECIAL
     
-    -- For customizations
-    RANGE
+    -- For attributes
+    DEFVALUE
     EMPTYALLOWED
     HASSPECIAL
     ISEDITABLE
     ISREMOVABLE
+    RANGE
     
     -- For boolean properties of fields (or anything else)
     TRUE
@@ -114,6 +115,12 @@ $Rules
     Keyword ::= d e f a u l t
         /.$BeginAction
             $setResult($_DEFAULT);
+          $EndAction
+        ./
+
+    Keyword ::= d e f v a l u e
+        /.$BeginAction
+            $setResult($_DEFVALUE);
           $EndAction
         ./
 
