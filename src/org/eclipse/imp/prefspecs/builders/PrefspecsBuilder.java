@@ -1,6 +1,7 @@
 package prefspecs.safari.builders;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,9 +10,10 @@ import org.eclipse.uide.builder.MarkerCreator;
 import org.eclipse.uide.core.Language;
 import org.eclipse.uide.core.LanguageRegistry;
 import org.eclipse.uide.core.SAFARIBuilderBase;
-import org.eclipse.uide.model.SourceProject;
+import org.eclipse.uide.model.ISourceProject;
+import org.eclipse.uide.model.ModelFactory;
+import org.eclipse.uide.model.ModelFactory.ModelException;
 import org.eclipse.uide.parser.IParseController;
-import org.eclipse.uide.parser.IParseControllerWithMarkerTypes;
 import org.eclipse.uide.runtime.SAFARIPluginBase;
 
 import prefspecs.PrefspecsPlugin;
@@ -138,13 +140,19 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
 
             // If we have a kind of parser that might be receptive, tell it
             // what types of problem marker the builder will create
-            if (parseController instanceof IParseControllerWithMarkerTypes) {
-                ((IParseControllerWithMarkerTypes)parseController).addProblemMarkerType(getErrorMarkerID());
-            }
+            parseController.addProblemMarkerType(getErrorMarkerID());
             
             // Need to tell the parse controller which file in which project to parse
-            // and also the message handler to which to report errors
-            parseController.initialize(file.getProjectRelativePath()/*.toString()*/, new SourceProject(file.getProject()), markerCreator);
+            // and also the message handler to which to report errors 
+            IProject project= file.getProject();
+    		ISourceProject sourceProject = null;
+        	try {
+        		sourceProject = ModelFactory.open(project);
+        	} catch (ModelException me){
+                System.err.println("PrefspecsBuilder.runParserForComplier(..):  Model exception:\n" + me.getMessage() + "\nReturning without parsing");
+                return;
+        	}	
+            parseController.initialize(file.getProjectRelativePath(), sourceProject, markerCreator);
 	
             // Get file contents for parsing
             String contents = BuilderUtils.extractContentsToString(file.getLocation().toString());
