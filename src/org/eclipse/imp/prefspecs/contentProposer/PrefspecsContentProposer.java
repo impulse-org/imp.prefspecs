@@ -23,60 +23,6 @@ import prefspecs.safari.parser.PrefspecsLexer.*;
 
 public class PrefspecsContentProposer implements IContentProposer
 {
-
-/*	
-	private HashMap getVisibleVariables(PrefspecsParser parser, ASTNode n) {
-        HashMap map = new HashMap();
-        for (PrefspecsParser.SymbolTable s = parser.getEnclosingSymbolTable(n); s != null; s = s.getParent())
-            for (Enumeration e = s.keys(); e.hasMoreElements(); ) {
-                Object key = e.nextElement();
-                if (! map.containsKey(key))
-                    map.put(key, s.get(key));
-            }
-
-        return map;
-    }
-
-    private String getVariableName(IAst decl){
-        if (decl instanceof declaration)
-             return ((declaration) decl).getidentifier().toString();
-        else if (decl instanceof functionDeclaration)
-             return ((functionDeclaration) decl).getidentifier().toString();
-        return "";
-    }
-    
-    private String getVariableProposal(IAst decl){
-        String string = "";
-        if (decl instanceof declaration) {
-            string = ((declaration) decl).getprimitiveType().toString() + " " +
-                     ((declaration) decl).getidentifier().toString();
-        }
-        else if (decl instanceof functionDeclaration) {
-            functionDeclaration fdecl = (functionDeclaration) decl;
-            declarationList parameters = fdecl.getparameters();
-            string = fdecl.getType().toString() + " " + fdecl.getidentifier().toString() + "(";
-            for (int i = 0; i < parameters.size(); i++)
-                string += ((declaration) parameters.getdeclarationAt(i)).getprimitiveType()
-                          + (i < parameters.size() - 1 ? ", " : "");
-            string += ")";
-        }
-        return string;
-    }
-
-    private ArrayList filterSymbols(HashMap in_symbols, String prefix)
-    {
-        ArrayList symbols = new ArrayList();
-        for (Iterator i = in_symbols.values().iterator(); i.hasNext(); ) {
-            IAst decl = (IAst) i.next();
-            String name = getVariableName(decl);
-            if (name.length() >= prefix.length() && prefix.equals(name.substring(0, prefix.length())))
-                symbols.add(decl);
-        }
-
-        return symbols;
-    }
-*/	
-	
     private IToken getToken(IParseController controller, int offset) {
         PrsStream stream = (PrsStream) controller.getParser();
         int index = stream.getTokenIndexAtCharacter(offset),
@@ -270,7 +216,7 @@ public class PrefspecsContentProposer implements IContentProposer
     	if (fieldTypeNames == null) {
     		fieldTypeNames = new ArrayList();
 	    	fieldTypeNames.add("boolean");
-	    	fieldTypeNames	.add("combo");
+	    	fieldTypeNames.add("combo");
 	    	fieldTypeNames.add("dirlist");
 	    	fieldTypeNames.add("file");
 	    	fieldTypeNames.add("int");
