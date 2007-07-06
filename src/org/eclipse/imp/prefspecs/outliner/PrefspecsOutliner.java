@@ -1,4 +1,4 @@
-package prefspecs.safari.outliner;
+	package prefspecs.safari.outliner;
 
 
 import org.eclipse.uide.defaults.OutlinerBase;
@@ -88,8 +88,10 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(tabsSpec n) {
 			pushSubItem("Tabs", n);
 			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
-							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
+//			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+//							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
+			addSubItem(docProvider.getDocumentation(n, editor.getParseController()), n, 
+					PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
 		
