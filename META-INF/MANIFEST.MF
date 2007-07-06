@@ -1,16 +1,32 @@
 Bundle-Vendor: 
 Bundle-SymbolicName: org.eclipse.uide.prefspecs; singleton=true
 Bundle-Activator: prefspecs.PrefspecsPlugin
+Bundle-Name: Prefspecs Plug-in
 Eclipse-AutoStart: true
-Require-Bundle: org.eclipse.core.runtime,
+Bundle-Version: 0.0.0
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
  org.eclipse.core.resources,
- org.eclipse.uide.runtime,
- org.eclipse.ui,
  lpg.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  com.ibm.watson.smapifier,
- org.eclipse.jdt.core
-Bundle-Name: Prefspecs Plug-in
-Bundle-Version: 0.0.0
+ org.eclipse.jdt.core,
+ org.eclipse.pde,
+ org.eclipse.uide,
+ org.eclipse.uide.runtime
+Provide-Package: prefspecs,
+ prefspecs.safari.actions,
+ prefspecs.safari.builders,
+ prefspecs.safari.compiler,
+ prefspecs.safari.contentProposer,
+ prefspecs.safari.documentationProvider,
+ prefspecs.safari.foldingUpdater,
+ prefspecs.safari.hoverHelper,
+ prefspecs.safari.outliner,
+ prefspecs.safari.parser,
+ prefspecs.safari.parser.Ast,
+ prefspecs.safari.preferencesDialog,
+ prefspecs.safari.referenceResolvers,
+ prefspecs.safari.tokenColorer
