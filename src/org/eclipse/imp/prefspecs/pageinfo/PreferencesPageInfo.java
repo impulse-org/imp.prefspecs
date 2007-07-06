@@ -54,7 +54,7 @@ public class PreferencesPageInfo {
 			PreferencesTabInfo tab = tabs.get(i);
 			if (tab == null) continue;
 			String tabName = tab.getName();
-			if (name.equals(name))
+			if (name.equals(tabName))
 				return tab;
 		}
 		return null;
