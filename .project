@@ -16,6 +16,15 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
+			<name>com.ibm.watson.smapifier.SmapieBuilder</name>
+			<arguments>
+				<dictionary>
+					<key>exten</key>
+					<value>g</value>
+				</dictionary>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.pde.ManifestBuilder</name>
 			<arguments>
 			</arguments>
@@ -29,5 +38,7 @@
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.safari.jikespg.runtime.jikesPGNature</nature>
+		<nature>com.ibm.watson.smapifier.smapinature</nature>
 	</natures>
 </projectDescription>
