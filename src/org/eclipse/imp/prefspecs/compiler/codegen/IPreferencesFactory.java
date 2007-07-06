@@ -18,7 +18,12 @@ public interface IPreferencesFactory
 //			String qualifiedClassName, String packageFolderName, Map subs, ISourceProject project, 	IProgressMonitor mon);
 
 
-	public SafariFieldEditor[] createFields(Composite parent, String tab);
-	
+	//public SafariFieldEditor[] createFields(Composite parent, String tab);
+	public SafariFieldEditor[] createFields(
+			SafariTabbedPreferencesPage page,
+			SafariPreferencesTab tab,
+			String level,
+			Composite parent,
+			ISafariPreferencesService prefsService);
 	
 }
