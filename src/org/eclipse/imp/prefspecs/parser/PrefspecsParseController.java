@@ -1,32 +1,33 @@
 package prefspecs.safari.parser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lpg.runtime.IMessageHandler;
 import lpg.runtime.IToken;
 import lpg.runtime.Monitor;
-import lpg.runtime.IMessageHandler;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.uide.parser.AstLocator;
+import org.eclipse.uide.model.ISourceProject;
 import org.eclipse.uide.parser.IASTNodeLocator;
 import org.eclipse.uide.parser.ILexer;
 import org.eclipse.uide.parser.IParseController;
 import org.eclipse.uide.parser.IParser;
 import org.eclipse.uide.parser.ParseError;
 
-import org.eclipse.core.resources.IMarker;			// SMS 5 May 2006
-import org.eclipse.core.resources.IResource;		// SMS 5 May 2006
-import org.eclipse.core.runtime.CoreException;		// SMS 5 May 2006
-
 import prefspecs.safari.parser.Ast.ASTNode;
 
 public class PrefspecsParseController implements IParseController
 {
-    private IProject project;
-    private String filePath;
+    private ISourceProject project;
+    private IPath filePath;
     private PrefspecsParser parser;
     private PrefspecsLexer lexer;
     private ASTNode currentAst;
@@ -43,10 +44,10 @@ public class PrefspecsParseController implements IParseController
      * @param handler		A message handler to receive error messages (or any others)
      * 						from the parser
      */
-    public void initialize(String filePath, IProject project, IMessageHandler handler) {
+    public void initialize(IPath filePath, ISourceProject project, IMessageHandler handler) {
     	this.filePath= filePath;
     	this.project= project;
-    	String fullFilePath = project.getLocation().toString() + "/" + filePath;
+    	String fullFilePath = project.getRawProject().getLocation().toString() + "/" + filePath;
         createLexerAndParser(fullFilePath);
     	
     	parser.setMessageHandler(handler);
@@ -54,9 +55,14 @@ public class PrefspecsParseController implements IParseController
     
     // SMS 5 May 2006:
     // To make this available to users of the controller
-    public IProject getProject() { return project; }
+    public ISourceProject getProject() { return project; }
     
     
+    // SMS 6 Jul 2007
+    public IPath getPath() {
+    	return filePath;
+    }
+
     
     public IParser getParser() { return parser; }
     public ILexer getLexer() { return lexer; }
@@ -112,7 +118,7 @@ public class PrefspecsParseController implements IParseController
     	MyMonitor my_monitor = new MyMonitor(monitor);
     	char[] contentsArray = contents.toCharArray();
 
-        lexer.initialize(contentsArray, filePath);
+        lexer.initialize(contentsArray, filePath.toPortableString());
         parser.getParseStream().resetTokenStream();
         
         // SMS 5 May 2006:
@@ -122,7 +128,7 @@ public class PrefspecsParseController implements IParseController
         // listener they were interested in having receive messages
         // and presumably in creating whatever annotations or markers
         // those messages require (and is that a good reason?)
-        IResource file = project.getFile(filePath);
+        IResource file = project.getRawProject().getFile(filePath);
    	    try {
         	file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
         } catch(CoreException e) {
@@ -141,6 +147,8 @@ public class PrefspecsParseController implements IParseController
         return currentAst;
     }
 
+    public String getSingleLineCommentPrefix() { return "//"; }
+    
     private void cacheKeywordsOnce() {
         if (keywords == null) {
             String tokenKindNames[] = parser.getParseStream().orderedTerminalSymbols();
@@ -157,4 +165,24 @@ public class PrefspecsParseController implements IParseController
             }
         }
     }
+
+    
+    /*
+     * For the management of associated problem-marker types
+     */
+    
+    private static List problemMarkerTypes = new ArrayList();
+    
+    public List getProblemMarkerTypes() {
+    	return problemMarkerTypes;
+    }
+    
+    public void addProblemMarkerType(String problemMarkerType) {
+    	problemMarkerTypes.add(problemMarkerType);
+    }
+    
+	public void removeProblemMarkerType(String problemMarkerType) {
+		problemMarkerTypes.remove(problemMarkerType);
+	}
+    
 }
