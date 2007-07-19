@@ -1,10 +1,11 @@
 package prefspecs.safari.parser;
 
-import prefspecs.safari.parser.Ast.ASTNode;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.uide.parser.IASTNodeLocator;
 
+import prefspecs.safari.parser.Ast.ASTNode;
 import prefspecs.safari.parser.Ast.AbstractVisitor;
-import lpg.runtime.IToken;
 
 public class PrefspecsASTNodeLocator implements IASTNodeLocator
 {
@@ -76,8 +77,8 @@ public class PrefspecsASTNodeLocator implements IASTNodeLocator
         return getEndOffset(n) - getStartOffset(n);
     }
 
-    public String getPath(Object node) {
+    public IPath getPath(Object node) {
         // TODO Determine path of compilation unit containing this node
-        return "";
+        return new Path("");
     }
 }
