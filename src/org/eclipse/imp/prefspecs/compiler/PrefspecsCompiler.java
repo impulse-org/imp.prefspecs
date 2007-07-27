@@ -17,9 +17,11 @@ import org.eclipse.uide.parser.IParseController;
 import org.eclipse.uide.preferences.ISafariPreferencesService;
 import org.eclipse.uide.preferences.pageinfo.ConcreteBooleanFieldInfo;
 import org.eclipse.uide.preferences.pageinfo.ConcreteFieldInfo;
+import org.eclipse.uide.preferences.pageinfo.ConcreteStringFieldInfo;
 import org.eclipse.uide.preferences.pageinfo.PreferencesPageInfo;
 import org.eclipse.uide.preferences.pageinfo.PreferencesTabInfo;
 import org.eclipse.uide.preferences.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.uide.preferences.pageinfo.VirtualStringFieldInfo;
 
 import prefspecs.safari.parser.PrefspecsParseController;
 import prefspecs.safari.parser.Ast.ASTNode;
@@ -37,6 +39,9 @@ import prefspecs.safari.parser.Ast.isEditableSpec;
 import prefspecs.safari.parser.Ast.isRemovableSpec;
 import prefspecs.safari.parser.Ast.pageSpec;
 import prefspecs.safari.parser.Ast.projectTabSpec;
+import prefspecs.safari.parser.Ast.stringFieldSpec;
+import prefspecs.safari.parser.Ast.stringFieldPropertySpecs;
+import prefspecs.safari.parser.Ast.*;
 import prefspecs.safari.parser.PrefspecsParser.SymbolTable;
 
 public class PrefspecsCompiler {
@@ -193,7 +198,7 @@ public class PrefspecsCompiler {
 
         	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
         	if (defValueSpec != null) {
-        		vBool.setDefValue(defValueSpec.getbooleanValue().toString().equals("true"));
+        		vBool.setDefaultValue(defValueSpec.getbooleanValue().toString().equals("true"));
         	}
         	
         	
@@ -223,15 +228,105 @@ public class PrefspecsCompiler {
             		cBool.setHasSpecial(true);
                 	cBool.setSpecial(specialSpec.getbooleanValue().toString().equals("true"));
             	} else {
-            		vBool.setHasSpecial(false);
-            		vBool.setSpecial(false);
+            		cBool.setHasSpecial(false);
+            		cBool.setSpecial(false);
             	}
         	}
         	return false;
         }
         
         
-        // Context for processing of custom rules
+        
+        public boolean visit(stringFieldSpec stringField) {
+        	VirtualStringFieldInfo vString = new VirtualStringFieldInfo(pageInfo, stringField.getidentifier().toString());
+        	stringFieldPropertySpecs propSpecs = stringField.getstringFieldPropertySpecs();
+        	
+        	// Create a virtual field
+            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
+        	if (editableSpec != null) {
+        		vString.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
+        	if (removableSpec != null) {
+            	vString.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	
+        	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+        	if (specialSpec != null) {
+        		vString.setHasSpecial(true);
+            	vString.setSpecial(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+        	} else {
+        		vString.setHasSpecial(false);
+        		vString.setSpecial(null);
+        	}
+
+        	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+        	if (defValueSpec != null) {
+        		vString.setDefValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        	
+        	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+        	if (emptyValueSpec instanceof stringEmptySpec0) {
+        		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+        		vString.setEmptyValueAllowed(false);
+        		vString.setEmptyValue(null);
+        	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+           		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+        		vString.setEmptyValueAllowed(ses1.getEMPTYALLOWED().toString().equals("true"));
+        		vString.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        	
+        	// Create an instance of a concrete field for each tab on the page
+        	Iterator tabs = pageInfo.getTabInfos();
+        	while (tabs.hasNext()) {
+        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		if (!tab.getIsUsed())
+        			continue;
+        		ConcreteStringFieldInfo cString = new ConcreteStringFieldInfo(vString, tab);
+        		
+        		// Set the attributes of the concrete field:
+        		// if set in the virtual field, use that value;
+        		// else if set for the tab, use that value;
+        		// else rely on the default for the field type
+            	if (editableSpec != null) {
+            		cString.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cString.setIsEditable(tab.getIsEditable());
+            	}
+            	if (removableSpec != null && !(tab.getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))) {
+                	cString.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cString.setIsRemovable(tab.getIsRemovable());
+            	}
+            	if (specialSpec != null) {
+            		cString.setHasSpecial(true);
+                	cString.setSpecial(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+            	} else {
+            		cString.setHasSpecial(false);
+            		cString.setSpecial(null);
+            	}
+            	if (emptyValueSpec != null) {
+	            	if (emptyValueSpec instanceof stringEmptySpec0) {
+	            		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+	            		cString.setEmptyValueAllowed(false);
+	            		cString.setEmptyValue(null);
+	            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+	               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+	            		cString.setEmptyValueAllowed(true);
+	            		cString.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+	            	}
+            	}
+        	}
+        	return false;
+        }
+        
+        
+        
+        
+        /*
+         * Context for processing of custom rules 
+         */ 
         String customTabName = null;
         PreferencesTabInfo customTabInfo = null;
         String customFieldName = null;
@@ -275,7 +370,7 @@ public class PrefspecsCompiler {
         
 
         // Use endVisit(..) methods to get information from specs because when
-        // visit(..)ed they don't yet have the info we need
+        // visit(..)ed they don't yet have the info that's needed
         
         
         public void endVisit(generalSpecs genSpecs)
@@ -307,9 +402,23 @@ public class PrefspecsCompiler {
         		// Don't think the boolean value can be null if we have a specialSpec	
         		((ConcreteBooleanFieldInfo)customFieldInfo).setSpecial(specialSpec.getbooleanValue().toString().equals("true"));
         	}
-
         }
+        
+        
+        public void endVisit(stringSpecialSpec specialSpec)
+        {
+        	// Process special spec as part of a string custom spec,
+        	// if processing a custom rule
+        	// If the specialSpec is not null, then the field has a special spec
+        	// and the value of that spec is the special value for the field
+        	if (customTabName != null) {
+        		// Don't think the boolean value can be null if we have a specialSpec	
+        		((ConcreteStringFieldInfo)customFieldInfo).setSpecial(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        }
+        
 
+        
     }
 
     
@@ -366,7 +475,6 @@ public class PrefspecsCompiler {
         
         parseController.initialize(file.getProjectRelativePath(), sourceProject, markerCreator);
 
-        
         parseController.parse(getFileContents(file), false, mon);
 
         ASTNode currentAst= (ASTNode) parseController.getCurrentAst();
