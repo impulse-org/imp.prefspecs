@@ -1,8 +1,8 @@
 Bundle-Vendor: 
-Bundle-SymbolicName: org.eclipse.uide.prefspecs; singleton=true
-Bundle-Activator: prefspecs.PrefspecsPlugin
-Bundle-Name: Prefspecs Plug-in
-Eclipse-AutoStart: true
+Bundle-SymbolicName: org.eclipse.imp.prefspecs;singleton:=true
+Bundle-Activator: org.eclipse.imp.prefspecs.PrefspecsPlugin
+Bundle-Name: Preference Specifications Plug-in
+Eclipse-LazyStart: true
 Bundle-Version: 0.0.0
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,19 +14,19 @@ Require-Bundle: org.eclipse.ui,
  com.ibm.watson.smapifier,
  org.eclipse.jdt.core,
  org.eclipse.pde,
- org.eclipse.uide,
- org.eclipse.uide.runtime
-Provide-Package: prefspecs,
- prefspecs.safari.actions,
- prefspecs.safari.builders,
- prefspecs.safari.compiler,
- prefspecs.safari.contentProposer,
- prefspecs.safari.documentationProvider,
- prefspecs.safari.foldingUpdater,
- prefspecs.safari.hoverHelper,
- prefspecs.safari.outliner,
- prefspecs.safari.parser,
- prefspecs.safari.parser.Ast,
- prefspecs.safari.preferencesDialog,
- prefspecs.safari.referenceResolvers,
- prefspecs.safari.tokenColorer
+ org.eclipse.imp.runtime,
+ org.eclipse.imp.metatooling
+Provide-Package: org.eclipse.imp.prefspecs,
+ org.eclipse.imp.prefspecs.actions,
+ org.eclipse.imp.prefspecs.builders,
+ org.eclipse.imp.prefspecs.compiler,
+ org.eclipse.imp.prefspecs.contentProposer,
+ org.eclipse.imp.prefspecs.documentationProvider,
+ org.eclipse.imp.prefspecs.foldingUpdater,
+ org.eclipse.imp.prefspecs.hoverHelper,
+ org.eclipse.imp.prefspecs.outliner,
+ org.eclipse.imp.prefspecs.parser,
+ org.eclipse.imp.prefspecs.parser.Ast,
+ org.eclipse.imp.prefspecs.preferencesDialog,
+ org.eclipse.imp.prefspecs.referenceResolvers,
+ org.eclipse.imp.prefspecs.tokenColorer

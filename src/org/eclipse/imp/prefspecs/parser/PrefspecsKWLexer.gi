@@ -1,7 +1,7 @@
 --
 -- The Java KeyWord Lexer
 --
-%options package=prefspecs.safari.parser
+%options package=org.eclipse.imp.prefspecs.parser
 %options template=UIDE/KeywordTemplate.gi
 
 $Include

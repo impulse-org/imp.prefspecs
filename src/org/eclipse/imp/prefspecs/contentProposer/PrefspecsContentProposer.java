@@ -1,25 +1,16 @@
-package prefspecs.safari.contentProposer;
+package org.eclipse.imp.prefspecs.contentProposer;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import lpg.runtime.IToken;
-import lpg.runtime.LexStream;
 import lpg.runtime.PrsStream;
 
+import org.eclipse.imp.editor.IContentProposer;
+import org.eclipse.imp.editor.SourceProposal;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.uide.editor.IContentProposer;
-import org.eclipse.uide.editor.SourceProposal;
-import org.eclipse.uide.parser.IParseController;
-
-import prefspecs.safari.parser.PrefspecsASTNodeLocator;
-import prefspecs.safari.parser.PrefspecsLexer;
-import prefspecs.safari.parser.Ast.ASTNode;
-import prefspecs.safari.parser.Ast.Itab;
-import prefspecs.safari.parser.Ast.identifier;
-
-import prefspecs.safari.parser.PrefspecsLexer.*;
 
 public class PrefspecsContentProposer implements IContentProposer
 {

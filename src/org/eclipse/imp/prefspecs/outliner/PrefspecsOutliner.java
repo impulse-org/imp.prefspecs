@@ -1,31 +1,9 @@
-	package prefspecs.safari.outliner;
+package org.eclipse.imp.prefspecs.outliner;
 
 
-import org.eclipse.uide.defaults.OutlinerBase;
-import org.eclipse.uide.editor.IOutlineImage;
-
-import prefspecs.safari.documentationProvider.PrefspecsNodeDocumentationProvider;
-import prefspecs.safari.parser.Ast.ASTNode;
-import prefspecs.safari.parser.Ast.AbstractVisitor;
-import prefspecs.safari.parser.Ast.booleanFieldSpec;
-import prefspecs.safari.parser.Ast.comboFieldSpec;
-import prefspecs.safari.parser.Ast.conditionalSpec0;
-import prefspecs.safari.parser.Ast.conditionalSpec1;
-import prefspecs.safari.parser.Ast.conditionalsSpec;
-import prefspecs.safari.parser.Ast.configurationTabSpec;
-import prefspecs.safari.parser.Ast.customRule;
-import prefspecs.safari.parser.Ast.customSpec;
-import prefspecs.safari.parser.Ast.defaultTabSpec;
-import prefspecs.safari.parser.Ast.dirListFieldSpec;
-import prefspecs.safari.parser.Ast.fieldsSpec;
-import prefspecs.safari.parser.Ast.fileFieldSpec;
-import prefspecs.safari.parser.Ast.instanceTabSpec;
-import prefspecs.safari.parser.Ast.intFieldSpec;
-import prefspecs.safari.parser.Ast.pageSpec;
-import prefspecs.safari.parser.Ast.projectTabSpec;
-import prefspecs.safari.parser.Ast.radioFieldSpec;
-import prefspecs.safari.parser.Ast.stringFieldSpec;
-import prefspecs.safari.parser.Ast.tabsSpec;
+import org.eclipse.imp.defaults.OutlinerBase;
+import org.eclipse.imp.prefspecs.documentationProvider.PrefspecsNodeDocumentationProvider;
+import org.eclipse.imp.prefspecs.parser.Ast.*;
 
 /**
  * This file provides a skeletal implementation of the language-dependent aspects

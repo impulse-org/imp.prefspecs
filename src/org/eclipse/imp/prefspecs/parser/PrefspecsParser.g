@@ -1,4 +1,4 @@
-%options package=prefspecs.safari.parser
+%options package=org.eclipse.imp.prefspecs.parser
 %options template=UIDE/dtParserTemplate.gi
 %options import_terminals=PrefspecsLexer.gi
 %options parent_saved,automatic_ast=toplevel,visitor=preorder,ast_directory=./Ast,ast_type=ASTNode
@@ -7,7 +7,7 @@
 --
 
 $Globals
-    /.import org.eclipse.uide.parser.IParser;
+    /.import org.eclipse.imp.parser.IParser;
     import java.util.Hashtable;
     import java.util.Stack;
     // SMS 2 Apr 2007

@@ -1,24 +1,23 @@
-package prefspecs.safari.builders;
+package org.eclipse.imp.prefspecs.builders;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.uide.builder.BuilderUtils;
-import org.eclipse.uide.builder.MarkerCreator;
-import org.eclipse.uide.core.Language;
-import org.eclipse.uide.core.LanguageRegistry;
-import org.eclipse.uide.core.SAFARIBuilderBase;
-import org.eclipse.uide.model.ISourceProject;
-import org.eclipse.uide.model.ModelFactory;
-import org.eclipse.uide.model.ModelFactory.ModelException;
-import org.eclipse.uide.parser.IParseController;
-import org.eclipse.uide.runtime.SAFARIPluginBase;
-
-import prefspecs.PrefspecsPlugin;
-import prefspecs.safari.compiler.PrefspecsCompiler;
-import prefspecs.safari.parser.PrefspecsParseController;
+import org.eclipse.imp.builder.BuilderUtils;
+import org.eclipse.imp.builder.MarkerCreator;
+import org.eclipse.imp.core.Language;
+import org.eclipse.imp.core.LanguageRegistry;
+import org.eclipse.imp.core.SAFARIBuilderBase;
+import org.eclipse.imp.model.ISourceProject;
+import org.eclipse.imp.model.ModelFactory;
+import org.eclipse.imp.model.ModelFactory.ModelException;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.PrefspecsPlugin;
+import org.eclipse.imp.prefspecs.compiler.PrefspecsCompiler;
+import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
+import org.eclipse.imp.runtime.SAFARIPluginBase;
 
 /**
  * @author

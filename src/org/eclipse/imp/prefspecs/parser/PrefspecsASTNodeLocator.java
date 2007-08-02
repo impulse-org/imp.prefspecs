@@ -1,11 +1,10 @@
-package prefspecs.safari.parser;
+package org.eclipse.imp.prefspecs.parser;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.uide.parser.IASTNodeLocator;
-
-import prefspecs.safari.parser.Ast.ASTNode;
-import prefspecs.safari.parser.Ast.AbstractVisitor;
+import org.eclipse.imp.parser.IASTNodeLocator;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
 
 public class PrefspecsASTNodeLocator implements IASTNodeLocator
 {

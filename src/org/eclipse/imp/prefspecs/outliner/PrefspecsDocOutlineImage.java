@@ -1,10 +1,9 @@
-package prefspecs.safari.outliner;
+package org.eclipse.imp.prefspecs.outliner;
 
+import org.eclipse.imp.editor.IOutlineImage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.uide.defaults.DefaultOutlineImage;
-import org.eclipse.uide.editor.IOutlineImage;
 
 //public class PrefspecsImages {
 	

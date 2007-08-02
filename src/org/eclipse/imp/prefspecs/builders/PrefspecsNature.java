@@ -1,15 +1,11 @@
-package prefspecs.safari.builders;
+package org.eclipse.imp.prefspecs.builders;
 
 import org.eclipse.core.resources.IProject;
-
-import org.eclipse.uide.core.ProjectNatureBase;
-import org.eclipse.uide.runtime.IPluginLog;
+import org.eclipse.imp.core.ProjectNatureBase;
+import org.eclipse.imp.prefspecs.PrefspecsPlugin;
+import org.eclipse.imp.runtime.IPluginLog;
 
 import com.ibm.watson.smapifier.builder.SmapiProjectNature;
-
-//import prefspecs.PrefspecsPlugin;
-//import prefspecs.PrefspecsPlugin;
-import prefspecs.PrefspecsPlugin;	// SMS 27 Mar 2007
 
 public class PrefspecsNature extends ProjectNatureBase {
 	// SMS 28 Mar 2007:  plugin class now totally parameterized

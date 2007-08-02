@@ -1,4 +1,4 @@
-%options package=prefspecs.safari.parser
+%options package=org.eclipse.imp.prefspecs.parser
 %options template=UIDE/LexerTemplate.gi
 %options filter=PrefspecsKWLexer.gi
 --
@@ -7,7 +7,7 @@
 
 $Globals
     /.import java.util.*;
-    import org.eclipse.uide.parser.ILexer;
+    import org.eclipse.imp.parser.ILexer;
     ./
 $End
 

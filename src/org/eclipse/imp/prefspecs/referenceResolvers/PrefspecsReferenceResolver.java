@@ -1,15 +1,13 @@
-package prefspecs.safari.referenceResolvers;
+package org.eclipse.imp.prefspecs.referenceResolvers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import org.eclipse.uide.core.ILanguageService;
-import org.eclipse.uide.editor.IReferenceResolver;
-import org.eclipse.uide.parser.IParseController;
-
-import lpg.runtime.*;
-
-import prefspecs.safari.parser.PrefspecsParser;
-import prefspecs.safari.parser.Ast.*;
+import org.eclipse.imp.core.ILanguageService;
+import org.eclipse.imp.editor.IReferenceResolver;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.parser.Ast.*;
 
 
 public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguageService {

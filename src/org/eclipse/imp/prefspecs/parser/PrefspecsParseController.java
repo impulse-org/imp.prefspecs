@@ -1,4 +1,4 @@
-package prefspecs.safari.parser;
+package org.eclipse.imp.prefspecs.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,19 +10,17 @@ import lpg.runtime.IToken;
 import lpg.runtime.Monitor;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.uide.model.ISourceProject;
-import org.eclipse.uide.parser.IASTNodeLocator;
-import org.eclipse.uide.parser.ILexer;
-import org.eclipse.uide.parser.IParseController;
-import org.eclipse.uide.parser.IParser;
-import org.eclipse.uide.parser.ParseError;
-
-import prefspecs.safari.parser.Ast.ASTNode;
+import org.eclipse.imp.model.ISourceProject;
+import org.eclipse.imp.parser.IASTNodeLocator;
+import org.eclipse.imp.parser.ILexer;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.ParseError;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 
 public class PrefspecsParseController implements IParseController
 {

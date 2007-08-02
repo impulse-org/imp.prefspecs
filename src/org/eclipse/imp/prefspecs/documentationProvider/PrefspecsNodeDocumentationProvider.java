@@ -1,19 +1,30 @@
-package prefspecs.safari.documentationProvider;
+package org.eclipse.imp.prefspecs.documentationProvider;
 
 
 import java.util.ArrayList;
 
-import org.eclipse.uide.core.IDocumentationProvider;
-import org.eclipse.uide.core.ILanguageService;
-import org.eclipse.uide.parser.IParseController;
-
-import prefspecs.safari.parser.PrefspecsLexer;
-import prefspecs.safari.parser.Ast.ASTNode;
-import prefspecs.safari.parser.Ast.ASTNodeToken;
-import prefspecs.safari.parser.Ast.IASTNodeToken;
-import prefspecs.safari.parser.Ast.IfieldSpec;
-import prefspecs.safari.parser.Ast.tabSpecs;
-import prefspecs.safari.parser.Ast.*;
+import org.eclipse.imp.core.IDocumentationProvider;
+import org.eclipse.imp.core.ILanguageService;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.IconditionalSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.customRule;
+import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 
 
 

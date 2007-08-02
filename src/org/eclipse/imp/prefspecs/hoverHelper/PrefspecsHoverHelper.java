@@ -1,20 +1,19 @@
-package prefspecs.safari.hoverHelper;
+package org.eclipse.imp.prefspecs.hoverHelper;
 
 import java.util.ArrayList;
 
 import lpg.runtime.IPrsStream;
 import lpg.runtime.IToken;
 
+import org.eclipse.imp.editor.IHoverHelper;
+import org.eclipse.imp.parser.IASTNodeLocator;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
+import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.uide.editor.IHoverHelper;
-import org.eclipse.uide.parser.IASTNodeLocator;
-import org.eclipse.uide.parser.IParseController;
-
-import prefspecs.safari.parser.PrefspecsLexer;
-import prefspecs.safari.parser.Ast.ASTNode;
-import prefspecs.safari.parser.Ast.ASTNodeToken;
-import prefspecs.safari.parser.Ast.IASTNodeToken;
-import prefspecs.safari.parser.Ast.IfieldSpec;
 
 public class PrefspecsHoverHelper implements IHoverHelper
 {

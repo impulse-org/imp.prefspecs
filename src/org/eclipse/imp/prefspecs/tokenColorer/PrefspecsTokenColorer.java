@@ -1,14 +1,13 @@
-package prefspecs.safari.tokenColorer;
+package org.eclipse.imp.prefspecs.tokenColorer;
 
 import lpg.runtime.IToken;
 
+import org.eclipse.imp.editor.ITokenColorer;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.parser.PrefspecsParsersym;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.uide.editor.ITokenColorer;
-import org.eclipse.uide.parser.IParseController;
-
-import prefspecs.safari.parser.PrefspecsParsersym;
 
 public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer {
 

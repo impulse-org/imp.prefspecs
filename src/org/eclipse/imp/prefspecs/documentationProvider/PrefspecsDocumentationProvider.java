@@ -1,19 +1,16 @@
-package prefspecs.safari.documentationProvider;
+package org.eclipse.imp.prefspecs.documentationProvider;
 
 
 import java.util.ArrayList;
 
-import org.eclipse.uide.core.IDocumentationProvider;
-import org.eclipse.uide.core.ILanguageService;
-import org.eclipse.uide.parser.IParseController;
-
-import prefspecs.safari.parser.PrefspecsLexer;
-import prefspecs.safari.parser.Ast.ASTNode;
-import prefspecs.safari.parser.Ast.ASTNodeToken;
-import prefspecs.safari.parser.Ast.IASTNodeToken;
-import prefspecs.safari.parser.Ast.IfieldSpec;
-import prefspecs.safari.parser.Ast.tabSpecs;
-import prefspecs.safari.parser.Ast.*;
+import org.eclipse.imp.core.IDocumentationProvider;
+import org.eclipse.imp.core.ILanguageService;
+import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
+import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 
 
 
