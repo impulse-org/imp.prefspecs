@@ -5,7 +5,7 @@ import org.eclipse.imp.runtime.SAFARIPluginBase;
 import org.osgi.framework.BundleContext;
 
 public class PrefspecsPlugin extends SAFARIPluginBase {
-    public static final String kPluginID= "org.eclipse.uide.prefspecs";
+    public static final String kPluginID= "org.eclipse.imp.prefspecs";
 
     /**
      * The unique instance of this plugin class
