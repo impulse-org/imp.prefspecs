@@ -2,79 +2,79 @@
 <plugin>
 
    <extension
-         point="org.eclipse.uide.runtime.languageDescription">
+         point="org.eclipse.imp.runtime.languageDescription">
       <language
             extensions="pfsp"
-            description="Specification language for SAFARI preference pages"
+            description="Specification language for IMP preference pages"
             language="prefspecs">
       </language>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.tokenColorer">
+         point="org.eclipse.imp.runtime.tokenColorer">
       <tokenColorer
-            class="prefspecs.safari.tokenColorer.PrefspecsTokenColorer"
+            class="org.eclipse.imp.prefspecs.tokenColorer.PrefspecsTokenColorer"
             language="prefspecs">
       </tokenColorer>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.foldingUpdater">
+         point="org.eclipse.imp.runtime.foldingUpdater">
       <foldingUpdater
-            class="prefspecs.safari.foldingUpdater.PrefspecsFoldingUpdater"
+            class="org.eclipse.imp.prefspecs.foldingUpdater.PrefspecsFoldingUpdater"
             language="prefspecs">
       </foldingUpdater>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.outliner">
+         point="org.eclipse.imp.runtime.outliner">
       <outliner
-            class="prefspecs.safari.outliner.PrefspecsOutliner"
+            class="org.eclipse.imp.prefspecs.outliner.PrefspecsOutliner"
             language="prefspecs">
       </outliner>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.referenceResolvers">
+         point="org.eclipse.imp.runtime.referenceResolvers">
       <referenceResolver
-            class="prefspecs.safari.referenceResolvers.PrefspecsReferenceResolver"
+            class="org.eclipse.imp.prefspecs.referenceResolvers.PrefspecsReferenceResolver"
             language="prefspecs">
       </referenceResolver>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.contentProposer">
+         point="org.eclipse.imp.runtime.contentProposer">
       <proposer
-            class="prefspecs.safari.contentProposer.PrefspecsContentProposer"
+            class="org.eclipse.imp.prefspecs.contentProposer.PrefspecsContentProposer"
             language="prefspecs">
       </proposer>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.hoverHelper">
+         point="org.eclipse.imp.runtime.hoverHelper">
       <hoverhelper
-            class="prefspecs.safari.hoverHelper.PrefspecsHoverHelper"
+            class="org.eclipse.imp.prefspecs.hoverHelper.PrefspecsHoverHelper"
             language="prefspecs">
       </hoverhelper>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.documentationProvider">
+         point="org.eclipse.imp.runtime.documentationProvider">
       <docProvider
-            class="prefspecs.safari.documentationProvider.PrefspecsDocumentationProvider"
+            class="org.eclipse.imp.prefspecs.documentationProvider.PrefspecsDocumentationProvider"
             language="prefspecs">
       </docProvider>
    </extension>
    <extension
-         point="org.eclipse.uide.runtime.parser">
+         point="org.eclipse.imp.runtime.parser">
       <parser
-            class="prefspecs.safari.parser.PrefspecsParseController"
+            class="org.eclipse.imp.prefspecs.parser.PrefspecsParseController"
             language="prefspecs">
       </parser>
    </extension>
    <extension
-         id="safari.nature"
+         id="imp.nature"
          name="prefspecs Nature"
          point="org.eclipse.core.resources.natures">
       <builder
-            id="org.eclipse.uide.prefspecs.prefspecs.safari.builder">
+            id="org.eclipse.imp.prefspecs.org.eclipse.imp.prefspecs.builder">
       </builder>
       <runtime>
          <run
-               class="prefspecs.safari.builders.PrefspecsNature">
+               class="org.eclipse.imp.prefspecs.builders.PrefspecsNature">
          </run>
       </runtime>
    </extension>
@@ -92,22 +92,22 @@
             objectClass="org.eclipse.jdt.core.IJavaProject"
             adaptable="false"
             nameFilter="*"
-            id="prefspecs.safari.projectContextMenu">
+            id="org.eclipse.imp.prefspecs.projectContextMenu">
          <action
                label="Enable prefspecs Builder"
                tooltip="Enable the prefspecs builder for this project"
-               class="prefspecs.safari.actions.EnableNature"
-               id="prefspecs.safari.actions.enableNatureAction">
+               class="org.eclipse.imp.prefspecs.actions.EnableNature"
+               id="org.eclipse.imp.prefspecs.actions.enableNatureAction">
          </action>
       </objectContribution>
    </extension>
    <extension
-         id="prefspecs.safari.builder"
+         id="org.eclipse.imp.prefspecs.builder"
          name="prefspecs builder"
          point="org.eclipse.core.resources.builders">
       <builder>
          <run
-               class="prefspecs.safari.builders.PrefspecsBuilder">
+               class="org.eclipse.imp.prefspecs.builders.PrefspecsBuilder">
             <parameter
                   name="foo"
                   value="bar">
@@ -116,20 +116,20 @@
       </builder>
    </extension>
    <extension
-         id="safari.nature"
+         id="imp.nature"
          name="prefspecs Nature"
          point="org.eclipse.core.resources.natures">
       <builder
-            id="org.eclipse.uide.prefspecs.prefspecs.safari.builder">
+            id="org.eclipse.imp.prefspecs.org.eclipse.imp.prefspecs.builder">
       </builder>
       <runtime>
          <run
-               class="prefspecs.safari.builders.PrefspecsNature">
+               class="org.eclipse.imp.prefspecs.builders.PrefspecsNature">
          </run>
       </runtime>
    </extension>
    <extension
-         id="prefspecs.safari.builder.problem"
+         id="org.eclipse.imp.prefspecs.builder.problem"
          name="prefspecs Error"
          point="org.eclipse.core.resources.markers">
       <super
@@ -137,45 +137,45 @@
       </super>
    </extension>
    <extension
-         id="ext.prefspecs.safari.preferencesDialog"
+         id="ext.org.eclipse.imp.prefspecs.preferencesDialog"
          name="ext.prefspecs preferencesDialog"
          point="org.eclipse.ui.preferencePages">
       <page
             name="prefspecs preferencesDialog"
-            class="prefspecs.safari.preferencesDialog.PrefspecsPreferencesDialog"
-            id="prefspecs.safari.preferencesDialog">
+            class="org.eclipse.imp.prefspecs.preferencesDialog.PrefspecsPreferencesDialog"
+            id="org.eclipse.imp.prefspecs.preferencesDialog">
       </page>
    </extension>
    
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipse.uide.preferences.PreferencePage"
-            id="org.eclipse.uide.runtime.preferencePage"
-            name="SAFARI"/>
+            class="org.eclipse.imp.preferences.PreferencePage"
+            id="org.eclipse.imp.runtime.preferencePage"
+            name="IMP"/>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
-      <initializer class="org.eclipse.uide.preferences.PreferenceInitializer"/>
+      <initializer class="org.eclipse.imp.preferences.PreferenceInitializer"/>
    </extension>
    	  <!-- 
       <extension
          point="org.eclipse.ui.newWizards">
 
       <category
-            id="org.eclipse.uide.wizards"
+            id="org.eclipse.imp.wizards"
             name="IDE Language Support"/>
       <category
-            id="org.eclipse.uide.wizards.core"
+            id="org.eclipse.imp.wizards.core"
             name="Core Services"
-            parentCategory="org.eclipse.uide.wizards"/>
+            parentCategory="org.eclipse.imp.wizards"/>
 
       <wizard
-            class="prefspecs.safari.wizard.NewPreferencesDialog"
+            class="org.eclipse.imp.prefspecs.wizard.NewPreferencesDialog"
             icon="icons/sample.gif"
-            category="org.eclipse.uide.wizards/org.eclipse.uide.wizards.core"
+            category="org.eclipse.imp.wizards/org.eclipse.imp.wizards.core"
             name="Preference Page"
-            id="org.eclipse.uide.wizards.NewPreferencesDialog"/>
+            id="org.eclipse.imp.wizards.NewPreferencesDialog"/>
       </extension>
 	-->
 </plugin>
