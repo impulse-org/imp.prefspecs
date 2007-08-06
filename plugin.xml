@@ -158,24 +158,4 @@
          point="org.eclipse.core.runtime.preferences">
       <initializer class="org.eclipse.imp.preferences.PreferenceInitializer"/>
    </extension>
-   	  <!-- 
-      <extension
-         point="org.eclipse.ui.newWizards">
-
-      <category
-            id="org.eclipse.imp.wizards"
-            name="IDE Language Support"/>
-      <category
-            id="org.eclipse.imp.wizards.core"
-            name="Core Services"
-            parentCategory="org.eclipse.imp.wizards"/>
-
-      <wizard
-            class="org.eclipse.imp.prefspecs.wizard.NewPreferencesDialog"
-            icon="icons/sample.gif"
-            category="org.eclipse.imp.wizards/org.eclipse.imp.wizards.core"
-            name="Preference Page"
-            id="org.eclipse.imp.wizards.NewPreferencesDialog"/>
-      </extension>
-	-->
 </plugin>
