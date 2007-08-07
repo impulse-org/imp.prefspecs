@@ -23,7 +23,7 @@ public class PrefspecsDocOutlineImage implements IOutlineImage
 	public static final String IMAGE_ROOT= "icons";
 	
 	//public static ImageDescriptor OUTLINE_ITEM_DESC= AbstractUIPlugin.imageDescriptorFromPlugin("prefspecs", IMAGE_ROOT + "/doc_outline_item.gif");
-	public static ImageDescriptor OUTLINE_ITEM_DESC= AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.uide.prefspecs", IMAGE_ROOT + "/doc_outline_item.gif");
+	public static ImageDescriptor OUTLINE_ITEM_DESC= AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.imp.prefspecs", IMAGE_ROOT + "/doc_outline_item.gif");
 
 	public static Image OUTLINE_ITEM_IMAGE= OUTLINE_ITEM_DESC.createImage();
 
