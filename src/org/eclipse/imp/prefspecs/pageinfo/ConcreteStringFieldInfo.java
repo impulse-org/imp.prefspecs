@@ -44,31 +44,31 @@ public class ConcreteStringFieldInfo
 	 * Whether a concrete instance of the boolean field
 	 * can by default take on on a "special" value
 	 */
-	protected boolean hasSpecial = false;
+	protected boolean hasSpecialValue = false;
 	
 	/**
 	 * A defualt "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
-	protected boolean special = false;
+	protected String specialValue = "";
 	
 	
-	public boolean getHasSpecial(boolean b) {
-		return hasSpecial;
+	public boolean getHasSpecialValue(boolean b) {
+		return hasSpecialValue;
 	}
 	
 	
-	public void setHasSpecial(boolean b) {
-		hasSpecial = b;
+	public void setHasSpecialValue(boolean b) {
+		hasSpecialValue = b;
 	}
 	
 	
-	public boolean getSpecial(boolean b) {
-		return special;
+	public String getSpecialValue() {
+		return specialValue;
 	}
 	
-	public void setSpecial(boolean b) {
-		special = b;
+	public void setSpecialValue(String s) {
+		specialValue = s;
 	}
 	
 
@@ -78,8 +78,8 @@ public class ConcreteStringFieldInfo
 	public void dump(String prefix) {
 		super.dump(prefix);	
 		String indent = prefix + "  ";
-		System.out.println(indent + "hasSpecial = " + hasSpecial);
-		System.out.println(indent + "special = " + special);
+		System.out.println(indent + "hasSpecial = " + hasSpecialValue);
+		System.out.println(indent + "special = " + specialValue);
 	}
 
 

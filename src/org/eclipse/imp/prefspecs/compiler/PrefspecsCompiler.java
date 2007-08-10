@@ -191,11 +191,11 @@ public class PrefspecsCompiler {
         	booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecificSpec().getbooleanCustomSpec();
         	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
         	if (specialSpec != null) {
-        		vBool.setHasSpecial(true);
-            	vBool.setSpecial(specialSpec.getbooleanValue().toString().equals("true"));
+        		vBool.setHasSpecialValue(true);
+            	vBool.setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
         	} else {
-        		vBool.setHasSpecial(false);
-        		vBool.setSpecial(false);
+        		vBool.setHasSpecialValue(false);
+        		vBool.setSpecialValue(false);
         	}
 
         	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
@@ -227,11 +227,11 @@ public class PrefspecsCompiler {
             		cBool.setIsRemovable(tab.getIsRemovable());
             	}
             	if (specialSpec != null) {
-            		cBool.setHasSpecial(true);
-                	cBool.setSpecial(specialSpec.getbooleanValue().toString().equals("true"));
+            		cBool.setHasSpecialValue(true);
+                	cBool.setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
             	} else {
-            		cBool.setHasSpecial(false);
-            		cBool.setSpecial(false);
+            		cBool.setHasSpecialValue(false);
+            		cBool.setSpecialValue(false);
             	}
         	}
         	return false;
@@ -256,11 +256,11 @@ public class PrefspecsCompiler {
         	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
         	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
         	if (specialSpec != null) {
-        		vString.setHasSpecial(true);
-            	vString.setSpecial(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+        		vString.setHasSpecialValue(true);
+            	vString.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
         	} else {
-        		vString.setHasSpecial(false);
-        		vString.setSpecial(null);
+        		vString.setHasSpecialValue(false);
+        		vString.setSpecialValue(null);
         	}
 
         	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
@@ -302,11 +302,11 @@ public class PrefspecsCompiler {
             		cString.setIsRemovable(tab.getIsRemovable());
             	}
             	if (specialSpec != null) {
-            		cString.setHasSpecial(true);
-                	cString.setSpecial(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+            		cString.setHasSpecialValue(true);
+                	cString.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
             	} else {
-            		cString.setHasSpecial(false);
-            		cString.setSpecial(null);
+            		cString.setHasSpecialValue(false);
+            		cString.setSpecialValue(null);
             	}
             	if (emptyValueSpec != null) {
 	            	if (emptyValueSpec instanceof stringEmptySpec0) {
@@ -402,7 +402,7 @@ public class PrefspecsCompiler {
         	// and the value of that spec is the special value for the field
         	if (customTabName != null) {
         		// Don't think the boolean value can be null if we have a specialSpec	
-        		((ConcreteBooleanFieldInfo)customFieldInfo).setSpecial(specialSpec.getbooleanValue().toString().equals("true"));
+        		((ConcreteBooleanFieldInfo)customFieldInfo).setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
         	}
         }
         
@@ -415,7 +415,7 @@ public class PrefspecsCompiler {
         	// and the value of that spec is the special value for the field
         	if (customTabName != null) {
         		// Don't think the boolean value can be null if we have a specialSpec	
-        		((ConcreteStringFieldInfo)customFieldInfo).setSpecial(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+        		((ConcreteStringFieldInfo)customFieldInfo).setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
         	}
         }
         

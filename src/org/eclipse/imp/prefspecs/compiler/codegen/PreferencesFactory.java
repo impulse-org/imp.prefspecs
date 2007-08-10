@@ -279,7 +279,7 @@ public class PreferencesFactory implements IPreferencesFactory
 					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
 					parent,
 					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
-					fieldInfo.getHasSpecial(), fieldInfo.getSpecial(),
+					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
 					false, false,												// empty allowed (always false for boolean), empty (irrelevant)
 					fieldInfo.getIsRemovable());								// false for default tab but not necessarily any others
 		Link fieldDetailsLink = prefUtils.createDetailsLink(parent, boolField, boolField.getChangeControl().getParent(), "Details ...");
@@ -394,7 +394,7 @@ public class PreferencesFactory implements IPreferencesFactory
 				VirtualBooleanFieldInfo vBool = (VirtualBooleanFieldInfo) vField;
 				fileText = fileText + "\t\tservice.setBooleanPreference(ISafariPreferencesService.DEFAULT_LEVEL, " +
 										constantsClassName + "." + preferenceConstantForName(vBool.getName()) + ", " +
-										vBool.getDefValue() + ");\n";
+										vBool.getDefaultValue() + ");\n";
 			} else {
 				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n";
 			}
@@ -506,7 +506,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + fieldInfo.getIsEditable() + ", " + fieldInfo.getIsEditable() + ",\n";		// enabled, editable (treat as same)\n";
-		result = result + "\t\t\t" + fieldInfo.getHasSpecial() + ", " + fieldInfo.getSpecial() + ",\n";
+		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", " + fieldInfo.getSpecialValue() + ",\n";
 		result = result + "\t\t\tfalse, false,\n";										// empty allowed (always false for boolean), empty (irrelevant)
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
 		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = prefUtils.createDetailsLink(parent, " +

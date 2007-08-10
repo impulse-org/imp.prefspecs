@@ -1,6 +1,6 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
-public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
+public class VirtualStringFieldInfo extends VirtualFieldInfo {
 
 	/**
 	 * Whether a concrete instance of the boolean field
@@ -12,7 +12,7 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 	 * The "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
-	protected boolean specialValue = true;
+	protected String specialValue = "";
 	
 	
 	/**
@@ -20,25 +20,25 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 	 * (used to set the value of the concrete instance of
 	 * this field on the default level)
 	 */
-	protected boolean defaultValue = true;
+	protected String defaultValue = "";
 	
 	
 	
-	public VirtualBooleanFieldInfo(PreferencesPageInfo parentPage, String name) {
+	public VirtualStringFieldInfo(PreferencesPageInfo parentPage, String name) {
 		super(parentPage, name);
 	}
 	
-	public VirtualBooleanFieldInfo(PreferencesPageInfo parentPage, String name, boolean defaultValue) {
+	public VirtualStringFieldInfo(PreferencesPageInfo parentPage, String name, String defaultValue) {
 		this(parentPage, name);
 		this.defaultValue = defaultValue;
 	}
 
-	public VirtualBooleanFieldInfo(PreferencesPageInfo parentPage, String name,
-			boolean defaultValue, boolean hasSpecialValue, boolean specialValue)
+	public VirtualStringFieldInfo(PreferencesPageInfo parentPage, String name,
+			String defaultValue, boolean hasSpecial, String special)
 	{
 		this(parentPage, name, defaultValue);
-		this.hasSpecialValue = hasSpecialValue;
-		this.specialValue = specialValue;
+		this.hasSpecialValue = hasSpecial;
+		this.specialValue = special;
 	}
 	
 	
@@ -52,20 +52,20 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 	}
 
 	
-	public void setSpecialValue(boolean b) {
-		specialValue = b;
+	public void setSpecialValue(String s) {
+		specialValue = s;
 	}
 	
-	public boolean getSpecialValue() {
+	public String getSpecialValue() {
 		return specialValue;
 	}
 	
 	
-	public void setDefaultValue(boolean b) {
-		defaultValue = b;
+	public void setDefaultValue(String s) {
+		defaultValue = s;
 	}
 	
-	public boolean getDefaultValue() {
+	public String getDefaultValue() {
 		return defaultValue;
 	}
 	
