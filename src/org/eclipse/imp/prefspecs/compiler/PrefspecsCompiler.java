@@ -265,7 +265,7 @@ public class PrefspecsCompiler {
 
         	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
         	if (defValueSpec != null) {
-        		vString.setDefValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
+        		vString.setDefaultValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
         	}
         	
         	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
