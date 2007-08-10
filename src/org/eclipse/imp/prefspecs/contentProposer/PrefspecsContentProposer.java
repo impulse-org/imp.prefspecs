@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import lpg.runtime.IToken;
 import lpg.runtime.PrsStream;
 
-import org.eclipse.imp.editor.IContentProposer;
 import org.eclipse.imp.editor.SourceProposal;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
+import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 

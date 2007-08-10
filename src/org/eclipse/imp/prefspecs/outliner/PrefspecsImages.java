@@ -1,6 +1,6 @@
 package org.eclipse.imp.prefspecs.outliner;
 
-import org.eclipse.imp.editor.IOutlineImage;
+import org.eclipse.imp.services.IOutlineImage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

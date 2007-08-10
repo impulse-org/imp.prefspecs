@@ -1,7 +1,7 @@
 package org.eclipse.imp.prefspecs.builders;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.imp.core.ProjectNatureBase;
+import org.eclipse.imp.builder.ProjectNatureBase;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.runtime.IPluginLog;
 

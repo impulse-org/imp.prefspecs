@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import lpg.runtime.IPrsStream;
 import lpg.runtime.IToken;
 
-import org.eclipse.imp.editor.IHoverHelper;
 import org.eclipse.imp.parser.IASTNodeLocator;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
@@ -13,6 +12,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
+import org.eclipse.imp.services.IHoverHelper;
 import org.eclipse.jface.text.source.ISourceViewer;
 
 public class PrefspecsHoverHelper implements IHoverHelper

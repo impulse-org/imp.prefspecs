@@ -1,9 +1,29 @@
 package org.eclipse.imp.prefspecs.outliner;
 
 
-import org.eclipse.imp.defaults.OutlinerBase;
 import org.eclipse.imp.prefspecs.documentationProvider.PrefspecsNodeDocumentationProvider;
-import org.eclipse.imp.prefspecs.parser.Ast.*;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.customRule;
+import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
+import org.eclipse.imp.services.base.OutlinerBase;
 
 /**
  * This file provides a skeletal implementation of the language-dependent aspects

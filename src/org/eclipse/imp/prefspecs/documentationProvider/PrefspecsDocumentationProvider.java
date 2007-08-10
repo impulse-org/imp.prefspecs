@@ -3,14 +3,14 @@ package org.eclipse.imp.prefspecs.documentationProvider;
 
 import java.util.ArrayList;
 
-import org.eclipse.imp.core.IDocumentationProvider;
-import org.eclipse.imp.core.ILanguageService;
+import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
+import org.eclipse.imp.services.IDocumentationProvider;
 
 
 

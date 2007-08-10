@@ -3,8 +3,7 @@ package org.eclipse.imp.prefspecs.documentationProvider;
 
 import java.util.ArrayList;
 
-import org.eclipse.imp.core.IDocumentationProvider;
-import org.eclipse.imp.core.ILanguageService;
+import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.IconditionalSpec;
@@ -25,6 +24,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
+import org.eclipse.imp.services.IDocumentationProvider;
 
 
 

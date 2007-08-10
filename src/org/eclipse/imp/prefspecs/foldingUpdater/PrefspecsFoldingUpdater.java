@@ -3,7 +3,6 @@ package org.eclipse.imp.prefspecs.foldingUpdater;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.imp.defaults.FolderBase;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
@@ -12,6 +11,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
+import org.eclipse.imp.services.base.FolderBase;
 
 /**
  * This file provides a skeletal implementation of the language-dependent aspects
