@@ -1,4 +1,4 @@
-package org.eclipse.uide.preferences;
+package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -10,19 +10,23 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.imp.model.ISourceProject;
+import org.eclipse.imp.preferences.ISafariPreferencesService;
+import org.eclipse.imp.preferences.SafariPreferencesTab;
+import org.eclipse.imp.preferences.SafariPreferencesUtilities;
+import org.eclipse.imp.preferences.SafariTabbedPreferencesPage;
+import org.eclipse.imp.preferences.fields.SafariBooleanFieldEditor;
+import org.eclipse.imp.preferences.fields.SafariFieldEditor;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.IPreferencesGeneratorData;
+import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.uide.model.ISourceProject;
-import org.eclipse.uide.preferences.fields.SafariBooleanFieldEditor;
-import org.eclipse.uide.preferences.fields.SafariFieldEditor;
-import org.eclipse.uide.preferences.pageinfo.ConcreteBooleanFieldInfo;
-import org.eclipse.uide.preferences.pageinfo.ConcreteFieldInfo;
-import org.eclipse.uide.preferences.pageinfo.ConcreteStringFieldInfo;
-import org.eclipse.uide.preferences.pageinfo.IPreferencesGeneratorData;
-import org.eclipse.uide.preferences.pageinfo.PreferencesPageInfo;
-import org.eclipse.uide.preferences.pageinfo.PreferencesTabInfo;
-import org.eclipse.uide.preferences.pageinfo.VirtualBooleanFieldInfo;
-import org.eclipse.uide.preferences.pageinfo.VirtualFieldInfo;
 
 public class PreferencesFactory implements IPreferencesFactory
 {
