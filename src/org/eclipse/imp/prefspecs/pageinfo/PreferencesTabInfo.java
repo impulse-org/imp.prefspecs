@@ -1,11 +1,10 @@
-package org.eclipse.uide.preferences.pageinfo;
+package org.eclipse.imp.prefspecs.pageinfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.uide.preferences.ISafariPreferencesService;
-import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
+import org.eclipse.imp.preferences.ISafariPreferencesService;
 
 
 public class PreferencesTabInfo

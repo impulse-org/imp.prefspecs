@@ -1,4 +1,4 @@
-package org.eclipse.uide.preferences.pageinfo;
+package org.eclipse.imp.prefspecs.pageinfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package org.eclipse.uide.preferences.pageinfo;
+package org.eclipse.imp.prefspecs.pageinfo;
 
 
 public interface IPreferencesGeneratorData {

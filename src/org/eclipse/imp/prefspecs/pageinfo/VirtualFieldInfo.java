@@ -1,7 +1,6 @@
-package org.eclipse.uide.preferences.pageinfo;
+package org.eclipse.imp.prefspecs.pageinfo;
 
-import org.eclipse.uide.preferences.ISafariPreferencesService;
-import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
+import org.eclipse.imp.preferences.ISafariPreferencesService;
 
 
 public class VirtualFieldInfo
