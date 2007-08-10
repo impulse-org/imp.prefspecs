@@ -1,10 +1,10 @@
 package org.eclipse.imp.prefspecs;
 
 //import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.imp.runtime.SAFARIPluginBase;
+import org.eclipse.imp.runtime.PluginBase;
 import org.osgi.framework.BundleContext;
 
-public class PrefspecsPlugin extends SAFARIPluginBase {
+public class PrefspecsPlugin extends PluginBase {
     public static final String kPluginID= "org.eclipse.imp.prefspecs";
 
     /**

@@ -5,9 +5,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.imp.builder.BuilderBase;
 import org.eclipse.imp.builder.BuilderUtils;
 import org.eclipse.imp.builder.MarkerCreator;
-import org.eclipse.imp.builder.SAFARIBuilderBase;
 import org.eclipse.imp.language.Language;
 import org.eclipse.imp.language.LanguageRegistry;
 import org.eclipse.imp.model.ISourceProject;
@@ -17,12 +17,12 @@ import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.compiler.PrefspecsCompiler;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
-import org.eclipse.imp.runtime.SAFARIPluginBase;
+import org.eclipse.imp.runtime.PluginBase;
 
 /**
  * @author
  */
-public class PrefspecsBuilder extends SAFARIBuilderBase {
+public class PrefspecsBuilder extends BuilderBase {
     /**
      * Extension ID of the Prefspecs builder. Must match the ID in the corresponding
      * extension definition in plugin.xml.
@@ -42,7 +42,7 @@ public class PrefspecsBuilder extends SAFARIBuilderBase {
     public static final String[] EXTENSIONS = LANGUAGE.getFilenameExtensions();
 
 
-    protected SAFARIPluginBase getPlugin() {
+    protected PluginBase getPlugin() {
         //return PrefspecsPlugin.getInstance();
         return PrefspecsPlugin.getInstance();
     }
