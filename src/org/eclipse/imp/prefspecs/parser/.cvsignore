@@ -7,3 +7,4 @@ PrefspecsLexerprs.java
 PrefspecsParser.java
 PrefspecsLexer.java
 PrefspecsParsersym.java
+*.l
