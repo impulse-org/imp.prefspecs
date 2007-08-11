@@ -21,6 +21,7 @@ import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
