@@ -1,6 +1,7 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
-import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.uide.preferences.ISafariPreferencesService;
+import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
 
 
 public class VirtualFieldInfo
@@ -20,15 +21,22 @@ public class VirtualFieldInfo
 	/**
 	 * Whether concrete instances of this field be edited by default
 	 */
-	private boolean isEditable = true;
+	protected boolean isEditable = true;
 	
 	/**
-	 * Whether concrete instance of this field be removed by default
+	 * Whether concrete instances of this field be removed by default
 	 */
-	private boolean isRemovable = false;
+	protected boolean isRemovable = false;
 
 
+	/**
+	 * Whether concrete instances of this field have a "special" value
+	 * (may not apply to some field types in practice)
+	 */
+	protected boolean hasSpecialValue = false;
 
+	
+	
 	public VirtualFieldInfo(PreferencesPageInfo parentPage, String name)
 	{
 		// All VirtualFieldInfos must have a parentPageInfo
@@ -69,30 +77,15 @@ public class VirtualFieldInfo
 	}
 	
 	
-
-	public void setIsEditable(boolean isEditable) {
-		this.isEditable = isEditable	;
-	}
-	
 	public boolean getIsEditable() {
 		return 	isEditable;
 	}
-
-	/**
-	 * Constraint:  For the default tab "isRemovable" must be false
-	 * 
-	 * @param isRemovable
-	 */
-	public void setIsRemovable(boolean isRemovable) {
-		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
-			if (isRemovable) {
-				throw new IllegalArgumentException(
-					"PreferenceIabInfo.setIsRemovable(..):  cannot set isRemovable ");
-			}
-		this.isRemovable = isRemovable;
+	
+	public void setIsEditable(boolean isEditable) {
+		this.isEditable = isEditable	;
 	}
-	
-	
+
+
 	/**
 	 * Whether the values of fields on this tab can, by default, be
 	 * removed.  Removal of a field value on one tab triggers inheritance
@@ -103,9 +96,34 @@ public class VirtualFieldInfo
 	 * @return	False for the default tab; the set value of isUsed otherwise
 	 */
 	public boolean getIsRemovable() {
-		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
 			return false;
 		return isRemovable;
+	}
+	
+	
+	/**
+	 * Constraint:  For the default tab "isRemovable" must be false
+	 * 
+	 * @param isRemovable
+	 */
+	public void setIsRemovable(boolean isRemovable) {
+		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
+			if (isRemovable) {
+				throw new IllegalArgumentException(
+					"PreferenceIabInfo.setIsRemovable(..):  cannot set isRemovable ");
+			}
+		this.isRemovable = isRemovable;
+	}
+	
+	
+	
+	public boolean getHasSpecialValue() {
+		return 	hasSpecialValue;
+	}
+	
+	public void setHasSpecialValue(boolean hasSpecialValue) {
+		this.hasSpecialValue = hasSpecialValue;
 	}
 	
 	

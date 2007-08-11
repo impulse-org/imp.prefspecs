@@ -1,6 +1,7 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
-import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.uide.preferences.ISafariPreferencesService;
+import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
 
 
 public class ConcreteFieldInfo
@@ -9,7 +10,7 @@ public class ConcreteFieldInfo
 	 * The virtual field for which the concrete field
 	 * is a representation
 	 */
-	protected VirtualFieldInfo vField = null;
+	protected VirtualFieldInfo vFieldInfo = null;
 	
 	
 	/**
@@ -26,19 +27,25 @@ public class ConcreteFieldInfo
 	/**
 	 * Whether instances of this field can be edited by default
 	 */
-	private boolean isEditable = true;
+	protected boolean isEditable = true;
 	
 	/**
 	 * Whether instances of this field (that is, their values)
 	 * can be removed by default
 	 */
-	private boolean isRemovable = false;
+	protected boolean isRemovable = false;
 
 
+	/**
+	 * Whether instances of this field have a "special" value
+	 */
+	protected boolean hasSpecialValue = false;
 	
-	public ConcreteFieldInfo(VirtualFieldInfo vField, PreferencesTabInfo parentTab)
+	
+	
+	public ConcreteFieldInfo(VirtualFieldInfo vFieldInfo, PreferencesTabInfo parentTab)
 	{
-		if (vField == null) {
+		if (vFieldInfo == null) {
 			throw new IllegalArgumentException(
 				"ConcreteFieldInfo(..	):  virtual field is null; not allowed");		
 		}
@@ -52,35 +59,40 @@ public class ConcreteFieldInfo
 		
 		// Okay
 		this.parentTab = parentTab;
-		this.vField = vField;
-		this.name = vField.getName();
+		this.vFieldInfo = vFieldInfo;
+		this.name = vFieldInfo.getName();
+		
+		this.isEditable = vFieldInfo.getIsEditable();
+		this.isRemovable = vFieldInfo.getIsRemovable();
+		this.hasSpecialValue = vFieldInfo.getHasSpecialValue();
+			
 		parentTab.add(this);
 	}
 	
 	
-	public ConcreteFieldInfo(PreferencesTabInfo parentTab, String name) {
-		if (parentTab == null) {
-			throw new IllegalArgumentException(
-				"ConcreteFieldInfo(..):  name is null; not allowed");		
-		}
-		if (parentTab == null) {
-			throw new IllegalArgumentException(
-				"ConcreteFieldInfo(..):  parent tab is null; not allowed");		
-		}
-		
-		// Okay
-		this.parentTab = parentTab;
-		this.name = name;
-		parentTab.add(this);	// why not???
-		
-	}
+//	public ConcreteFieldInfo(PreferencesTabInfo parentTab, String name) {
+//		if (parentTab == null) {
+//			throw new IllegalArgumentException(
+//				"ConcreteFieldInfo(..):  name is null; not allowed");		
+//		}
+//		if (parentTab == null) {
+//			throw new IllegalArgumentException(
+//				"ConcreteFieldInfo(..):  parent tab is null; not allowed");		
+//		}
+//		
+//		// Okay
+//		this.parentTab = parentTab;
+//		this.name = name;
+//		parentTab.add(this);	// why not???
+//		
+//	}
 	
 	
 	
 	// TODO:  Consider adding other constructors to enable attribute values to be set
 	
 	//
-	// Name is only defined through the constuctor,
+	// Name and parent tab are only defined through the constuctor,
 	// so only "get" methods are defined for those
 	//
 	
@@ -93,29 +105,16 @@ public class ConcreteFieldInfo
 	}
 	
 	
-
-	public void setIsEditable(boolean isEditable) {
-		this.isEditable = isEditable;
-	}
 	
 	public boolean getIsEditable() {
 		return 	isEditable;
 	}
 
-	/**
-	 * Constraint:  For the default tab isRemovable	 must be false
-	 * 
-	 * @param isRemovable
-	 */
-	public void setIsRemovable(boolean isRemovable) {
-		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
-			if (isRemovable) {
-				throw new IllegalArgumentException(
-					"ConcreteFieldInfo.setIsRemovable(..):  cannot set isRemovable ");
-			}
-		this.isRemovable = isRemovable;
+	public void setIsEditable(boolean isEditable) {
+		this.isEditable = isEditable;
 	}
-	
+
+
 	
 	/**
 	 * Whether the values of fields on this tab can, by default, be
@@ -127,10 +126,35 @@ public class ConcreteFieldInfo
 	 * @return	False for the default tab; the set value of isRemovable otherwise
 	 */
 	public boolean getIsRemovable() {
-		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
 			return false;
 		return isRemovable;
 	}
+	
+	
+	/**
+	 * Constraint:  For the default tab isRemovable	 must be false
+	 * 
+	 * @param isRemovable
+	 */
+	public void setIsRemovable(boolean isRemovable) {
+		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
+			if (isRemovable) {
+				throw new IllegalArgumentException(
+					"ConcreteFieldInfo.setIsRemovable(..):  cannot set isRemovable ");
+			}
+		this.isRemovable = isRemovable;
+	}
+	
+	
+	public boolean getHasSpecialValue() {
+		return 	hasSpecialValue;
+	}
+
+	public void setHasSpecialValue(boolean hasSpecialValue) {
+		this.hasSpecialValue = hasSpecialValue;
+	}
+
 
 	
 	
@@ -144,6 +168,7 @@ public class ConcreteFieldInfo
 		System.out.println(indent + "parent page = " + getParentTab().getName());
 		System.out.println(indent + "isEditable  = " + isEditable);
 		System.out.println(indent + "isRemovable = " + isRemovable);
+		System.out.println(indent + "hasSpecial = " + hasSpecialValue);
 	}
 	
 }

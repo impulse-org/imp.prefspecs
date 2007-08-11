@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.uide.preferences.ISafariPreferencesService;
+import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
 
 
 public class PreferencesTabInfo
@@ -43,7 +44,7 @@ public class PreferencesTabInfo
 			throw new IllegalArgumentException(
 				"PreferencesIabInfo(..):  name is null; not allowed");		
 		}
-		String[] levels = IPreferencesService.levels;
+		String[] levels = ISafariPreferencesService.levels;
 		boolean nameOK = false;
 		for (int i = 0; i < levels.length; i++) {
 			if (name.equals(levels[i])) {
@@ -103,7 +104,7 @@ public class PreferencesTabInfo
 	 * @param isRemovable
 	 */
 	public void setIsRemovable(boolean isRemovable) {
-		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
 			if (isRemovable) {
 				throw new IllegalArgumentException(
 					"PreferencesIabInfo.setIsRemovable(..):  cannot set isRemovable ");
@@ -122,7 +123,7 @@ public class PreferencesTabInfo
 	 * @return	False for the default tab; the set value of isUsed otherwise
 	 */
 	public boolean getIsRemovable() {
-		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
 			return false;
 		return isRemovable;
 	}

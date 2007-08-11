@@ -12,7 +12,7 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 	 * The "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
-	protected boolean specialValue = true;
+	protected boolean specialValue = false;
 	
 	
 	/**
@@ -28,15 +28,15 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 		super(parentPage, name);
 	}
 	
-	public VirtualBooleanFieldInfo(PreferencesPageInfo parentPage, String name, boolean defaultValue) {
+	public VirtualBooleanFieldInfo(PreferencesPageInfo parentPage, String name, boolean defValue) {
 		this(parentPage, name);
-		this.defaultValue = defaultValue;
+		this.defaultValue = defValue;
 	}
 
 	public VirtualBooleanFieldInfo(PreferencesPageInfo parentPage, String name,
-			boolean defaultValue, boolean hasSpecialValue, boolean specialValue)
+			boolean defValue, boolean hasSpecialValue, boolean specialValue)
 	{
-		this(parentPage, name, defaultValue);
+		this(parentPage, name, defValue);
 		this.hasSpecialValue = hasSpecialValue;
 		this.specialValue = specialValue;
 	}
@@ -53,6 +53,9 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 
 	
 	public void setSpecialValue(boolean b) {
+		if (!getHasSpecialValue())
+			throw new IllegalStateException(
+				"VirtualBooleanFieldInfo.setSpecialValue(boolean):  attempt to set special value when field has no special value");
 		specialValue = b;
 	}
 	
@@ -79,7 +82,7 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 		String indent = prefix + "  ";
 		System.out.println(indent + "hasSpecial  = " + hasSpecialValue);
 		System.out.println(indent + "special     = " + specialValue);
-		System.out.println(indent + "defValue    = " + defaultValue);
+		System.out.println(indent + "defaultValue    = " + defaultValue);
 	}
 	
 }
