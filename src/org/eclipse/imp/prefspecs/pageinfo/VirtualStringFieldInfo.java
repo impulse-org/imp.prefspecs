@@ -6,13 +6,13 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	 * Whether a concrete instance of the field
 	 * can take on on a "special" value
 	 */
-	protected boolean hasSpecial = false;
+	protected boolean hasSpecialValue = false;
 	
 	/**
 	 * The "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
-	protected String special = null;
+	protected String specialValue = null;
 	
 	
 	/**
@@ -36,6 +36,8 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	protected String emptyValue = "";
 	
 	
+	
+	
 	public VirtualStringFieldInfo(PreferencesPageInfo parentPage, String name) {
 		super(parentPage, name);
 	}
@@ -49,27 +51,10 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 			String defValue, boolean hasSpecial, String special)
 	{
 		this(parentPage, name, defValue);
-		this.hasSpecial = hasSpecial;
-		this.special = special;
+		this.hasSpecialValue = hasSpecial;
+		this.specialValue = special;
 	}
 	
-	
-	public void setHasSpecial(boolean b) {
-		hasSpecial = b;
-	}
-	
-	public boolean getHasSpecial() {
-		return hasSpecial;
-	}
-
-	
-	public void setSpecial(String s) {
-		special = s;
-	}
-	
-	public String getSpecial() {
-		return special;
-	}
 	
 	
 	public void setDefaultValue(String s) {
@@ -81,6 +66,15 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	}
 	
 	
+	public void setSpecialValue(String s) {
+		specialValue = s;
+	}
+	
+	public String getSpecialValue() {
+		return specialValue;
+	}
+	
+
 	public void setEmptyValueAllowed(boolean b) {
 		emptyValueAllowed = b;
 	}
@@ -110,8 +104,8 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	public void dump(String prefix) {
 		super.dump(prefix);
 		String indent = prefix + "  ";
-		System.out.println(indent + "hasSpecial  = " + hasSpecial);
-		System.out.println(indent + "special     = " + special);
+		System.out.println(indent + "hasSpecial  = " + hasSpecialValue);
+		System.out.println(indent + "special     = " + specialValue);
 		System.out.println(indent + "defaultValue    = " + defaultValue);
 	}
 	

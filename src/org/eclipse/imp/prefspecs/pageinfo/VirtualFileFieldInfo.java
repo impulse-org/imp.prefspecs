@@ -23,8 +23,8 @@ public class VirtualFileFieldInfo extends VirtualStringFieldInfo {
 			String defValue, boolean hasSpecial, String special)
 	{
 		this(parentPage, name, defValue);
-		this.hasSpecial = hasSpecial;
-		this.special = special;
+		this.hasSpecialValue = hasSpecial;
+		this.specialValue = special;
 	}
 	
 

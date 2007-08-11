@@ -1,7 +1,6 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
-import org.eclipse.uide.preferences.ISafariPreferencesService;
-import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
+import org.eclipse.imp.preferences.IPreferencesService;
 
 
 public class ConcreteFieldInfo
@@ -126,7 +125,7 @@ public class ConcreteFieldInfo
 	 * @return	False for the default tab; the set value of isRemovable otherwise
 	 */
 	public boolean getIsRemovable() {
-		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
 			return false;
 		return isRemovable;
 	}
@@ -138,7 +137,7 @@ public class ConcreteFieldInfo
 	 * @param isRemovable
 	 */
 	public void setIsRemovable(boolean isRemovable) {
-		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
 			if (isRemovable) {
 				throw new IllegalArgumentException(
 					"ConcreteFieldInfo.setIsRemovable(..):  cannot set isRemovable ");

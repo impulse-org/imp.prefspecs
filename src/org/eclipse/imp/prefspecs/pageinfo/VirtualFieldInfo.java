@@ -1,8 +1,6 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
-import org.eclipse.uide.preferences.ISafariPreferencesService;
-import org.eclipse.uide.preferences.SafariTabbedPreferencesPage;
-
+import org.eclipse.imp.preferences.IPreferencesService;
 
 public class VirtualFieldInfo
 {
@@ -96,7 +94,7 @@ public class VirtualFieldInfo
 	 * @return	False for the default tab; the set value of isUsed otherwise
 	 */
 	public boolean getIsRemovable() {
-		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
 			return false;
 		return isRemovable;
 	}
@@ -108,7 +106,7 @@ public class VirtualFieldInfo
 	 * @param isRemovable
 	 */
 	public void setIsRemovable(boolean isRemovable) {
-		if (getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))
+		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
 			if (isRemovable) {
 				throw new IllegalArgumentException(
 					"PreferenceIabInfo.setIsRemovable(..):  cannot set isRemovable ");
