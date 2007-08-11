@@ -14,7 +14,7 @@ import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.model.ModelFactory;
 import org.eclipse.imp.model.ModelFactory.ModelException;
 import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.preferences.ISafariPreferencesService;
+import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
@@ -221,7 +221,7 @@ public class PrefspecsCompiler {
             	} else {
             		cBool.setIsEditable(tab.getIsEditable());
             	}
-            	if (removableSpec != null && !(tab.getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))) {
+            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
                 	cBool.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
             	} else {
             		cBool.setIsRemovable(tab.getIsRemovable());
@@ -296,7 +296,7 @@ public class PrefspecsCompiler {
             	} else {
             		cString.setIsEditable(tab.getIsEditable());
             	}
-            	if (removableSpec != null && !(tab.getName().equals(ISafariPreferencesService.DEFAULT_LEVEL))) {
+            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
                 	cString.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
             	} else {
             		cString.setIsRemovable(tab.getIsRemovable());

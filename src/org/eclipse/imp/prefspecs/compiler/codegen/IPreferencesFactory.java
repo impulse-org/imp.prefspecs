@@ -1,9 +1,9 @@
 package org.eclipse.imp.prefspecs.compiler.codegen;
 
-import org.eclipse.imp.preferences.ISafariPreferencesService;
-import org.eclipse.imp.preferences.SafariPreferencesTab;
-import org.eclipse.imp.preferences.SafariTabbedPreferencesPage;
-import org.eclipse.imp.preferences.fields.SafariFieldEditor;
+import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.imp.preferences.PreferencesTab;
+import org.eclipse.imp.preferences.TabbedPreferencesPage;
+import org.eclipse.imp.preferences.fields.FieldEditor;
 import org.eclipse.swt.widgets.Composite;
 
 public interface IPreferencesFactory
@@ -17,11 +17,11 @@ public interface IPreferencesFactory
 
 
 	//public SafariFieldEditor[] createFields(Composite parent, String tab);
-	public SafariFieldEditor[] createFields(
-			SafariTabbedPreferencesPage page,
-			SafariPreferencesTab tab,
+	public FieldEditor[] createFields(
+			TabbedPreferencesPage page,
+			PreferencesTab tab,
 			String level,
 			Composite parent,
-			ISafariPreferencesService prefsService);
+			IPreferencesService prefsService);
 	
 }
