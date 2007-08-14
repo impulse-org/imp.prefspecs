@@ -441,7 +441,7 @@ public class PreferencesFactory implements IPreferencesFactory
 
 		String fileText = "package " + packageName + ";\n\n";
 		fileText = fileText + "import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;\n";
-		fileText = fileText + "import org.eclipse.uide.preferences.IPreferencesService;\n";
+		fileText = fileText + "import org.eclipse.imp.preferences.IPreferencesService;\n";
 		fileText = fileText + "import " + pluginPackageName + "." + pluginClassName + ";\n\n";
 		fileText = fileText + "/**\n";
 		fileText = fileText + " * Initializations of default values for preferences.\n";
@@ -523,8 +523,8 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "import org.eclipse.core.runtime.preferences.IEclipsePreferences;\n";
 		fileText = fileText + "import org.eclipse.swt.widgets.Composite;\n";
 		fileText = fileText + "import org.eclipse.swt.widgets.Link;\n";
-		fileText = fileText + "import org.eclipse.uide.preferences.*;\n";
-		fileText = fileText + "import org.eclipse.uide.preferences.fields.*;\n";
+		fileText = fileText + "import org.eclipse.imp.preferences.*;\n";
+		fileText = fileText + "import org.eclipse.imp.preferences.fields.*;\n";
 		fileText = fileText + "import org.osgi.service.prefs.Preferences;\n";
 		fileText = fileText + "\n//		 TODO:  Import additional classes for specific field types from\n";
 		fileText = fileText + "//		 org.eclipse.uide.preferences.fields";
@@ -599,7 +599,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		PreferencesPageInfo pageInfo, ConcreteBooleanFieldInfo fieldInfo, String tabLevel	)
 	{
 		String result = "\n";
-		result = result + "\t\tSafariBooleanFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewBooleanField(\n";
+		result = result + "\t\tBooleanFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewBooleanField(\n";
 		result = result + "\t\t\tpage, tab, prefsService,\n";
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
 		result = result + "\t\t\tparent,\n";
@@ -618,7 +618,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			PreferencesPageInfo pageInfo, ConcreteIntFieldInfo fieldInfo, String tabLevel	)
 		{
 			String result = "\n";
-			result = result + "\t\tSafariIntegerFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewIntegerField(\n";
+			result = result + "\t\tIntegerFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewIntegerField(\n";
 			
 			result = result + "\t\t\tpage, tab, prefsService,\n";
 			result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
@@ -648,11 +648,11 @@ public class PreferencesFactory implements IPreferencesFactory
 	{
 		String result = "\n";
 		if (fieldInfo instanceof ConcreteDirListFieldInfo) {
-			result = result + "\t\tSafariDirectoryListFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewDirectoryListField(\n";
+			result = result + "\t\tDirectoryListFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewDirectoryListField(\n";
 		} else if (fieldInfo instanceof ConcreteFileFieldInfo) {
-			result = result + "\t\tSafariFileFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewFileField(\n";
+			result = result + "\t\tFileFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewFileField(\n";
 		} else if (fieldInfo instanceof ConcreteStringFieldInfo) {
-			result = result + "\t\tSafariStringFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewStringField(\n";
+			result = result + "\t\tStringFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewStringField(\n";
 		}
 		result = result + "\t\t\tpage, tab, prefsService,\n";
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
@@ -721,15 +721,15 @@ public class PreferencesFactory implements IPreferencesFactory
 			ConcreteFieldInfo cFieldInfo = (ConcreteFieldInfo) cFields.next();
 			String fieldTypeName = null;
 			if (cFieldInfo instanceof ConcreteBooleanFieldInfo) {
-				fieldTypeName = "SafariBooleanFieldEditor";
+				fieldTypeName = "BooleanFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteDirListFieldInfo) {
-				fieldTypeName = "SafariDirectoryListFieldEditor";
+				fieldTypeName = "DirectoryListFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteFileFieldInfo) {
-				fieldTypeName = "SafariFileFieldEditor";
+				fieldTypeName = "FileFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteIntFieldInfo) {
-				fieldTypeName = "SafariIntegerFieldEditor";
+				fieldTypeName = "IntegerFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteStringFieldInfo) {
-				fieldTypeName = "SafariStringFieldEditor";
+				fieldTypeName = "StringFieldEditor";
 			} else {
 				fieldTypeName = "UnrecognizedFieldType";
 			}
@@ -737,10 +737,10 @@ public class PreferencesFactory implements IPreferencesFactory
 		}	
 		fileText += "\n";
 		
-//		fileText = fileText + "\t\tSafariBooleanFieldEditor useDefaultExecutable = (SafariBooleanFieldEditor) fields[0];
-//		fileText = fileText + "\t\tSafariBooleanFieldEditor useDefaultClasspath  = (SafariBooleanFieldEditor) fields[1];
-//		SafariBooleanFieldEditor emitDiagnostics      = (SafariBooleanFieldEditor) fields[2];
-//		SafariBooleanFieldEditor generateLog          = (SafariBooleanFieldEditor) fields[3];
+//		fileText = fileText + "\t\tBooleanFieldEditor useDefaultExecutable = (BooleanFieldEditor) fields[0];
+//		fileText = fileText + "\t\tBooleanFieldEditor useDefaultClasspath  = (BooleanFieldEditor) fields[1];
+//		BooleanFieldEditor emitDiagnostics      = (BooleanFieldEditor) fields[2];
+//		BooleanFieldEditor generateLog          = (BooleanFieldEditor) fields[3];
 
 		fileText = fileText + "\t\t// Declare a 'holder' for each preference field; not strictly necessary\n";
 		fileText = fileText + "\t\t// but helpful in various manipulations of fields and controls to follow\n";
