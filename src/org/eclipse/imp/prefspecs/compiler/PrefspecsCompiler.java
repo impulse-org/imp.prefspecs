@@ -156,7 +156,7 @@ public class PrefspecsCompiler {
         }
         
 
-        public boolean visit(projectTabSpec tabSpec) {
+	public boolean visit(projectTabSpec tabSpec) {
         	PreferencesTabInfo tab = new PreferencesTabInfo(pageInfo, tabSpec.getPROJECT().toString());
         	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
         	
@@ -196,7 +196,7 @@ public class PrefspecsCompiler {
             	vBool.setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
         	} else {
         		vBool.setHasSpecialValue(false);
-        		vBool.setSpecialValue(false);
+        		//vBool.setSpecialValue(false);
         	}
 
         	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
@@ -232,7 +232,7 @@ public class PrefspecsCompiler {
                 	cBool.setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
             	} else {
             		cBool.setHasSpecialValue(false);
-            		cBool.setSpecialValue(false);
+            		//cBool.setSpecialValue(false);
             	}
         	}
         	return false;
@@ -261,7 +261,7 @@ public class PrefspecsCompiler {
             	vString.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
         	} else {
         		vString.setHasSpecialValue(false);
-        		vString.setSpecialValue(null);
+        		//vString.setSpecialValue(null);
         	}
 
         	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
@@ -307,7 +307,7 @@ public class PrefspecsCompiler {
                 	cString.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
             	} else {
             		cString.setHasSpecialValue(false);
-            		cString.setSpecialValue(null);
+            		//cString.setSpecialValue(null);
             	}
             	if (emptyValueSpec != null) {
 	            	if (emptyValueSpec instanceof stringEmptySpec0) {
