@@ -2,10 +2,10 @@
 -- The Java KeyWord Lexer
 --
 %options package=org.eclipse.imp.prefspecs.parser
-%options template=UIDE/KeywordTemplate.gi
+%options template=KeywordTemplate.gi
 
 $Include
-    UIDE/KWLexerLowerCaseMap.gi
+    KWLexerLowerCaseMap.gi
 $End
 
 $Export

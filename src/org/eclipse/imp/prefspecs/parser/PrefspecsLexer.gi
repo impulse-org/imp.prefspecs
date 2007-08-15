@@ -1,5 +1,5 @@
 %options package=org.eclipse.imp.prefspecs.parser
-%options template=UIDE/LexerTemplate.gi
+%options template=LexerTemplate.gi
 %options filter=PrefspecsKWLexer.gi
 --
 -- This is just a sample lexer and not a real lexer for prefspecs
@@ -17,7 +17,7 @@ $Define
 $End
 
 $Include
-    uide/LexerBasicMap.gi
+    LexerBasicMap.gi
 $End
 
 $Export

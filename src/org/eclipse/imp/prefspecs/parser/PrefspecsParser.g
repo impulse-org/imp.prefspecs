@@ -1,5 +1,5 @@
 %options package=org.eclipse.imp.prefspecs.parser
-%options template=UIDE/dtParserTemplate.gi
+%options template=dtParserTemplate.gi
 %options import_terminals=PrefspecsLexer.gi
 %options parent_saved,automatic_ast=toplevel,visitor=preorder,ast_directory=./Ast,ast_type=ASTNode
 --
