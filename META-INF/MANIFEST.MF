@@ -1,9 +1,9 @@
 Bundle-Vendor: 
 Bundle-SymbolicName: org.eclipse.imp.prefspecs;singleton:=true
 Bundle-Activator: org.eclipse.imp.prefspecs.PrefspecsPlugin
-Bundle-Name: Preference Specifications Plug-in
+Bundle-Name: IMP Preference Specifications
 Eclipse-LazyStart: true
-Bundle-Version: 0.0.0
+Bundle-Version: 1.0.58
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
