@@ -842,9 +842,9 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\t\t\t\t// overwritten by values set here--so the values set here should be consistent\n";
 		fileText = fileText + "\t\t\t\t// with what the listener would set.\n\n";
 		
-		fileText = fileText + "\t\t\t\t// Used in setting enabled and editable status\n";
-		fileText = fileText + "\t\t\t\tboolean enabledState = false;\n\n";
-
+		//fileText = fileText + "\t\t\t\t// Used in setting enabled and editable status\n";
+		//fileText = fileText + "\t\t\t\tboolean enabledState = false;\n\n";
+		
 			
 		// Generate code for the (field-specific) initialization and enabling of each field
 		// For conditionally enabled fields, attempts to account for the conditionally enabling
@@ -861,7 +861,7 @@ public class PreferencesFactory implements IPreferencesFactory
 				enabledRepresentation = Boolean.toString(cFieldInfo.getIsEditable());
 			} else {
 				// have to represent the setting with or against the condition field
-				enabledRepresentation = cFieldInfo.getConditionField().getName() + ".getChangeControl().getEnabled()";
+				enabledRepresentation = cFieldInfo.getConditionField().getName() + ".getBooleanValue()";
 				if (!cFieldInfo.getConditionalWith())
 					enabledRepresentation = "!" + enabledRepresentation;
 			}
