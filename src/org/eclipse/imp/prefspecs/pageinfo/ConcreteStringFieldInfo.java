@@ -21,7 +21,7 @@ public class ConcreteStringFieldInfo
 	 * A "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
-	protected String specialValue = "Unspecified";
+	protected String specialValue = "\"Unspecified\"";
 	
 	/**
 	 * Whether an concrete instance of this field can

@@ -41,6 +41,29 @@ public class ConcreteFieldInfo
 	protected boolean hasSpecialValue = false;
 	
 	
+	/**
+	 * Whether this field is enabled conditionally based on another
+	 * (boolean) field
+	 */
+	protected boolean isConditional = false;
+	
+	
+	/**
+	 * Whether this field, if isConditional, is is enabled when the
+	 * condition field is true (if false implies that this field is
+	 * enabled when the condition field is false)
+	 */	
+	protected boolean conditionalWith = true;
+	
+	
+	/**
+	 * The boolean field based on which this field is enabled (or not),
+	 * if isConditional and depending on conditionalWith
+	 */
+	protected VirtualBooleanFieldInfo conditionField = null;
+	
+	
+	
 	
 	public ConcreteFieldInfo(VirtualFieldInfo vFieldInfo, PreferencesTabInfo parentTab)
 	{
@@ -64,8 +87,9 @@ public class ConcreteFieldInfo
 		this.isEditable = vFieldInfo.getIsEditable();
 		this.isRemovable = vFieldInfo.getIsRemovable();
 		this.hasSpecialValue = vFieldInfo.getHasSpecialValue();
-			
+		
 		parentTab.add(this);
+		vFieldInfo.addConcreteFieldInfo(this);
 	}
 	
 	
@@ -156,6 +180,34 @@ public class ConcreteFieldInfo
 
 
 	
+	public boolean getIsConditional() {
+		return isConditional;
+	}
+	
+	public void setIsConditional(boolean b) {
+		isConditional = b;
+	}
+	
+	
+	public boolean getConditionalWith() {
+		return conditionalWith;
+	}
+	
+	public void setConditionalWith(boolean b) {
+		conditionalWith = b;
+	}
+	
+	
+	public VirtualBooleanFieldInfo getConditionField() {
+		return conditionField;
+	}
+	
+	public void setConditionField(VirtualBooleanFieldInfo vbf) {
+		conditionField = vbf;
+	}
+	
+
+	
 	
 	//
 	// For reporting on the contents of the field
@@ -168,6 +220,11 @@ public class ConcreteFieldInfo
 		System.out.println(indent + "isEditable  = " + isEditable);
 		System.out.println(indent + "isRemovable = " + isRemovable);
 		System.out.println(indent + "hasSpecial = " + hasSpecialValue);
+		if (isConditional) {
+			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + conditionField.getName());
+		} else {
+			System.out.println(indent + "isConditional  = false");
+		}
 	}
 	
 }

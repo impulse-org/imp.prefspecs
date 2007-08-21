@@ -1,5 +1,9 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.imp.preferences.IPreferencesService;
 
 public class VirtualFieldInfo
@@ -33,6 +37,34 @@ public class VirtualFieldInfo
 	 */
 	protected boolean hasSpecialValue = false;
 
+	
+	/**
+	 * Whether this field is enabled conditionally based on another
+	 * (boolean) field
+	 */
+	protected boolean isConditional = false;
+	
+
+	/**
+	 * Whether this field, if isConditional, is is enabled when the
+	 * condition field is true (if false implies that this field is
+	 * enabled when the condition field is false)
+	 */	
+	protected boolean conditionalWith = true;
+	
+	
+	/**
+	 * The boolean field based on which this field is enabled (or not),
+	 * if isConditional and depending on conditionalWith
+	 */
+	protected VirtualBooleanFieldInfo conditionField = null;
+	
+	
+	/**
+	 * List of concrete fields that are based on this virtual field
+	 */
+	List concreteFieldInfos = new ArrayList();
+	
 	
 	
 	public VirtualFieldInfo(PreferencesPageInfo parentPage, String name)
@@ -73,6 +105,17 @@ public class VirtualFieldInfo
 	public String getName() {
 		return name;
 	}
+	
+	
+	public void addConcreteFieldInfo(ConcreteFieldInfo cFieldInfo) {
+		concreteFieldInfos.add(cFieldInfo);
+	}
+	
+	
+	public Iterator getConcreteFieldInfos() {
+		return concreteFieldInfos.iterator();
+	}
+	
 	
 	
 	public boolean getIsEditable() {
@@ -124,7 +167,35 @@ public class VirtualFieldInfo
 		this.hasSpecialValue = hasSpecialValue;
 	}
 	
+
 	
+	public boolean getIsConditional() {
+		return isConditional;
+	}
+	
+	public void setIsConditional(boolean b) {
+		isConditional = b;
+	}
+	
+	
+	public boolean getConditionalWith() {
+		return conditionalWith;
+	}
+	
+	public void setConditionalWith(boolean b) {
+		conditionalWith = b;
+	}
+	
+	
+	public VirtualBooleanFieldInfo getConditionField() {
+		return conditionField;
+	}
+	
+	public void setConditionField(VirtualBooleanFieldInfo vbf) {
+		conditionField = vbf;
+	}
+	
+
 	//
 	// For reporting on the contents of the field
 	//
@@ -135,6 +206,11 @@ public class VirtualFieldInfo
 		System.out.println(indent + "parent page = " + getParentPage().getPageName());
 		System.out.println(indent + "isEditable  = " + isEditable);
 		System.out.println(indent + "isRemovable = " + isRemovable);
+		if (isConditional) {
+			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + conditionField.getName());
+		} else {
+			System.out.println(indent + "isConditional  = false");
+		}
 	}
 	
 }
