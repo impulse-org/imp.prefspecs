@@ -105,13 +105,13 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	public static IFile generateDefaultTab(
 		PreferencesPageInfo pageInfo,
-		String pluginProjectName, String pluginClassName, String constantsClassName,
+		String pluginProjectName, String pluginClassName, String constantsClassName, String initializerClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
 		System.out.println("PreferencesFactory.generateDefaultTab():  generating (insofar as implemented)");
 		
 		// Generate file text
-		String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, IPreferencesService.DEFAULT_LEVEL);
+		String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, initializerClassName, IPreferencesService.DEFAULT_LEVEL);
 		fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.DEFAULT_LEVEL);
 		fileText = generateTabAfterFields(fileText);
 		
@@ -128,7 +128,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		System.out.println("PreferencesFactory.generateConfigurationTab():  generating (insofar as implemented)");
 		
 		// Generate file text
-		String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, IPreferencesService.CONFIGURATION_LEVEL);
+		String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, null, IPreferencesService.CONFIGURATION_LEVEL);
 		fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.CONFIGURATION_LEVEL);
 		fileText = generateTabAfterFields(fileText);
 		
@@ -146,7 +146,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			System.out.println("PreferencesFactory.generateInstanceTab():  generating (insofar as implemented)");
 			
 			// Generate file text
-			String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, IPreferencesService.INSTANCE_LEVEL);
+			String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, null, IPreferencesService.INSTANCE_LEVEL);
 			fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.INSTANCE_LEVEL);
 			fileText = generateTabAfterFields(fileText);
 			
@@ -163,7 +163,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			System.out.println("PreferencesFactory.generateProjectTab():  generating (insofar as implemented)");
 			
 			// Generate file text
-			String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, IPreferencesService.PROJECT_LEVEL);
+			String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, null, IPreferencesService.PROJECT_LEVEL);
 			fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.PROJECT_LEVEL);
 			fileText = generateTabAfterFields(fileText);
 			fileText = regenerateEndOfProjectTab(pageInfo, fileText);
@@ -508,7 +508,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	
 	protected static String generateTabBeforeFields(
-			String pluginPackageName, String pluginClassName, String packageName, String className, String levelName)
+			String pluginPackageName, String pluginClassName, String packageName, String className, String initializerClassName, String levelName)
 	{
 		if (className.endsWith(".java")) {
 			className = className.substring(0, className.length()-5);
@@ -537,16 +537,18 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\tpublic " + className + "(IPreferencesService prefService) {\n";
 		fileText = fileText + "\t\tsuper(prefService);\n\t}\n\n";
 		
-		fileText = fileText + "\t/**\n";
-		fileText = fileText + "\t * Creates a language-specific preferences initializer.\n";
-		fileText = fileText + "\t *\n";
-		fileText = fileText + "\t * @return    The preference initializer to be used to initialize\n";
-		fileText = fileText + "\t *            preferences in this tab\n";
-		fileText = fileText + "\t */\n";
-		fileText = fileText + "\tpublic AbstractPreferenceInitializer getPreferenceInitializer() {\n";
-		fileText = fileText + "\t\tLegPreferencesDialogInitializer preferencesInitializer = new LegPreferencesDialogInitializer();\n";
-		fileText = fileText + "\t\treturn preferencesInitializer;\n";
-		fileText = fileText + "\t}\n\n";
+		if (initializerClassName != null) {
+			fileText = fileText + "\t/**\n";
+			fileText = fileText + "\t * Creates a language-specific preferences initializer.\n";
+			fileText = fileText + "\t *\n";
+			fileText = fileText + "\t * @return    The preference initializer to be used to initialize\n";
+			fileText = fileText + "\t *            preferences in this tab\n";
+			fileText = fileText + "\t */\n";
+			fileText = fileText + "\tpublic AbstractPreferenceInitializer getPreferenceInitializer() {\n";
+			fileText = fileText + "\t\t" + initializerClassName +	" preferencesInitializer = new " + initializerClassName + "();\n";
+			fileText = fileText + "\t\treturn preferencesInitializer;\n";
+			fileText = fileText + "\t}\n\n";
+		}
 		
 		fileText = fileText + "\t/**\n";
 		fileText = fileText + "\t * Creates specific preference fields with settings appropriate to\n";
@@ -588,11 +590,48 @@ public class PreferencesFactory implements IPreferencesFactory
 			} else {
 				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + cFieldInfo.getName() + "\n\n";
 			}
-		}			
+			// SMS 16 Aug 2007
+			if (cFieldInfo.getIsConditional()) {
+				fileText = fileText + generateFieldToggleText(cFieldInfo, fileText);
+			}
+		}
 		return fileText;		
 	}	
 
 	
+	
+	protected static String generateFieldToggleText(ConcreteFieldInfo cFieldInfo, String fileText)
+	{
+		String condFieldName = cFieldInfo.getConditionField().getName();
+		String result = "\n";
+		result = result + "\t\tprefUtils.createToggleFieldListener(" +
+			condFieldName + ", " +  cFieldInfo.getName() + ", " +
+			(cFieldInfo.getConditionalWith() ? "true" : "false") + ");\n";
+		String condFieldValueString = condFieldName + "Value";
+		result = result + "\t\tboolean " + condFieldValueString + " = " + condFieldName + ".getBooleanValue();\n";
+		if (cFieldInfo instanceof ConcreteStringFieldInfo) {
+			result = result + "\t\t" + cFieldInfo.getName() + ".getTextControl().setEditable(" + condFieldValueString + ");\n";
+			result = result + "\t\t" + cFieldInfo.getName() + ".getTextControl().setEnabled(" + condFieldValueString + ");\n";
+			result = result + "\t\t" + cFieldInfo.getName() + ".setEnabled(" + condFieldValueString + ", " + cFieldInfo.getName() +
+			".getParent());\n\n";
+		} else if (cFieldInfo instanceof ConcreteBooleanFieldInfo) {
+			result = result + "\t\t" + cFieldInfo.getName() + ".getChangeControl().setEnabled(" + condFieldValueString + ");\n";
+			result = result + "\t\t" + cFieldInfo.getName() + ".setEnabled(" + condFieldValueString + ", " + cFieldInfo.getName() +
+			".getParent());\n\n";
+		}
+		// TODO:  May need to address other filed types if and when
+		// they're added
+
+		/*
+		prefUtils.createToggleFieldListener(useDefaultGenIncludePathField, includeDirectoriesField, false);
+		value = !useDefaultGenIncludePathField.getBooleanValue();
+		includeDirectoriesField.getTextControl().setEditable(value);
+		includeDirectoriesField.getTextControl().setEnabled(value);
+		includeDirectoriesField.setEnabled(value, includeDirectoriesField.getParent());
+		*/
+		
+		return result;
+	}
 	
 	
 	protected static String getTextToCreateBooleanField(
@@ -658,8 +697,8 @@ public class PreferencesFactory implements IPreferencesFactory
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + fieldInfo.getIsEditable() + ", " + fieldInfo.getIsEditable() + ",\n";		// enabled, editable (treat as same)\n";
-		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", " + fieldInfo.getSpecialValue() + ",\n";
-		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + fieldInfo.getEmptyValue() + "\",\n";										// empty allowed, empty value
+		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", \"" + stripQuotes(fieldInfo.getSpecialValue()) + "\",\n";
+		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n";										// empty allowed, empty value
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
 		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = prefUtils.createDetailsLink(parent, " +
 							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
@@ -667,6 +706,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		return result;
 	}
 	
+
 
 	
 
@@ -888,23 +928,49 @@ public class PreferencesFactory implements IPreferencesFactory
 	protected static IFile createFileWithText(
 			String fileText, ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
-		// Find or create the folder to contain the file	
+		// Find or create the folder to contain the file		
+		IFolder packageFolder = null;
 		String packageFolderName = packageName.replace(".", "/");
-		IFolder packageFolder = project.getRawProject().getFolder(projectSourceLocation + packageFolderName);
-		try {
-			if (!packageFolder.exists()) {
-				packageFolder.create(true, true, mon);
-				if (!packageFolder.exists()) {	
-					System.err.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
-							"\tpackage folder = " + packageFolder.getLocation().toString());
-					return null;
+		String createdPath = null;
+		String[] pathSegs = (projectSourceLocation + packageFolderName).split("/");
+		for (int i = 0; i < pathSegs.length; i++) {
+			if (createdPath == null)
+				createdPath = pathSegs[i];
+			else
+				createdPath = createdPath + "/" + pathSegs[i];
+			packageFolder = project.getRawProject().getFolder(createdPath);
+			try {
+				if (!packageFolder.exists()) {
+					packageFolder.create(true, true, mon);
+					if (!packageFolder.exists()) {	
+						System.err.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
+								"\tpackage folder = " + packageFolder.getLocation().toString());
+						return null;
+					}
 				}
+			} catch (CoreException e) {
+				System.err.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
+						"\tpackage folder = " + packageFolder.getLocation().toString());
+				return null;
 			}
-		} catch (CoreException e) {
-			System.err.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
-					"\tpackage folder = " + packageFolder.getLocation().toString());
-			return null;
+			
 		}
+		
+//		IFolder packageFolder = project.getRawProject().getFolder(projectSourceLocation + packageFolderName);
+//		try {
+//			if (!packageFolder.exists()) {
+//				packageFolder.create(true, true, mon);
+//				if (!packageFolder.exists()) {	
+//					System.err.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
+//							"\tpackage folder = " + packageFolder.getLocation().toString());
+//					return null;
+//				}
+//			}
+//		} catch (CoreException e) {
+//			System.err.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
+//					"\tpackage folder = " + packageFolder.getLocation().toString());
+//			return null;
+//		}
 		
 		// Find or create the file to contain the text,
 		// and put the text into it
@@ -930,4 +996,33 @@ public class PreferencesFactory implements IPreferencesFactory
 	protected static String preferenceConstantForName(String  name) {
 		return "P_" + name.toUpperCase();
 	}
+	
+	
+	public static String stripQuotes(String s)
+	{
+		if (s == null) 
+			return null;
+		if (s.length() == 0)
+			return s;
+		if (s.length() == 1) {
+			if (s.charAt(0) == '"')
+				return "";
+			else
+				return s;
+		}
+		
+		int newStart, newEnd;
+		if (s.charAt(0) == '"')
+			newStart = 1;
+		else
+			newStart = 0;
+		
+		if (s.charAt(s.length()-1) == '"')
+			newEnd = s.length()-1;
+		else
+			newEnd = s.length();
+		
+		return s.substring(newStart, newEnd);
+	}
+	
 }
