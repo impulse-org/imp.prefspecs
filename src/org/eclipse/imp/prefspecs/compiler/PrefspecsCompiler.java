@@ -16,35 +16,21 @@ import org.eclipse.imp.model.ModelFactory.ModelException;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteFileFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
-import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
-import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
-import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
-import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.generalSpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec1;
-import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.*;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 
 public class PrefspecsCompiler {
@@ -239,6 +225,305 @@ public class PrefspecsCompiler {
         }
         
         
+        public boolean visit(dirListFieldSpec dirListField) {
+        	VirtualDirListFieldInfo vDirList = new VirtualDirListFieldInfo(pageInfo, dirListField.getidentifier().toString());
+        	dirlistFieldPropertySpecs propSpecs = dirListField.getdirlistFieldPropertySpecs();
+        	
+        	// Create a virtual field
+            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
+        	if (editableSpec != null) {
+        		vDirList.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
+        	if (removableSpec != null) {
+            	vDirList.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	
+        	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+        	if (specialSpec != null) {
+        		vDirList.setHasSpecialValue(true);
+            	vDirList.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+        	} else {
+        		vDirList.setHasSpecialValue(false);
+        		//vString.setSpecialValue(null);
+        	}
+
+        	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+        	if (defValueSpec != null) {
+        		vDirList.setDefaultValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        	
+        	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+        	if (emptyValueSpec instanceof stringEmptySpec0) {
+        		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+        		vDirList.setEmptyValueAllowed(false);
+        		vDirList.setEmptyValue(null);
+        	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+           		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+        		vDirList.setEmptyValueAllowed(ses1.getEMPTYALLOWED().toString().equals("true"));
+        		vDirList.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        	
+        	// Create an instance of a concrete field for each tab on the page
+        	Iterator tabs = pageInfo.getTabInfos();
+        	while (tabs.hasNext()) {
+        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		if (!tab.getIsUsed())
+        			continue;
+        		ConcreteDirListFieldInfo cDirList = new ConcreteDirListFieldInfo(vDirList, tab);
+        		
+        		// Set the attributes of the concrete field:
+        		// if set in the virtual field, use that value;
+        		// else if set for the tab, use that value;
+        		// else rely on the default for the field type
+            	if (editableSpec != null) {
+            		cDirList.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cDirList.setIsEditable(tab.getIsEditable());
+            	}
+            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
+                	cDirList.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cDirList.setIsRemovable(tab.getIsRemovable());
+            	}
+            	if (specialSpec != null) {
+            		cDirList.setHasSpecialValue(true);
+                	cDirList.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+            	} else {
+            		cDirList.setHasSpecialValue(false);
+            		//cString.setSpecialValue(null);
+            	}
+            	if (emptyValueSpec != null) {
+	            	if (emptyValueSpec instanceof stringEmptySpec0) {
+	            		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+	            		cDirList.setEmptyValueAllowed(false);
+	            		cDirList.setEmptyValue(null);
+	            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+	               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+	            		cDirList.setEmptyValueAllowed(true);
+	            		cDirList.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+	            	}
+            	}
+        	}
+        	return false;
+        }
+  
+        
+        public boolean visit(fileFieldSpec fileField) {
+        	VirtualFileFieldInfo vFile = new VirtualFileFieldInfo(pageInfo, fileField.getidentifier().toString());
+        	fileFieldPropertySpecs propSpecs = fileField.getfileFieldPropertySpecs();
+        	
+        	// Create a virtual field
+            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
+        	if (editableSpec != null) {
+        		vFile.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
+        	if (removableSpec != null) {
+            	vFile.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	
+        	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+        	if (specialSpec != null) {
+        		vFile.setHasSpecialValue(true);
+            	vFile.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+        	} else {
+        		vFile.setHasSpecialValue(false);
+        		//vString.setSpecialValue(null);
+        	}
+
+        	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+        	if (defValueSpec != null) {
+        		vFile.setDefaultValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        	
+        	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+        	if (emptyValueSpec instanceof stringEmptySpec0) {
+        		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+        		vFile.setEmptyValueAllowed(false);
+        		vFile.setEmptyValue(null);
+        	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+           		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+        		vFile.setEmptyValueAllowed(ses1.getEMPTYALLOWED().toString().equals("true"));
+        		vFile.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+        	}
+        	
+        	// Create an instance of a concrete field for each tab on the page
+        	Iterator tabs = pageInfo.getTabInfos();
+        	while (tabs.hasNext()) {
+        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		if (!tab.getIsUsed())
+        			continue;
+        		ConcreteFileFieldInfo cFile = new ConcreteFileFieldInfo(vFile, tab);
+        		
+        		// Set the attributes of the concrete field:
+        		// if set in the virtual field, use that value;
+        		// else if set for the tab, use that value;
+        		// else rely on the default for the field type
+            	if (editableSpec != null) {
+            		cFile.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cFile.setIsEditable(tab.getIsEditable());
+            	}
+            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
+                	cFile.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cFile.setIsRemovable(tab.getIsRemovable());
+            	}
+            	if (specialSpec != null) {
+            		cFile.setHasSpecialValue(true);
+                	cFile.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+            	} else {
+            		cFile.setHasSpecialValue(false);
+            		//cString.setSpecialValue(null);
+            	}
+            	if (emptyValueSpec != null) {
+	            	if (emptyValueSpec instanceof stringEmptySpec0) {
+	            		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+	            		cFile.setEmptyValueAllowed(false);
+	            		cFile.setEmptyValue(null);
+	            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+	               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+	            		cFile.setEmptyValueAllowed(true);
+	            		cFile.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+	            	}
+            	}
+        	}
+        	return false;
+        }
+        
+        
+        
+        public boolean visit(intFieldSpec intField) {
+        	VirtualIntFieldInfo vInt = new VirtualIntFieldInfo(pageInfo, intField.getidentifier().toString());
+        	intFieldPropertySpecs propSpecs = intField.getintFieldPropertySpecs();
+        	
+        	// Create a virtual field
+            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
+        	if (editableSpec != null) {
+        		vInt.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
+        	if (removableSpec != null) {
+            	vInt.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+        	}
+        	
+        	intSpecificSpec specificSpec = propSpecs.getintSpecificSpec();
+        	intCustomSpec customSpec = specificSpec.getintCustomSpec();
+        	intSpecialSpec specialSpec = customSpec.getintSpecialSpec();
+        	intRangeSpec rangeSpec = customSpec.getintRangeSpec();
+        	intDefValueSpec defValueSpec = specificSpec.getintDefValueSpec();
+        	
+        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+        	if (specialSpec != null) {
+        		vInt.setHasSpecialValue(true);
+        		int intValue = 0;
+        		IsignedNumber signedNumber = specialSpec.getsignedNumber();
+        		if (signedNumber instanceof signedNumber0) {
+        			intValue = new Integer(((signedNumber0)signedNumber).getNUMBER().toString()).intValue();
+        		} else if (signedNumber instanceof signedNumber1) {
+        			intValue = new Integer(((signedNumber1)signedNumber).getNUMBER().toString()).intValue();
+        		}
+        		vInt.setSpecialValue(intValue);
+        	} else {
+        		vInt.setHasSpecialValue(false);
+        		//vInt.setSpecialValue(null);
+        	}
+
+        	if (defValueSpec != null) {
+        		int intValue = 0;
+        		IsignedNumber signedNumber = defValueSpec.getsignedNumber();
+        		if (signedNumber instanceof signedNumber0) {
+        			intValue = new Integer(((signedNumber0)signedNumber).getNUMBER().toString()).intValue();
+        		} else if (signedNumber instanceof signedNumber1) {
+        			intValue = new Integer(((signedNumber1)signedNumber).getNUMBER().toString()).intValue();
+        		}
+        		vInt.setDefaultValue(intValue);
+        	}
+        	
+        	if (rangeSpec != null) {
+        		int intValue = 0;
+        		IsignedNumber lower = rangeSpec.getsignedNumber();
+        		if (lower instanceof signedNumber0) {
+        			intValue = new Integer(((signedNumber0)lower).getNUMBER().toString()).intValue();
+        		} else if (lower instanceof signedNumber1) {
+        			intValue = new Integer(((signedNumber1)lower).getNUMBER().toString()).intValue();
+        		}
+        		vInt.setRangeLow(intValue);
+        		
+        		IsignedNumber upper = rangeSpec.getsignedNumber4();
+        		if (upper instanceof signedNumber0) {
+        			intValue = new Integer(((signedNumber0)upper).getNUMBER().toString()).intValue();
+        		} else if (upper instanceof signedNumber1) {
+        			intValue = new Integer(((signedNumber1)upper).getNUMBER().toString()).intValue();
+        		}
+        		vInt.setRangeHigh(intValue);
+        	}
+        	
+        	
+        	// Create an instance of a concrete field for each tab on the page
+        	Iterator tabs = pageInfo.getTabInfos();
+        	while (tabs.hasNext()) {
+        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		if (!tab.getIsUsed())
+        			continue;
+        		ConcreteIntFieldInfo cInt = new ConcreteIntFieldInfo(vInt, tab);
+        		
+        		// Set the attributes of the concrete field:
+        		// if set in the virtual field, use that value;
+        		// else if set for the tab, use that value;
+        		// else rely on the default for the field type
+            	if (editableSpec != null) {
+            		cInt.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cInt.setIsEditable(tab.getIsEditable());
+            	}
+            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
+                	cInt.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+            	} else {
+            		cInt.setIsRemovable(tab.getIsRemovable());
+            	}
+            	if (specialSpec != null) {
+            		cInt.setHasSpecialValue(true);
+            		int intValue = 0;
+            		IsignedNumber signedNumber = specialSpec.getsignedNumber();
+            		if (signedNumber instanceof signedNumber0) {
+            			intValue = new Integer(((signedNumber0)signedNumber).getNUMBER().toString()).intValue();
+            		} else if (signedNumber instanceof signedNumber1) {
+            			intValue = new Integer(((signedNumber1)signedNumber).getNUMBER().toString()).intValue();
+            		}
+            		cInt.setSpecialValue(intValue);
+            	} else {
+            		cInt.setHasSpecialValue(false);
+            		//cString.setSpecialValue(null);
+            	}
+
+            	if (rangeSpec != null) {
+            		int intValue = 0;
+            		IsignedNumber lower = rangeSpec.getsignedNumber();
+            		if (lower instanceof signedNumber0) {
+            			intValue = new Integer(((signedNumber0)lower).getNUMBER().toString()).intValue();
+            		} else if (lower instanceof signedNumber1) {
+            			intValue = new Integer(((signedNumber1)lower).getNUMBER().toString()).intValue();
+            		}
+            		cInt.setRangeLow(intValue);
+            		
+            		IsignedNumber upper = rangeSpec.getsignedNumber4();
+            		if (upper instanceof signedNumber0) {
+            			intValue = new Integer(((signedNumber0)upper).getNUMBER().toString()).intValue();
+            		} else if (upper instanceof signedNumber1) {
+            			intValue = new Integer(((signedNumber1)upper).getNUMBER().toString()).intValue();
+            		}
+            		cInt.setRangeHigh(intValue);
+            	}
+            	
+        	}
+        	return false;
+        }
+        
+        
         
         public boolean visit(stringFieldSpec stringField) {
         	VirtualStringFieldInfo vString = new VirtualStringFieldInfo(pageInfo, stringField.getidentifier().toString());
@@ -421,6 +706,111 @@ public class PrefspecsCompiler {
         }
         
 
+        
+        /*
+         * For processing of conditional rules
+         */
+        
+        /*
+         * For "with" condition rules
+         */
+        public boolean visit(conditionalSpec0 rule) {
+        	
+        	String conditionalFieldName = rule.getidentifier().toString();
+        	String conditionFieldName = rule.getidentifier3().toString();
+        	VirtualFieldInfo conditionalFieldInfo = null;
+        	VirtualFieldInfo conditionFieldInfo = null;
+        	
+        	Iterator virtualFieldInfos = pageInfo.getVirtualFieldInfos();	
+        	while (virtualFieldInfos.hasNext()) {
+        		VirtualFieldInfo next = (VirtualFieldInfo) virtualFieldInfos.next();
+        		String nextName = next.getName();
+        		if (nextName.equals(conditionalFieldName)) {
+        			conditionalFieldInfo = next;
+        		} else if (nextName.equals(conditionFieldName)) {
+        			conditionFieldInfo = next;
+        		}
+        		if (conditionalFieldInfo != null && conditionFieldInfo != null)
+        			break;
+        	}
+        	conditionalFieldInfo.setIsConditional(true);
+        	conditionalFieldInfo.setConditionalWith(true);
+        	// if we're compiling, then the AST should be correct,
+        	// in which case the condition field should always be
+        	// a boolean field
+        	conditionalFieldInfo.setConditionField((VirtualBooleanFieldInfo)conditionFieldInfo);
+        	
+        	return false;
+        }
+        
+        
+        /*
+         * For "against" condition rules
+         */
+        public boolean visit(conditionalSpec1 rule) {
+        	
+        	String conditionalFieldName = rule.getidentifier().toString();
+        	String conditionFieldName = rule.getidentifier3().toString();
+        	VirtualFieldInfo conditionalFieldInfo = null;
+        	VirtualFieldInfo conditionFieldInfo = null;
+        	
+        	Iterator virtualFieldInfos = pageInfo.getVirtualFieldInfos();	
+        	while (virtualFieldInfos.hasNext()) {
+        		VirtualFieldInfo next = (VirtualFieldInfo) virtualFieldInfos.next();
+        		String nextName = next.getName();
+        		if (nextName.equals(conditionalFieldName)) {
+        			conditionalFieldInfo = next;
+        		} else if (nextName.equals(conditionFieldName)) {
+        			conditionFieldInfo = next;
+        		}
+        		if (conditionalFieldInfo != null && conditionFieldInfo != null)
+        			break;
+        	}
+        	conditionalFieldInfo.setIsConditional(true);
+        	conditionalFieldInfo.setConditionalWith(false);
+        	// if we're compiling, then the AST should be correct,
+        	// in which case the condition field should always be
+        	// a boolean field
+        	conditionalFieldInfo.setConditionField((VirtualBooleanFieldInfo)conditionFieldInfo);
+        	
+        	return false;
+        }
+        
+        
+        
+        public void endVisit(conditionalSpecs0 spec) {
+        	propagateConditionsToConcreteSpecs();
+        }
+        
+        
+        public void endVisit(conditionalSpecs1 spec) {
+        	propagateConditionsToConcreteSpecs();
+        }
+        
+        
+        protected void propagateConditionsToConcreteSpecs()
+        {
+        	Iterator vFieldInfos = pageInfo.getVirtualFieldInfos();
+        	while (vFieldInfos.hasNext()) {
+        		VirtualFieldInfo vInfo = (VirtualFieldInfo) vFieldInfos.next();
+        		if (vInfo.getIsConditional()) {
+        			Iterator cFieldInfos = vInfo.getConcreteFieldInfos();
+        			while (cFieldInfos.hasNext()) {
+        				ConcreteFieldInfo cInfo = (ConcreteFieldInfo) cFieldInfos.next();
+        				cInfo.setIsConditional(true);
+        				cInfo.setConditionalWith(vInfo.getConditionalWith());
+        				cInfo.setConditionField(vInfo.getConditionField());
+        			}
+        		}
+        	}
+        	
+        	
+        }
+        
+        
+        
+        
+        
         
     }
 
