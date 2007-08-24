@@ -1,3 +1,8 @@
+/*
+ * (C) Copyright IBM Corporation 2007
+ * 
+ * This file is part of the Eclipse IMP.
+ */
 package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import java.io.ByteArrayInputStream;

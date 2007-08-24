@@ -63,6 +63,14 @@ $Recover
    MissingExpression
 $End
 
+%Notice
+/.
+// (C) Copyright IBM Corporation 2007
+// 
+// This file is part of the Eclipse IMP.
+./
+%End
+
 $Rules
 
     -- Rules for the major parts:  pages and their sections

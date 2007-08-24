@@ -72,6 +72,14 @@ $Start
     Keyword
 $End
 
+%Notice
+/.
+// (C) Copyright IBM Corporation 2007
+// 
+// This file is part of the Eclipse IMP.
+./
+%End
+
 $Rules
 
     -- The Goal for the parser is a single Keyword
