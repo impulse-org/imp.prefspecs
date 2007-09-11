@@ -34,12 +34,12 @@ public class PrefspecsBuilder extends BuilderBase {
      * SMS 22 Mar 2007:  If that ID is set through the NewBuilder wizard, then so must this one be.
      */
 	// SMS 28 Mar 2007:  Make plugin class name totally parameterized
-	public static final String BUILDER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.safari.builder";
+	public static final String BUILDER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.builder";
 	// SMS 28 Mar 2007:  Make problem id parameterized (rather than just ".problem") so that
 	// it can be given a builde-specific value (not simply composed here using the builder id
 	// because the problem id is also needed in ExtensionPointEnabler for adding the marker
 	// extension to the plugin.xml file)
-    public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.safari.builder.problem";
+    public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.imp.builder.problem";
     
     // SMS 11 May 2006
     public static final String LANGUAGE_NAME = "prefspecs";
