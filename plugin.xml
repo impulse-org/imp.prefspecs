@@ -102,7 +102,7 @@
       </objectContribution>
    </extension>
    <extension
-         id="org.eclipse.imp.prefspecs.builder"
+         id="prefspecs.builder"
          name="prefspecs builder"
          point="org.eclipse.core.resources.builders">
       <builder>
@@ -120,7 +120,7 @@
          name="prefspecs Nature"
          point="org.eclipse.core.resources.natures">
       <builder
-            id="org.eclipse.imp.prefspecs.org.eclipse.imp.prefspecs.builder">
+            id="org.eclipse.imp.prefspecs.prefspecs.builder">
       </builder>
       <runtime>
          <run
