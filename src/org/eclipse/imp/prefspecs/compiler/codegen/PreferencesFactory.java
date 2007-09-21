@@ -567,7 +567,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\t */\n";
 		fileText = fileText + "\tprotected FieldEditor[] createFields(\n";
 		fileText = fileText + "\t\tTabbedPreferencesPage page, PreferencesTab tab, String tabLevel,\n";
-		fileText = fileText + "\t\tComposite parent, IPreferencesService prefsService)\n\t{\n";
+		fileText = fileText + "\t\tComposite parent)\n\t{\n";
 		fileText = fileText + "\t\tList fields = new ArrayList();\n";
 
 		return fileText;
@@ -613,7 +613,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		String condFieldName = cFieldInfo.getConditionField().getName();
 		String result = "\n";
 		// Initialize the sense of the toggle-field listener
-		result = result + "\t\tprefUtils.createToggleFieldListener(" +
+		result = result + "\t\tfPrefUtils.createToggleFieldListener(" +
 			condFieldName + ", " +  cFieldInfo.getName() + ", " +
 			(cFieldInfo.getConditionalWith() ? "true" : "false") + ");\n";
 		
@@ -644,7 +644,7 @@ public class PreferencesFactory implements IPreferencesFactory
 
 		/*
 		 * Example target code:	
-		prefUtils.createToggleFieldListener(useDefaultGenIncludePathField, includeDirectoriesField, false);
+		fPrefUtils.createToggleFieldListener(useDefaultGenIncludePathField, includeDirectoriesField, false);
 		value = !useDefaultGenIncludePathField.getBooleanValue();
 		includeDirectoriesField.getTextControl().setEditable(value);
 		includeDirectoriesField.getTextControl().setEnabled(value);
@@ -661,15 +661,15 @@ public class PreferencesFactory implements IPreferencesFactory
 		boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : fieldInfo.getIsEditable();
 		
 		String result = "\n";
-		result = result + "\t\tBooleanFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewBooleanField(\n";
-		result = result + "\t\t\tpage, tab, prefsService,\n";
+		result = result + "\t\tBooleanFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewBooleanField(\n";
+		result = result + "\t\t\tpage, tab, fPrefService,\n";
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", " + fieldInfo.getSpecialValue() + ",\n";
 		result = result + "\t\t\tfalse, false,\n";										// empty allowed (always false for boolean), empty (irrelevant)
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
-		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = prefUtils.createDetailsLink(parent, " +
+		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
 							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";	
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
 		return result;
@@ -682,16 +682,16 @@ public class PreferencesFactory implements IPreferencesFactory
 		    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : fieldInfo.getIsEditable();
 		
 			String result = "\n";
-			result = result + "\t\tIntegerFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewIntegerField(\n";
+			result = result + "\t\tIntegerFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewIntegerField(\n";
 			
-			result = result + "\t\t\tpage, tab, prefsService,\n";
+			result = result + "\t\t\tpage, tab, fPrefService,\n";
 			result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
 			result = result + "\t\t\tparent,\n";
 			result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 			result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", String.valueOf(" + fieldInfo.getSpecialValue() + "),\n";
 			result = result + "\t\t\tfalse, \"0\",\n";										// empty allowed, empty value
 			result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
-			result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = prefUtils.createDetailsLink(parent, " +
+			result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
 								fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
 			result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
 			return result;
@@ -714,20 +714,20 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 		String result = "\n";
 		if (fieldInfo instanceof ConcreteDirListFieldInfo) {
-			result = result + "\t\tDirectoryListFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewDirectoryListField(\n";
+			result = result + "\t\tDirectoryListFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewDirectoryListField(\n";
 		} else if (fieldInfo instanceof ConcreteFileFieldInfo) {
-			result = result + "\t\tFileFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewFileField(\n";
+			result = result + "\t\tFileFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFileField(\n";
 		} else if (fieldInfo instanceof ConcreteStringFieldInfo) {
-			result = result + "\t\tStringFieldEditor " + fieldInfo.getName() + " = prefUtils.makeNewStringField(\n";
+			result = result + "\t\tStringFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewStringField(\n";
 		}
-		result = result + "\t\t\tpage, tab, prefsService,\n";
+		result = result + "\t\t\tpage, tab, fPrefService,\n";
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + fieldInfo.getName() + "\",\n";	// tab level, key, text\n";
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", \"" + stripQuotes(fieldInfo.getSpecialValue()) + "\",\n";
 		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n";										// empty allowed, empty value
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
-		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = prefUtils.createDetailsLink(parent, " +
+		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
 							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
 		return result;
@@ -800,7 +800,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			} else {
 				fieldTypeName = "UnrecognizedFieldType";
 			}
-			fileText = fileText + "\t\t" + fieldTypeName + " " + cFieldInfo.getName() + " = (" + fieldTypeName + ") fields[" + i++ + "];\n";
+			fileText = fileText + "\t\t" + fieldTypeName + " " + cFieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + i++ + "];\n";
 		}	
 		fileText += "\n";
 		
@@ -873,13 +873,13 @@ public class PreferencesFactory implements IPreferencesFactory
 
 			if (cFieldInfo instanceof ConcreteBooleanFieldInfo) {
 				fileText = fileText + "\t\t\t\t" + holderName + " = " + fieldName + ".getChangeControl().getParent();\n";
-				fileText = fileText + "\t\t\t\tprefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
+				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getChangeControl().setEnabled(" + enabledRepresentation + ");\n\n";
 			} else if (cFieldInfo instanceof ConcreteIntFieldInfo ||
 					   cFieldInfo instanceof ConcreteStringFieldInfo)
 			{
 				fileText = fileText + "\t\t\t\t" + holderName + " = " + fieldName + ".getTextControl().getParent();\n";	
-				fileText = fileText + "\t\t\t\tprefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
+				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getTextControl().setEditable(" + enabledRepresentation + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getTextControl().setEnabled(" + enabledRepresentation + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n\n";
@@ -919,7 +919,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\t\t\tselectedProjectName.setStringValue(\"none selected\");\n\n";
 
 		fileText = fileText + "\t\t\t// Clear the preferences from the store\n";
-		fileText = fileText + "\t\t\tprefService.clearPreferencesAtLevel(IPreferencesService.PROJECT_LEVEL);\n\n";
+		fileText = fileText + "\t\t\tfPrefService.clearPreferencesAtLevel(IPreferencesService.PROJECT_LEVEL);\n\n";
 
 		fileText = fileText + "\t\t\t// Disable fields and make them non-editable\n";
 		fileText = fileText + "\t\t\tif (!composite.isDisposed()) {\n";
