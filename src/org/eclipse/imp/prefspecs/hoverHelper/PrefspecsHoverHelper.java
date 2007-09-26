@@ -19,6 +19,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 import org.eclipse.imp.services.IHoverHelper;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.imp.prefspecs.documentationProvider.PrefspecsDocumentationProvider;
 
 public class PrefspecsHoverHelper implements IHoverHelper
 {
@@ -36,6 +37,11 @@ public class PrefspecsHoverHelper implements IHoverHelper
         IASTNodeLocator nodeLocator= parseController.getNodeLocator();
         Object node = nodeLocator.findNode(ast, offset);
 
+        
+        PrefspecsDocumentationProvider provider = new PrefspecsDocumentationProvider();
+        return provider.getDocumentation(node, parseController);
+        
+        /*
         if (node == null)
             return null;
 	
@@ -48,7 +54,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
         	
         	case PrefspecsLexer.TK_TABS:
         		return("In this section list each of the four tabs:  'default', 'configuration', 'instance', and 'project',	" +
-        				"and, for eack, indicate whether it is 'in' or 'out' of the preference page and assign tab-wide attributes, " +
+        				"and, for each, indicate whether it is 'in' or 'out' of the preference page and assign tab-wide attributes, " +
         				"'iseditable' and/or 'isremovable', as appropriate");
         	case PrefspecsLexer.TK_FIELDS:
         		return("In this section list the fields that will appear on the generated preferences page (each field will appear" +
@@ -203,7 +209,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
         		} else {
         			return null;
         		}
-        		
+
         	default:				 // Below depends on JikesPG-specific types 
 		        ASTNode def = null;  //ASTNode) ASTUtils.findDefOf((IASTNodeToken) node, (JikesPG) ast);
 		        if (def != null)
@@ -213,6 +219,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
         	}
         }
         return getSubstring(parseController, token);
+*/
     }
 
     public static String getSubstring(IParseController parseController, int start, int end) {
