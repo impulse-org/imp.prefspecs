@@ -37,7 +37,7 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         	
         	case PrefspecsLexer.TK_TABS:
         		return "Introduces required section for specifying participation of tabs on the preference page " +
-        				"and optionally specifying certain properties of fields on those tabs";
+        			"and optionally specifying certain properties of fields on those tabs";
         	case PrefspecsLexer.TK_FIELDS:
         		return "Introduces required section for specifying fields for tabs on the preference page " +
 						"and optionally specifying certain properties of those fields";
