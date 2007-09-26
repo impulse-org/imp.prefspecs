@@ -32,19 +32,19 @@ import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.IDocumentationProvider;
 
 
-
 public class PrefspecsNodeDocumentationProvider implements IDocumentationProvider, ILanguageService {
 
     public String getDocumentation(Object target, IParseController parseController) {
-
+    	StringBuffer buff= new StringBuffer();
     	Object node = target;
 	
         if (node == null || !(node instanceof ASTNode))
-            return null;
+            return null;	
 
         if (node instanceof tabsSpec) {
-        	return "In this section list each of the four tabs:  'default', 'configuration', 'instance', and 'project',	" +
-        			"and, for eack, indicate whether it is 'in' or 'out' of the preference page and assign tab-wide attributes, " +
+        	return "In this section list each of the four tabs:  " +
+        			"'default', 'configuration', 'instance', and 'project',	" +
+        			"and, for each, indicate whether it is 'in' or 'out' of the preference page and assign tab-wide attributes, " +
         			"'iseditable' and/or 'isremovable', as appropriate";
         } if (node instanceof defaultTabSpec || node instanceof configurationTabSpec ||
 			node instanceof instanceTabSpec || node instanceof projectTabSpec) {
