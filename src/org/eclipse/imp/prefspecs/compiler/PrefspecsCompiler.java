@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,7 +21,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -59,7 +57,7 @@ import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
-import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.imp.wizards.WizardUtilities;
 import org.eclipse.pde.core.plugin.IPluginModel;
 import org.eclipse.pde.internal.core.bundle.WorkspaceBundleModel;
 
@@ -1122,7 +1120,8 @@ public class PrefspecsCompiler
         //fInitializerFileName = initializerSrc.getName();
         
         
-        IFile pageSrc = ExtensionPointWizard.createFileFromTemplate(fPageClassNameBase + ".java", "preferencesPageWithTabs.java", fPagePackageName, subs, fProject, mon);
+        IFile pageSrc = WizardUtilities.createFileFromTemplate(
+        	fPageClassNameBase + ".java", "preferencesPageWithTabs.java", fPagePackageName, WizardUtilities.getProjectSourceLocation(), subs, fProject, mon);
         //editFile(mon, pageSrc);
         
 
