@@ -10,7 +10,7 @@ import org.eclipse.imp.builder.ProjectNatureBase;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.runtime.IPluginLog;
 
-import com.ibm.watson.smapifier.builder.SmapiProjectNature;
+import org.eclipse.imp.smapifier.builder.SmapiProjectNature;
 
 public class PrefspecsNature extends ProjectNatureBase {
 	// SMS 28 Mar 2007:  plugin class now totally parameterized
