@@ -29,6 +29,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.base.OutlinerBase;
+import org.eclipse.swt.SWT;
 
 /**
  * This file provides a skeletal implementation of the language-dependent aspects
@@ -94,7 +95,7 @@ public class PrefspecsOutliner extends OutlinerBase
 //			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
 //							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			addSubItem(docProvider.getDocumentation(n, editor.getParseController()), n, 
-					PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
+					PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage(), SWT.LEAD);
 			return true;
 		}
 		
@@ -109,7 +110,7 @@ public class PrefspecsOutliner extends OutlinerBase
 			pushSubItem("Default tab", n);
 			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
 			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
-							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
+							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage(), SWT.LEAD);
 			inDefaultTabSpec = true;
 			return true;
 		}
