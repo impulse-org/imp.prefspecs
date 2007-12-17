@@ -8,8 +8,10 @@ package org.eclipse.imp.prefspecs.tokenColorer;
 import lpg.runtime.IToken;
 
 import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParsersym;
 import org.eclipse.imp.services.ITokenColorer;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -20,7 +22,8 @@ public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer 
     				partsKeywordAttribute, valueKeywordAttribute, tabKeywordAttribute, fieldTypeKeywordAttribute,
     				modifierKeywordAttribute;
 
-    public TextAttribute getColoring(IParseController controller, IToken token) {
+    public TextAttribute getColoring(IParseController controller, Object o) {
+        IToken token= (IToken) o;
         switch (token.getKind()) {
             // START_HERE
             case TK_IDENTIFIER:
@@ -47,10 +50,12 @@ public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer 
                 return keywordAttribute;
             case TK_SINGLE_LINE_COMMENT:
             	return commentAttribute;
-            default:
-                if (controller.isKeyword(token.getKind()))
+            default: {
+                SimpleLPGParseController lpgPC= (SimpleLPGParseController) controller;
+                if (lpgPC.isKeyword(token.getKind()))
                      return keywordAttribute;
                else return null;
+            }
         }
     }
 
@@ -74,5 +79,9 @@ public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer 
     }
 
     public void setLanguage(String language) {
+    }
+
+    public IRegion calculateDamageExtent(IRegion seed) {
+        return seed;
     }
 }

@@ -52,7 +52,46 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
-import org.eclipse.imp.prefspecs.parser.Ast.*;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
+import org.eclipse.imp.prefspecs.parser.Ast.IsignedNumber;
+import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs0;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs1;
+import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.customRule;
+import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirlistFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.generalSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intCustomSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intRangeSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intSpecificSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.signedNumber0;
+import org.eclipse.imp.prefspecs.parser.Ast.signedNumber1;
+import org.eclipse.imp.prefspecs.parser.Ast.stringDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec0;
+import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec1;
+import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
@@ -129,7 +168,7 @@ public class PrefspecsCompiler
 		
 		// If we have a kind of parser that might be receptive, tell it
 		// what types of problem marker the builder will create
-		parseController.addProblemMarkerType(PROBLEM_MARKER_ID);
+		parseController.getAnnotationTypeInfo().addProblemMarkerType(PROBLEM_MARKER_ID);
 		
 		parseController.initialize(specFile.getProjectRelativePath(), sourceProject, markerCreator);
 		

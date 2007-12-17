@@ -13,6 +13,31 @@ import lpg.runtime.PrsStream;
 import org.eclipse.imp.editor.SourceProposal;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
+import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.IbooleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IcomboFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IdirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.IfileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IintFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IradioFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fieldSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optionalSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.pageBody;
+import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.tabSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -21,11 +46,12 @@ public class PrefspecsContentProposer implements IContentProposer
 {
     private IToken getToken(IParseController controller, int offset) {
         PrsStream stream = (PrsStream) controller.getParser();
+        PrefspecsParseController psPC= (PrefspecsParseController) controller;
         int index = stream.getTokenIndexAtCharacter(offset),
             token_index = (index < 0 ? -(index - 1) : index),
             previous_index = stream.getPrevious(token_index);
         return stream.getIToken(((stream.getKind(previous_index) == PrefspecsLexer.TK_IDENTIFIER ||
-                                  controller.isKeyword(stream.getKind(previous_index))) &&
+                                  psPC.isKeyword(stream.getKind(previous_index))) &&
                                  offset == stream.getEndOffset(previous_index) + 1)
                                          ? previous_index
                                          : token_index);
@@ -58,7 +84,7 @@ public class PrefspecsContentProposer implements IContentProposer
     public ICompletionProposal[] getContentProposals(IParseController controller, int offset, ITextViewer viewer)
     {
         // START_HERE           
-    	ArrayList list = new ArrayList(); // a list of proposals.
+    	ArrayList<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
 
     	ArrayList fieldIDs = getFieldIdentifiers(controller);	
     	
@@ -69,7 +95,7 @@ public class PrefspecsContentProposer implements IContentProposer
         }
         if (token == null || !kindCanBeCompleted(controller, kind)) {
         	list.add(new SourceProposal("No completion exists for that prefix", "", offset));
-        	return (ICompletionProposal[]) list.toArray(new ICompletionProposal[list.size()]);	
+        	return list.toArray(new ICompletionProposal[list.size()]);	
         }
         
         // Delimit ranges where completion is supported
@@ -142,46 +168,48 @@ public class PrefspecsContentProposer implements IContentProposer
         {
         	list.add(new SourceProposal("No completions available at this position", "", offset));
         }
-        return (ICompletionProposal[]) list.toArray(new ICompletionProposal[list.size()]);
+        return list.toArray(new ICompletionProposal[list.size()]);
     }
 
     
     public ArrayList getFieldIdentifiers(IParseController controller)
     {
-    	ArrayList result = new ArrayList();
-    	String fieldID = null;
-    	boolean started = false;
+    	ArrayList<String> result = new ArrayList<String>();
+    	pageSpec ps= (pageSpec) controller.getCurrentAst();
+        IfieldSpecs specs= ps.getpageBody().getfieldsSpec().getfieldSpecs();
 
-    	PrsStream prsStream = controller.getParser().getParseStream();
-    	for (int i = 0; i < prsStream.getStreamLength(); i++) {
-    		IToken token = prsStream.getIToken(i);
-    		int kind = token.getKind();
-    		if (!started) {
-    			if (kind == PrefspecsLexer.TK_FIELDS) {
-    				started = true;
-    			}
-    			continue;
-    		}
-    		if ((kind == PrefspecsLexer.TK_CUSTOM) || (kind	 == PrefspecsLexer.TK_CONDITIONALS))
-    			break;
-    		
-    		switch (token.getKind()) {
-    		case PrefspecsLexer.TK_IDENTIFIER:
-    			fieldID = token.toString().substring(0, token.getEndOffset() - token.getStartOffset() + 1);
-    			result.add(fieldID);
-    			break;
-    		}
-    	}
-  	
+        do {
+            IfieldSpec fs;
+            if (specs instanceof fieldSpecs) {
+                fs= ((fieldSpecs) specs).getfieldSpec();
+                specs= ((fieldSpecs) specs).getfieldSpecs();
+            } else  {
+                fs= (IfieldSpec) specs;
+                specs= null; // hit the end of the line
+            }
+            if (fs instanceof booleanFieldSpec) {
+                result.add(((booleanFieldSpec) fs).getidentifier().toString());
+            } else if (fs instanceof comboFieldSpec) {
+                result.add(((comboFieldSpec) fs).getidentifier().toString());
+            } else if (fs instanceof dirListFieldSpec) {
+                result.add(((dirListFieldSpec) fs).getidentifier().toString());
+            } else if (fs instanceof fileFieldSpec) {
+                result.add(((fileFieldSpec) fs).getidentifier().toString());
+            } else if (fs instanceof intFieldSpec) {
+                result.add(((intFieldSpec) fs).getidentifier().toString());
+            } else if (fs instanceof radioFieldSpec) {
+                result.add(((radioFieldSpec) fs).getidentifier().toString());
+            }
+        } while (specs != null);
     	return result;
     }
     
     
-    private ArrayList tabNames = null;
+    private ArrayList<String> tabNames = null;
     
     public ArrayList getTabNames() {
     	if (tabNames == null) {
-	    	tabNames = new ArrayList();
+	    	tabNames = new ArrayList<String>();
 	    	tabNames.add("default");
 	    	tabNames.add("configuration");
 	    	tabNames.add("instance");
@@ -191,11 +219,11 @@ public class PrefspecsContentProposer implements IContentProposer
     }
     
 
-    private ArrayList attributeKeywords = null;
+    private ArrayList<String> attributeKeywords = null;
     
     public ArrayList getAttributeKeywords() {
     	if (attributeKeywords == null) {
-	    	attributeKeywords = new ArrayList();
+	    	attributeKeywords = new ArrayList<String>();
 	    	attributeKeywords.add("emptyallowed");
 	    	attributeKeywords.add("hasspecial");
 	    	attributeKeywords.add("iseditable");
@@ -206,11 +234,11 @@ public class PrefspecsContentProposer implements IContentProposer
     }
     
     
-    private ArrayList fieldTypeNames = null;
+    private ArrayList<String> fieldTypeNames = null;
     
     public ArrayList getFieldTypeNames() {
     	if (fieldTypeNames == null) {
-    		fieldTypeNames = new ArrayList();
+    		fieldTypeNames = new ArrayList<String>();
 	    	fieldTypeNames.add("boolean");
 	    	fieldTypeNames.add("combo");
 	    	fieldTypeNames.add("dirlist");
@@ -233,8 +261,9 @@ public class PrefspecsContentProposer implements IContentProposer
     	case PrefspecsLexer.TK_IDENTIFIER:
     		return true;
     	}
+        PrefspecsParseController psPC= (PrefspecsParseController) controller;
     	
-    	if (controller.isKeyword(kind))
+    	if (psPC.isKeyword(kind))
     		return true;
     	
     	return false;
@@ -255,60 +284,24 @@ public class PrefspecsContentProposer implements IContentProposer
     
     private void setSectionLimits(IParseController controller)
     {
-    	PrsStream prsStream = controller.getParser().getParseStream();
-    	for (int i = 0; i < prsStream.getStreamLength(); i++) {
-    		IToken token = prsStream.getIToken(i);
-    		int kind = token.getKind();
-    		switch(kind) {
-    		case PrefspecsLexer.TK_TABS:
-    			startTabs = findFirstLeftBrace(prsStream, token);
-    			endTabs = findConcludingRightBrace(prsStream, token);
-    			break;
-    		case PrefspecsLexer.TK_FIELDS:
-    			startFields = findFirstLeftBrace(prsStream, token);
-    			endFields = findConcludingRightBrace(prsStream, token);
-    			break;
-    		case PrefspecsLexer.TK_CUSTOM:
-    			startCustom = findFirstLeftBrace(prsStream, token);
-    			endCustom = findConcludingRightBrace(prsStream, token);
-    			break;
-    		case PrefspecsLexer.TK_CONDITIONALS:
-    			startConditionals = findFirstLeftBrace(prsStream, token);
-    			endConditionals = findConcludingRightBrace(prsStream, token);
-    			break;	
-    		}
-    	}	
+        pageSpec ps= (pageSpec) controller.getCurrentAst();
+        pageBody pb= ps.getpageBody();
+        final optionalSpecs optSpecs= pb.getoptionalSpecs();
+
+        tabsSpec ts= pb.gettabsSpec();
+        startTabs= ts.getLeftIToken().getStartOffset();
+        endTabs= ts.getRightIToken().getEndOffset();
+
+        fieldsSpec fs= pb.getfieldsSpec();
+        startFields= fs.getLeftIToken().getStartOffset();
+        endFields= fs.getRightIToken().getEndOffset();
+
+        customSpec cso= optSpecs.getcustomSpecOption();
+        startCustom= (cso != null ? cso.getLeftIToken().getStartOffset() : 0);
+        endCustom= (cso != null ? cso.getRightIToken().getEndOffset() : 0);
+
+        conditionalsSpec condsSpec= optSpecs.getconditionalsSpecOption();
+        startConditionals= (condsSpec != null ? condsSpec.getLeftIToken().getStartOffset() : 0);
+        endConditionals= (condsSpec != null ? condsSpec.getRightIToken().getEndOffset() : 0);
     }
-    
-    
-    private int findFirstLeftBrace(PrsStream prsStream, IToken token)
-    {
-    	for (int i = token.getTokenIndex(); i < prsStream.getSize(); i++) {
-    		token = prsStream.getIToken(i);
-    		if (token.getKind() == PrefspecsLexer.TK_LEFTBRACE) {
-    			return token.getEndOffset();
-    		}
-    	}
-    	return -1;
-    }
-    
-    private int findConcludingRightBrace(PrsStream prsStream, IToken token)
-    {
-    	int count = 0;
-    	for (int i = token.getTokenIndex(); i < prsStream.getSize(); i++) {
-    		token = prsStream.getIToken(i);
-    		if (token.getKind() == PrefspecsLexer.TK_LEFTBRACE) {
-    			count++;
-    			continue;
-    		}
-    		if (token.getKind() == PrefspecsLexer.TK_RIGHTBRACE) {
-    			count--;
-    			if (count > 0) continue;
-    			return token.getStartOffset();
-    		}
-    	}
-    	return -1;
-    }
- 
-    
 }

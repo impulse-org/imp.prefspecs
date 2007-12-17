@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import lpg.runtime.IPrsStream;
 import lpg.runtime.IToken;
 
-import org.eclipse.imp.parser.IASTNodeLocator;
+import org.eclipse.imp.parser.ISourcePositionLocator;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
@@ -34,7 +34,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
         Object ast = parseController.getCurrentAst();
         if (ast == null) return null;
 
-        IASTNodeLocator nodeLocator= parseController.getNodeLocator();
+        ISourcePositionLocator nodeLocator= parseController.getNodeLocator();
         Object node = nodeLocator.findNode(ast, offset);
 
         

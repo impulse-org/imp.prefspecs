@@ -7,11 +7,8 @@ package org.eclipse.imp.prefspecs.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import lpg.runtime.IMessageHandler;
-import lpg.runtime.IToken;
 import lpg.runtime.Monitor;
 
 import org.eclipse.core.resources.IMarker;
@@ -19,25 +16,22 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.imp.language.ILanguageSyntaxProperties;
 import org.eclipse.imp.model.ISourceProject;
-import org.eclipse.imp.parser.IASTNodeLocator;
 import org.eclipse.imp.parser.ILexer;
+import org.eclipse.imp.parser.IMessageHandler;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.IParser;
-import org.eclipse.imp.parser.ParseError;
+import org.eclipse.imp.parser.ISourcePositionLocator;
+import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 
-public class PrefspecsParseController implements IParseController
+public class PrefspecsParseController extends SimpleLPGParseController implements IParseController
 {
-    private ISourceProject project;
-    private IPath filePath;
     private PrefspecsParser parser;
     private PrefspecsLexer lexer;
-    private ASTNode currentAst;
 
-    private char keywords[][];
-    private boolean isKeyword[];
-
+    public PrefspecsParseController() { }
 
     // SMS 5 May 2006:
     // Version of initialize method corresponding to change in IParseController
@@ -48,46 +42,15 @@ public class PrefspecsParseController implements IParseController
      * 						from the parser
      */
     public void initialize(IPath filePath, ISourceProject project, IMessageHandler handler) {
-    	this.filePath= filePath;
-    	this.project= project;
+        super.initialize(filePath, project, handler);
     	String fullFilePath = project.getRawProject().getLocation().toString() + "/" + filePath;
         createLexerAndParser(fullFilePath);
-    	
-    	parser.setMessageHandler(handler);
     }
-    
-    // SMS 5 May 2006:
-    // To make this available to users of the controller
-    public ISourceProject getProject() { return project; }
-    
-    
-    // SMS 6 Jul 2007
-    public IPath getPath() {
-    	return filePath;
-    }
-
     
     public IParser getParser() { return parser; }
     public ILexer getLexer() { return lexer; }
-    public Object getCurrentAst() { return currentAst; }
-    public char [][] getKeywords() { return keywords; }
-    public boolean isKeyword(int kind) { return isKeyword[kind]; }
-    public int getTokenIndexAtCharacter(int offset)
-    {
-        int index = parser.getParseStream().getTokenIndexAtCharacter(offset);
-        return (index < 0 ? -index : index);
-    }
-    public IToken getTokenAtCharacter(int offset) {
-    	return parser.getParseStream().getTokenAtCharacter(offset);
-    }											// SMS 3 Oct 2006:  trying new locator
-    public IASTNodeLocator getNodeLocator() { return new PrefspecsASTNodeLocator(); }	//return new AstLocator(); }
 
-    public boolean hasErrors() { return currentAst == null; }
-    public List getErrors() { return Collections.singletonList(new ParseError("parse error", null)); }
-    
-    public PrefspecsParseController()
-    {
-    }
+    public ISourcePositionLocator getNodeLocator() { return new PrefspecsASTNodeLocator(); }	//return new AstLocator(); }
 
     private void createLexerAndParser(String filePath) {
         try {
@@ -98,30 +61,18 @@ public class PrefspecsParseController implements IParseController
         }
     }
 
-    class MyMonitor implements Monitor
-    {
-        IProgressMonitor monitor;
-        boolean wasCancelled= false;
-        MyMonitor(IProgressMonitor monitor)
-        {
-            this.monitor = monitor;
-        }
-        public boolean isCancelled() {
-        	if (!wasCancelled)
-        		wasCancelled = monitor.isCanceled();
-        	return wasCancelled;
-        }
+    public ILanguageSyntaxProperties getSyntaxProperties() {
+        return new PrefspecsSyntaxProperties();
     }
-    
+
     /**
      * setFilePath() should be called before calling this method.
      */
-    public Object parse(String contents, boolean scanOnly, IProgressMonitor monitor)
-    {
-    	MyMonitor my_monitor = new MyMonitor(monitor);
+    public Object parse(String contents, boolean scanOnly, IProgressMonitor monitor) {
+    	PMMonitor my_monitor = new PMMonitor(monitor);
     	char[] contentsArray = contents.toCharArray();
 
-        lexer.initialize(contentsArray, filePath.toPortableString());
+        lexer.initialize(contentsArray, fFilePath.toPortableString());
         parser.getParseStream().resetTokenStream();
         
         // SMS 5 May 2006:
@@ -131,7 +82,7 @@ public class PrefspecsParseController implements IParseController
         // listener they were interested in having receive messages
         // and presumably in creating whatever annotations or markers
         // those messages require (and is that a good reason?)
-        IResource file = project.getRawProject().getFile(filePath);
+        IResource file = fProject.getRawProject().getFile(fFilePath);
    	    try {
         	file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
         } catch(CoreException e) {
@@ -140,52 +91,13 @@ public class PrefspecsParseController implements IParseController
         
         lexer.lexer(my_monitor, parser.getParseStream()); // Lex the stream to produce the token stream
         if (my_monitor.isCancelled())
-        	return currentAst; // TODO currentAst might (probably will) be inconsistent wrt the lex stream now
+        	return fCurrentAst; // TODO currentAst might (probably will) be inconsistent wrt the lex stream now
 
-        currentAst = (ASTNode) parser.parser(my_monitor, 0);
-        parser.resolve(currentAst);
+        fCurrentAst = parser.parser(my_monitor, 0);
+        parser.resolve((ASTNode) fCurrentAst);
 
         cacheKeywordsOnce(); // better place/time to do this?
 
-        return currentAst;
+        return fCurrentAst;
     }
-
-    public String getSingleLineCommentPrefix() { return "//"; }
-    
-    private void cacheKeywordsOnce() {
-        if (keywords == null) {
-            String tokenKindNames[] = parser.getParseStream().orderedTerminalSymbols();
-            this.isKeyword = new boolean[tokenKindNames.length];
-            this.keywords = new char[tokenKindNames.length][];
-
-            int [] keywordKinds = lexer.getKeywordKinds();
-            for (int i = 1; i < keywordKinds.length; i++)
-            {
-                int index = parser.getParseStream().mapKind(keywordKinds[i]);
-
-                isKeyword[index] = true;
-                keywords[index] = parser.getParseStream().orderedTerminalSymbols()[index].toCharArray();
-            }
-        }
-    }
-
-    
-    /*
-     * For the management of associated problem-marker types
-     */
-    
-    private static List problemMarkerTypes = new ArrayList();
-    
-    public List getProblemMarkerTypes() {
-    	return problemMarkerTypes;
-    }
-    
-    public void addProblemMarkerType(String problemMarkerType) {
-    	problemMarkerTypes.add(problemMarkerType);
-    }
-    
-	public void removeProblemMarkerType(String problemMarkerType) {
-		problemMarkerTypes.remove(problemMarkerType);
-	}
-    
 }
