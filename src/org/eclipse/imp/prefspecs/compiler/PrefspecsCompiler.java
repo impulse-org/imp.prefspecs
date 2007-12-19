@@ -52,46 +52,7 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
-import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
-import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
-import org.eclipse.imp.prefspecs.parser.Ast.IsignedNumber;
-import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs0;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs1;
-import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
-import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.dirlistFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.fileFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.generalSpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intCustomSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intRangeSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intSpecialSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.signedNumber0;
-import org.eclipse.imp.prefspecs.parser.Ast.signedNumber1;
-import org.eclipse.imp.prefspecs.parser.Ast.stringDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec1;
-import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.*;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
@@ -929,16 +890,8 @@ public class PrefspecsCompiler
         				cInfo.setConditionField(vInfo.getConditionField());
         			}
         		}
-        	}
-        	
-        	
+        	}	
         }
-        
-        
-        
-        
-        
-        
     }
 
     
@@ -976,54 +929,35 @@ public class PrefspecsCompiler
     
 	public boolean performGeneration(final IFile specFile, final IProgressMonitor mon)
 	{
-				IWorkspaceRunnable wsop= new IWorkspaceRunnable() {
-				    public void run(IProgressMonitor monitor) throws CoreException {			
-							getGenerationParameters(specFile);
-							collectCodeParms(specFile);
-							
-							ExtensionPointEnabler.enable(
-								specFile.getProject(), "org.eclipse.ui", "preferencePages", 
-								new String[][] {
-									{ "page:id", fPageId },
-									{ "page:name", fPageName },
-									{ "page:class", fPagePackageName + "." + fPageClassNameBase },							// was prefClass
-									
-									{ "extension:preferencesDialog:language", fLanguageName },
-									{ "extension:preferencesDialog:fields", specFile.getLocation().toString() },
-									{ "extension:preferencesDialog:class", fPagePackageName + "." + fPageClassNameBase },	// was 	prefClass
-									{ "extension:preferencesDialog:category", fPageMenuItem	 },
-								},
-								true,	// replace previous extension
-								getPluginDependencies(),
-								monitor);
-		
-							// SMS 18 Jun 2007:  Duplicative if generateCodeStubs() calls compile?
-							//PreferencesPageInfo pageInfo = compile(fProject.getFile(new Path(fieldSpecsRelativeLocation)), monitor);
-							generateCodeStubs(specFile, mon);
-				    }	
-				};
-			try {
-				wsop.run(new NullProgressMonitor());
-			} catch (CoreException e) {
-				ErrorHandler.reportError("PrefspecsCompiler.performGeneration:  Core exception:  ", e);
-			}
-
-//		try {
-//			// Don't have a container (that I know of) if we're not a wizard;
-//			// just run it here ...
-//		    //getContainer().run(true, false, op);
-//		    op.run(mon);
-//		} catch (InvocationTargetException e) {
-//		    Throwable realException= e.getTargetException();
-//		    ErrorHandler.reportError("Error", realException);
-//		    return false;
-//		} catch (InterruptedException e) {
-//		    return false;
-//		}
-		
-		// Don't do this with builder
-		//postReminderAboutPreferencesInitializer();
-		
+		IWorkspaceRunnable wsop= new IWorkspaceRunnable() {
+		    public void run(IProgressMonitor monitor) throws CoreException {			
+				getGenerationParameters(specFile);
+				collectCodeParms(specFile);
+				
+				ExtensionPointEnabler.enable(
+					specFile.getProject(), "org.eclipse.ui", "preferencePages", 
+					new String[][] {
+						{ "page:id", fPageId },
+						{ "page:name", fPageName },
+						{ "page:class", fPagePackageName + "." + fPageClassNameBase },							// was prefClass
+						{ "page:category", fPageMenuItem },
+						
+	//						{ "extension:preferencesDialog:language", fLanguageName },
+	//						{ "extension:preferencesDialog:fields", specFile.getLocation().toString() },
+	//						{ "extension:preferencesDialog:class", fPagePackageName + "." + fPageClassNameBase },	// was 	prefClass
+	//						{ "extension:preferencesDialog:category", fPageMenuItem	 },
+					},
+					false,	// don't replace previous extension--may have more than one page	
+					getPluginDependencies(),
+					monitor);
+				generateCodeStubs(specFile, mon);
+		    }	
+		};
+		try {
+			wsop.run(new NullProgressMonitor());
+		} catch (CoreException e) {
+			ErrorHandler.reportError("PrefspecsCompiler.performGeneration:  Core exception:  ", e);
+		}
 		return true;	
 	}
 	
