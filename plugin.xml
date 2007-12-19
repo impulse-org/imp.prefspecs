@@ -136,16 +136,6 @@
             type="org.eclipse.core.resources.problemmarker">
       </super>
    </extension>
-   <extension
-         id="ext.org.eclipse.imp.prefspecs.preferencesDialog"
-         name="ext.prefspecs preferencesDialog"
-         point="org.eclipse.ui.preferencePages">
-      <page
-            name="prefspecs preferencesDialog"
-            class="org.eclipse.imp.prefspecs.preferencesDialog.PrefspecsPreferencesDialog"
-            id="org.eclipse.imp.prefspecs.preferencesDialog">
-      </page>
-   </extension>
    
    <extension
          point="org.eclipse.ui.preferencePages">
