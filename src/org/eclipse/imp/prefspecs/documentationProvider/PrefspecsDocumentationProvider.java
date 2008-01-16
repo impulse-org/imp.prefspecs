@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
@@ -157,6 +158,6 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
 
 
     public static String getSubstring(IParseController parseController, int start, int end) {
-        return new String(parseController.getLexer().getLexStream().getInputChars(), start, end-start+1);
+        return new String(((SimpleLPGParseController) parseController).getLexer().getLexStream().getInputChars(), start, end-start+1);
     }
 }

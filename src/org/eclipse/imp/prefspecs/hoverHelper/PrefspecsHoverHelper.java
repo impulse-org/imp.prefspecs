@@ -12,10 +12,8 @@ import lpg.runtime.IToken;
 
 import org.eclipse.imp.parser.ISourcePositionLocator;
 import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
+import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
-import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
-import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 import org.eclipse.imp.services.IHoverHelper;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -25,7 +23,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
 {
     public String getHoverHelpAt(IParseController parseController, ISourceViewer srcViewer, int offset)
     {
-        IPrsStream ps= parseController.getParser().getParseStream();
+        IPrsStream ps= ((SimpleLPGParseController) parseController).getParser().getParseStream();
         // SMS 16 Mar 2007:  index out of bounds occurs here sometimes,
         // probably when ast has errors (around point of error)
         IToken token= ps.getTokenAtCharacter(offset);
@@ -223,7 +221,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
     }
 
     public static String getSubstring(IParseController parseController, int start, int end) {
-        return new String(parseController.getLexer().getLexStream().getInputChars(), start, end-start+1);
+        return new String(((SimpleLPGParseController) parseController).getLexer().getLexStream().getInputChars(), start, end-start+1);
     }
 
     public static String getSubstring(IParseController parseController, IToken token) {

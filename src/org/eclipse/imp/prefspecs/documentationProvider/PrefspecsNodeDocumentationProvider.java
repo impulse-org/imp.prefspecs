@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.IconditionalSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
@@ -35,7 +36,6 @@ import org.eclipse.imp.services.IDocumentationProvider;
 public class PrefspecsNodeDocumentationProvider implements IDocumentationProvider, ILanguageService {
 
     public String getDocumentation(Object target, IParseController parseController) {
-    	StringBuffer buff= new StringBuffer();
     	Object node = target;
 	
         if (node == null || !(node instanceof ASTNode))
@@ -130,6 +130,6 @@ public class PrefspecsNodeDocumentationProvider implements IDocumentationProvide
 
 
     public static String getSubstring(IParseController parseController, int start, int end) {
-        return new String(parseController.getLexer().getLexStream().getInputChars(), start, end-start+1);
+        return new String(((SimpleLPGParseController) parseController).getLexer().getLexStream().getInputChars(), start, end-start+1);
     }
 }

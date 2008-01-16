@@ -12,6 +12,7 @@ import lpg.runtime.PrsStream;
 
 import org.eclipse.imp.editor.SourceProposal;
 import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.*;
@@ -22,7 +23,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 public class PrefspecsContentProposer implements IContentProposer
 {
     private IToken getToken(IParseController controller, int offset) {
-        PrsStream stream = (PrsStream) controller.getParser();
+        PrsStream stream = ((SimpleLPGParseController) controller).getParser().getParseStream();
         PrefspecsParseController psPC= (PrefspecsParseController) controller;
         int index = stream.getTokenIndexAtCharacter(offset),
             token_index = (index < 0 ? -(index - 1) : index),
