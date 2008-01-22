@@ -44,7 +44,6 @@ public class PrefspecsBuilder extends BuilderBase {
     // SMS 11 May 2006
     public static final String LANGUAGE_NAME = "prefspecs";
     public static final Language LANGUAGE = LanguageRegistry.findLanguage(LANGUAGE_NAME);
-    public static final String[] EXTENSIONS = LANGUAGE.getFilenameExtensions();
 
 
     protected PluginBase getPlugin() {
@@ -75,10 +74,7 @@ public class PrefspecsBuilder extends BuilderBase {
         String pathString = path.toString();
         if (pathString.indexOf("/bin/") != -1) return false;
         
-        for (int i = 0; i < EXTENSIONS.length; i++) {
-            if (EXTENSIONS[i].equals(path.getFileExtension())) return true;
-        }
-        return false;
+        return LANGUAGE.hasExtension(path.getFileExtension());
     }
 
 
