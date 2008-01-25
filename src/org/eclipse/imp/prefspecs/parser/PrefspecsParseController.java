@@ -23,6 +23,7 @@ import org.eclipse.imp.parser.IMessageHandler;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.IParser;
 import org.eclipse.imp.parser.ISourcePositionLocator;
+import org.eclipse.imp.parser.MessageHandlerAdapter;
 import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 
@@ -72,9 +73,23 @@ public class PrefspecsParseController extends SimpleLPGParseController implement
     	PMMonitor my_monitor = new PMMonitor(monitor);
     	char[] contentsArray = contents.toCharArray();
 
-        lexer.initialize(contentsArray, fFilePath.toPortableString());
-        parser.getParseStream().resetTokenStream();
+    	// SMS 23 Jan 2007:  revised to match LPG
+        //lexer.initialize(contentsArray, fFilePath.toPortableString());
+		if (lexer == null) {
+			  lexer = new PrefspecsLexer();
+			}
+		lexer.reset(contentsArray, fFilePath.toPortableString());
         
+    	// SMS 23 Jan 2007:  revised to match LPG
+        //parser.getParseStream().resetTokenStream();
+		if (parser == null) {
+			parser = new PrefspecsParser(lexer.getLexStream());
+		}
+		parser.reset(lexer.getLexStream());
+		parser.getParseStream().setMessageHandler(new MessageHandlerAdapter(handler));
+		
+		
+		
         // SMS 5 May 2006:
         // Clear the problem markers on the file
         // It should be okay to do this here because ...
