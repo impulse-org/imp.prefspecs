@@ -154,8 +154,17 @@ public class PrefspecsContentProposer implements IContentProposer
     {
     	ArrayList<String> result = new ArrayList<String>();
     	pageSpec ps= (pageSpec) controller.getCurrentAst();
-        IfieldSpecs specs= ps.getpageBody().getfieldsSpec().getfieldSpecs();
-
+    	// ps may be null if there are errors
+    	if (ps == null)
+    		return result;
+    	// The value returnd by getpageBody() may be null,
+        pageBody pb = ps.getpageBody();
+    	IfieldSpecs specs = null;
+        if (pb != null)
+        	specs = pb.getfieldsSpec().getfieldSpecs();
+        else
+        	return result;
+        
         do {
             IfieldSpec fs;
             if (specs instanceof fieldSpecs) {
@@ -263,6 +272,9 @@ public class PrefspecsContentProposer implements IContentProposer
     private void setSectionLimits(IParseController controller)
     {
         pageSpec ps= (pageSpec) controller.getCurrentAst();
+        // current AST may be null if there are errors
+        if (ps == null)
+        	return;
         pageBody pb= ps.getpageBody();
         final optionalSpecs optSpecs= pb.getoptionalSpecs();
 
