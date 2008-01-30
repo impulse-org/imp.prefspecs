@@ -8,3 +8,6 @@ PrefspecsParser.java
 PrefspecsLexer.java
 PrefspecsParsersym.java
 *.l
+PrefspecsParsersym.xml
+PrefspecsLexerexp.java
+PrefspecsKWLexerexp.java
