@@ -30,7 +30,8 @@ public class PrefspecsASTNodeLocator implements ISourcePositionLocator
             // System.out.println("NodeVisitor.unimplementedVisitor:  Unimplemented");
         }
 
-        public boolean preVisit(ASTNode element)
+//        public boolean preVisit(ASTNode element)
+        public boolean preVisit(IAst element)
         {
             int nodeStartOffset = element.getLeftIToken().getStartOffset();
             int nodeEndOffset = element.getRightIToken().getEndOffset();
@@ -40,7 +41,7 @@ public class PrefspecsASTNodeLocator implements ISourcePositionLocator
             // If this node contains the span of interest then record it
             if (nodeStartOffset <= fStartOffset && nodeEndOffset >= fEndOffset) {
                 //System.out.println("prefspecsNodeLocator.NodeVisitor.preVisit(ASTNode) SELECTED for offsets [" + fStartOffset + ".." + fEndOffset + "]");
-                fNode[0]= element;
+                fNode[0]= (ASTNode) element;
                 return true; // to continue visiting here?
             }
             return false; // to stop visiting here?
