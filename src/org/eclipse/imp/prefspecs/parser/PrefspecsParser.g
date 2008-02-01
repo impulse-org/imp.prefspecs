@@ -71,18 +71,18 @@
 
     -- Rules for the major parts:  pages and their sections
     
-    pageSpec ::= $empty
+    pageSpec ::= %empty
                 |  PAGE identifier '{' pageBody '}'
                 
-    pageBody ::= $empty
+    pageBody ::= %empty
                     |  tabsSpec fieldsSpec optionalSpecs
     
     optionalSpecs ::= customSpecOption conditionalsSpecOption
     
-    customSpecOption ::= $empty
+    customSpecOption ::= %empty
                             | customSpec
                                                            
-    conditionalsSpecOption ::= $empty
+    conditionalsSpecOption ::= %empty
                             | conditionalsSpec
                
                
@@ -92,7 +92,7 @@
     
     tab ::= DEFAULT | CONFIGURATION | INSTANCE | PROJECT
     
-    tabSpecs ::= $empty
+    tabSpecs ::= %empty
 	|  defaultTabSpec configurationTabSpec instanceTabSpec projectTabSpec
 
     defaultTabSpec ::= DEFAULT inout '{' generalSpecs '}'
@@ -112,7 +112,7 @@
     
     fieldsSpec ::= FIELDS '{' fieldSpecs '}'
     
-    fieldSpecs ::= $empty
+    fieldSpecs ::= %empty
                     | fieldSpec
                     | fieldSpecs fieldSpec
                     
@@ -159,7 +159,7 @@
      
     customSpec ::= CUSTOM '{' customRules '}'
 
-    customRules ::= $empty
+    customRules ::= %empty
                        |  customRule
                        |  customRules customRule
     
@@ -178,7 +178,7 @@
 
     conditionalsSpec ::= CONDITIONALS '{' conditionalSpecs '}'
     
-    conditionalSpecs ::= $empty
+    conditionalSpecs ::= %empty
                             | conditionalSpec ;
                             | conditionalSpecs conditionalSpec ;
                             
@@ -190,16 +190,16 @@
         
     generalSpecs ::= isEditableSpec isRemovableSpec
         
-    isEditableSpec ::= $empty | ISEDITABLE booleanValue ';'
+    isEditableSpec ::= %empty | ISEDITABLE booleanValue ';'
     
-    isRemovableSpec ::= $empty |  ISREMOVABLE booleanValue ';'
+    isRemovableSpec ::= %empty |  ISREMOVABLE booleanValue ';'
     
 
     booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
 
     booleanCustomSpec ::= booleanSpecialSpec
 
-    booleanSpecialSpec ::= $empty |  HASSPECIAL booleanValue ';'
+    booleanSpecialSpec ::= %empty |  HASSPECIAL booleanValue ';'
 
     booleanDefValueSpec ::= DEFVALUE booleanValue ';'
 
@@ -208,9 +208,9 @@
     
     intCustomSpec ::= intRangeSpec intSpecialSpec
 
-    intRangeSpec ::= $empty | RANGE signedNumber DOTS signedNumber ';'
+    intRangeSpec ::= %empty | RANGE signedNumber DOTS signedNumber ';'
                     
-    intSpecialSpec ::= $empty | HASSPECIAL signedNumber ';'
+    intSpecialSpec ::= %empty | HASSPECIAL signedNumber ';'
                             
     intDefValueSpec ::= DEFVALUE signedNumber ';'
     
@@ -219,7 +219,7 @@
     
     radioCustomSpec ::= radioSpecialSpec
 
-    radioSpecialSpec ::= $empty | HASSPECIAL NUMBER ';'
+    radioSpecialSpec ::= %empty | HASSPECIAL NUMBER ';'
     
     radioDefValueSpec ::= DEFVALUE NUMBER ';'
     
@@ -228,9 +228,9 @@
     
     stringCustomSpec ::= stringSpecialSpec stringEmptySpec
                           
-    stringSpecialSpec ::= $empty | HASSPECIAL stringValue ';'                          
+    stringSpecialSpec ::= %empty | HASSPECIAL stringValue ';'                          
                           
-    stringEmptySpec ::= $empty
+    stringEmptySpec ::= %empty
 			| EMPTYALLOWED FALSE ';'
 			| EMPTYALLOWED TRUE stringValue ';'
     

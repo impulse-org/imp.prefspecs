@@ -207,7 +207,7 @@
     
     doubleQuoteString ::= DoubleQuote doubleQuoteStringChars DoubleQuote
     
-    doubleQuoteStringChars ::= $empty
+    doubleQuoteStringChars ::= %empty
     			| doubleQuoteStringChar
     			| doubleQuoteStringChars doubleQuoteStringChar
     
@@ -215,7 +215,7 @@
     
     singleQuoteString ::= SingleQuote singleQuoteStringChars SingleQuote
     
-    singleQuoteStringChars ::= $empty
+    singleQuoteStringChars ::= %empty
     			| singleQuoteStringChar
     			| singleQuoteStringChars singleQuoteStringChar
     
