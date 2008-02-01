@@ -4,11 +4,11 @@
 %options package=org.eclipse.imp.prefspecs.parser
 %options template=KeywordTemplate.gi
 
-$Include
+%Include
     KWLexerLowerCaseMap.gi
-$End
+%End
 
-$Export
+%Export
 
     -- List all the keywords the kwlexer will export to the lexer and parser
 
@@ -61,16 +61,16 @@ $Export
     WITH
     AGAINST
     
-$End
+%End
 
-$Terminals
+%Terminals
     a    b    c    d    e    f    g    h    i    j    k    l    m
     n    o    p    q    r    s    t    u    v    w    x    y    z
-$End
+%End
 
-$Start
+%Start
     Keyword
-$End
+%End
 
 %Notice
 /.
@@ -80,7 +80,7 @@ $End
 ./
 %End
 
-$Rules
+%Rules
 
     -- The Goal for the parser is a single Keyword
 
@@ -259,4 +259,4 @@ $Rules
           $EndAction
         ./
 
-$End
+%End

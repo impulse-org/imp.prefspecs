@@ -1,12 +1,9 @@
 %options package=org.eclipse.imp.prefspecs.parser
-%options template=dtParserTemplate.gi
+%options template=btParserTemplateF.gi
 %options import_terminals=PrefspecsLexer.gi
 %options parent_saved,automatic_ast=toplevel,visitor=preorder,ast_directory=./Ast,ast_type=ASTNode
---
--- This is now the real grammar for prefspecs
---
 
-$Globals
+%Globals
     /.import org.eclipse.imp.parser.IParser;
     import java.util.Hashtable;
     import java.util.Stack;
@@ -15,15 +12,14 @@ $Globals
     import java.util.ArrayList;
     import java.util.HashMap;
     ./
-$End
+%End
 
-
-$Define
+%Define
     $ast_class /.Object./
     $additional_interfaces /., IParser./
-$End        
+%End        
 
-$Terminals
+%Terminals
     --            
     -- Here, you may list terminals needed by this grammar.
     -- Furthermore, a terminal may be mapped into an alias
@@ -53,15 +49,15 @@ $Terminals
     -- Note that the terminals that do not have aliases are declared
     -- above only for documentation purposes.
     --
-$End
+%End
 
-$Start
+%Start
     pageSpec
-$End
+%End
 
-$Recover
+%Recover
    MissingExpression
-$End
+%End
 
 %Notice
 /.
@@ -71,7 +67,7 @@ $End
 ./
 %End
 
-$Rules
+%Rules
 
     -- Rules for the major parts:  pages and their sections
     
@@ -253,9 +249,9 @@ $Rules
     
     sign ::= PLUS | MINUS
 
-$End
+%End
 
-$Headers
+%Headers
     /.
 
             // SMS 2 Apr 2007 custom code
@@ -272,9 +268,9 @@ $Headers
             public final String RADIO_TYPE = "radio";
             public final String STRING_TYPE = "string";
 
-            public static List<String> fieldNames = new ArrayList();        
-        public static List<String> booleanFields = new ArrayList();
-        public static HashMap<String,String> fieldTypes = new HashMap();
+            public static List<String> fieldNames = new ArrayList<String>();        
+        public static List<String> booleanFields = new ArrayList<String>();
+        public static HashMap<String,String> fieldTypes = new HashMap<String,String>();
           
           public static void reportError(String msg) {
                   System.err.println(msg);
@@ -324,9 +320,9 @@ $Headers
         }
 
         public void resolve($ast_type root) {
-            fieldNames = new ArrayList();
-            booleanFields = new ArrayList();
-            fieldTypes = new HashMap();
+            fieldNames = new ArrayList<String>();
+            booleanFields = new ArrayList<String>();
+            fieldTypes = new HashMap<String,String>();
             if (root != null) {
                 // symbolTableStack = new Stack();
                 // topLevelSymbolTable = new SymbolTable(null);
@@ -345,30 +341,30 @@ $Headers
             public void unimplementedVisitor(String s) { /* Useful for debugging: System.out.println(s); */ }
             
             public void emitError(IToken id, String message) {
-                getMessageHandler().handleMessage(
+                prsStream.getMessageHandler().handleMessage(
                     ParseErrorCodes.NO_MESSAGE_CODE,
-                    getLexStream().getLocation(id.getStartOffset(), id.getEndOffset()),
-                    getLexStream().getLocation(0, 0),
-                    getFileName(),
+                    prsStream.getLexStream().getLocation(id.getStartOffset(), id.getEndOffset()),
+                    prsStream.getLexStream().getLocation(0, 0),
+                    prsStream.getFileName(),
                     new String [] { message });
             }
 
             public void emitError(ASTNode node, String message) {
-                getMessageHandler().handleMessage(
+                prsStream.getMessageHandler().handleMessage(
                     ParseErrorCodes.NO_MESSAGE_CODE,
-                    getLexStream().getLocation(
+                    prsStream.getLexStream().getLocation(
                         node.getLeftIToken().getStartOffset(), node.getRightIToken().getEndOffset()),
-                    getLexStream().getLocation(0, 0),
-                    getFileName(),
+                    prsStream.getLexStream().getLocation(0, 0),
+                    prsStream.getFileName(),
                     new String [] { message });
             }
 
            public void emitError(int startOffset, int endOffset, String message) {
-                getMessageHandler().handleMessage(
+                prsStream.getMessageHandler().handleMessage(
                     ParseErrorCodes.NO_MESSAGE_CODE,
-                    getLexStream().getLocation(startOffset, endOffset),
-                    getLexStream().getLocation(0, 0),
-                    getFileName(),
+                    prsStream.getLexStream().getLocation(startOffset, endOffset),
+                    prsStream.getLexStream().getLocation(0, 0),
+                    prsStream.getFileName(),
                     new String [] { message });
             }
 
@@ -608,4 +604,4 @@ $Headers
         } // End SymbolTableVisitor
         
     ./
-$End
+%End

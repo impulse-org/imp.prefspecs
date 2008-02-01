@@ -1,26 +1,23 @@
 %options package=org.eclipse.imp.prefspecs.parser
-%options template=LexerTemplate.gi
+%options template=LexerTemplateF.gi
 %options filter=PrefspecsKWLexer.gi
---
--- This is just a sample lexer and not a real lexer for prefspecs
---
 
-$Globals
+%Globals
     /.import java.util.*;
     import org.eclipse.imp.parser.ILexer;
     ./
-$End
+%End
 
-$Define
+%Define
     $additional_interfaces /., ILexer./
     $kw_lexer_class /.$PrefspecsKWLexer./
-$End
+%End
 
-$Include
-    LexerBasicMap.gi
-$End
+%Include
+    LexerBasicMapF.gi
+%End
 
-$Export
+%Export
     --
     -- List all the token types the lexer will directly process
     -- and export to the parser. If a keyword lexer is used as
@@ -43,9 +40,9 @@ $Export
         LEFTBRACE
         RIGHTBRACE
         DOTS
-$End
+%End
 
-$Terminals
+%Terminals
     CtlCharNotWS
 
     LF   CR   HT   FF
@@ -96,11 +93,11 @@ $Terminals
     LeftParen    ::= '('
     RightParen   ::= ')'
     Equal        ::= '='
-$End
+%End
 
-$Start
+%Start
     Token
-$End
+%End
 
 %Notice
 /.
@@ -110,7 +107,7 @@ $End
 ./
 %End
 
-$Rules
+%Rules
     Token ::= identifier
         /.$BeginJava
                     checkForKeyWord();
@@ -281,4 +278,4 @@ $Rules
                 '/' | '$'
 
     notEOL ::= letter | digit | special | Space | HT | FF
-$End
+%End
