@@ -6,10 +6,6 @@
 package org.eclipse.imp.prefspecs.parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import lpg.runtime.Monitor;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
