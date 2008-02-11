@@ -71,6 +71,10 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         	case PrefspecsLexer.TK_STRING:
         		return "Designates the 'string' field type";
 
+        	case PrefspecsLexer.TK_DEFVALUE:
+        		return "'defvalue' indicates a default value for the field, which is used to set " +
+        				"the value of the field on the 'default' preferences level; takes a value " +
+        				"of the type of the field";
         	case PrefspecsLexer.TK_EMPTYALLOWED:
         		return "'emptyallowed' indicates whether the field has, and is allowed to take on, " +
         				"an 'empty' value; this attribute takes a boolean value; if 'true' then a value " +
