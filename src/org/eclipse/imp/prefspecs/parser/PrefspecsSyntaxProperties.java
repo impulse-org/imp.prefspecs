@@ -3,7 +3,7 @@ package org.eclipse.imp.prefspecs.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.imp.language.ILanguageSyntaxProperties;
+import org.eclipse.imp.services.ILanguageSyntaxProperties;
 
 public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
 
