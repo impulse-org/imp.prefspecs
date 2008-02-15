@@ -197,6 +197,8 @@
     identifier -> letter
                 | identifier letter
                 | identifier digit
+                | identifier '_'
+
 
     number ::= digit
              | number digit
