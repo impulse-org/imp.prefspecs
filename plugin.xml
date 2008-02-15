@@ -136,16 +136,27 @@
             type="org.eclipse.core.resources.problemmarker">
       </super>
    </extension>
-   
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
+            name="IMP"
             class="org.eclipse.imp.preferences.PreferencePage"
-            id="org.eclipse.imp.runtime.preferencePage"
-            name="IMP"/>
+            id="org.eclipse.imp.runtime.preferencePage">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
-      <initializer class="org.eclipse.imp.preferences.PreferenceInitializer"/>
+      <initializer
+            class="org.eclipse.imp.preferences.PreferenceInitializer">
+      </initializer>
    </extension>
+   <extension
+         point="org.eclipse.imp.runtime.languageDescription">
+      <language
+            extensions="pfsp"
+            description="Language for specifying preference fields and preference pages"
+            language="prefspecs">
+      </language>
+   </extension>
+
 </plugin>
