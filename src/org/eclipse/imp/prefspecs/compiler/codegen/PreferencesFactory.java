@@ -100,14 +100,14 @@ public class PreferencesFactory implements IPreferencesFactory
 		// Generate file text
 		String fileText = generateInitializersPartBeforeFields(pluginProjectName, pluginClassName, packageName, className);
 		fileText = generateInitializersFields(pageInfo, constantsClassName, fileText);
-		fileText = generateInitializersAfterFields(fileText);
+		fileText = generateInitializersAfterFields(pluginClassName, fileText);
 		
 		IFile initializersFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
 		return initializersFile;
 		
 	}
 
-	
+		
 	
 	public static IFile generateDefaultTab(
 		PreferencesPageInfo pageInfo,
@@ -446,14 +446,15 @@ public class PreferencesFactory implements IPreferencesFactory
 		}
 
 		String fileText = "package " + packageName + ";\n\n";
-		fileText = fileText + "import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;\n";
+		//fileText = fileText + "import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;\n";
+		fileText = fileText + "import org.eclipse.imp.preferences.PreferencesInitializer;\n";
 		fileText = fileText + "import org.eclipse.imp.preferences.IPreferencesService;\n";
 		fileText = fileText + "import " + pluginPackageName + "." + pluginClassName + ";\n\n";
 		fileText = fileText + "/**\n";
 		fileText = fileText + " * Initializations of default values for preferences.\n";
 		fileText = fileText + " */\n";
 		fileText = fileText + "\n\n";
-		fileText = fileText + "public class " + className + " extends AbstractPreferenceInitializer {\n";
+		fileText = fileText + "public class " + className + " extends PreferencesInitializer {\n";
 		fileText = fileText + "\t/*\n";
 		fileText = fileText + "\t * (non-Javadoc)\n";
 		fileText = fileText + "\t * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()\n";
@@ -500,9 +501,20 @@ public class PreferencesFactory implements IPreferencesFactory
 	}
 
 	
-	protected static String generateInitializersAfterFields(String fileText) {
+	protected static String generateInitializersAfterFields(String pluginClassName, String fileText) {
 		// Note:  first closing brace in text is for the initializeDefaultPreferences method
-		return fileText + "\t}\n}\n";
+		//return fileText + "\t}\n}\n";
+		
+		fileText = fileText + "\t}\n\n";	// closing brace for initializeDefaultPreferences
+		
+		fileText = fileText + "\t/*\n";
+		fileText = fileText + "\t * Clear (remove) any preferences set on the given level.\n";	
+		fileText = fileText + "\t */\n";
+		fileText = fileText + "\tpublic void clearPreferencesOnLevel(String level) {\n";
+		fileText = fileText + "\t\tIPreferencesService service = " + pluginClassName + ".getPreferencesService();\n";
+		fileText = fileText + "\t\tservice.clearPreferencesAtLevel(level);\n\n";
+		fileText = fileText + "\t}\n}\n";
+		return fileText;
 	}
 	
 	
