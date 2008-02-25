@@ -2,7 +2,7 @@
 <version pluginID="org.eclipse.imp.prefspecs"
          versionID="1.0.72">
     <file path="/org.eclipse.imp.prefspecs/META-INF/MANIFEST.MF"
-          version="1.19"/>
+          version="1.20"/>
     <file path="/org.eclipse.imp.prefspecs/icons/doc_outline_item.gif"
           version="1.1"/>
     <file path="/org.eclipse.imp.prefspecs/icons/outline_item.gif"
