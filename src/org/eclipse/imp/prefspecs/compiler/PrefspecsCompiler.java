@@ -1078,7 +1078,7 @@ public class PrefspecsCompiler
 
     	
         IFile constantsSrc = PreferencesFactory.generatePreferencesConstants(
-        		pageInfo, sourceProject, ExtensionPointWizard.getProjectSourceLocation(), fPagePackageName, constantsClassName,  mon);
+        		pageInfo, sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, constantsClassName,  mon);
         //IFile constantsSrc = createFileFromTemplate(fFullClassName + "Constants.java", "preferencesConstants.java", fPackageFolder, subs, fProject, mon);
         //editFile(mon, constantsSrc);
 
@@ -1086,7 +1086,7 @@ public class PrefspecsCompiler
         IFile initializerSrc = PreferencesFactory.generatePreferencesInitializers(
         		pageInfo,
         		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,	
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(), fPagePackageName, fPageClassNameBase + "Initializer",  mon);
+        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "Initializer",  mon);
         //IFile initializerSrc = createFileFromTemplate(fFullClassName + "Initializer.java", "preferencesInitializer.java", fPackageFolder, subs, fProject, mon);
         //editFile(mon, initializerSrc);
         
@@ -1094,33 +1094,33 @@ public class PrefspecsCompiler
         
         
         IFile pageSrc = WizardUtilities.createFileFromTemplate(
-        	fPageClassNameBase + ".java", "preferencesPageWithTabs.java", fPagePackageName, WizardUtilities.getProjectSourceLocation(), subs, fProject, mon);
+        	fPageClassNameBase + ".java", "preferencesPageWithTabs.java", fPagePackageName, WizardUtilities.getProjectSourceLocation(fProject), subs, fProject, mon);
         //editFile(mon, pageSrc);
         
 
         IFile defaultSrc = PreferencesFactory.generateDefaultTab(
         		pageInfo,
         		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName, initializerClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(), fPagePackageName, fPageClassNameBase + "DefaultTab",  mon);
+        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "DefaultTab",  mon);
         //editFile(mon, defaultSrc);
         
         IFile configSrc = PreferencesFactory.generateConfigurationTab(
         		pageInfo,
         		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(), fPagePackageName, fPageClassNameBase + "ConfigurationTab",  mon);
+        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "ConfigurationTab",  mon);
         //editFile(mon, configSrc);
         
 
         IFile instanceSrc = PreferencesFactory.generateInstanceTab(
         		pageInfo,
         		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(), fPagePackageName, fPageClassNameBase + "InstanceTab",  mon);
+        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "InstanceTab",  mon);
         //editFile(mon, instanceSrc);
         
         IFile projectSrc = PreferencesFactory.generateProjectTab(
         		pageInfo,
         		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(), fPagePackageName, fPageClassNameBase + "ProjectTab",  mon);
+        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "ProjectTab",  mon);
         //editFile(mon, projectSrc);
 
 	}
@@ -1279,7 +1279,7 @@ public class PrefspecsCompiler
 
     
     public IPath getProjectSourceLocationPath() {
-    	return new Path(ExtensionPointWizard.getProjectSourceLocation());
+    	return new Path(ExtensionPointWizard.getProjectSourceLocation(fProject));
     }
     
 	protected List getPluginDependencies() {
