@@ -688,9 +688,14 @@ public class PreferencesFactory implements IPreferencesFactory
 		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", " + fieldInfo.getSpecialValue() + ",\n";
 		result = result + "\t\t\tfalse, false,\n";										// empty allowed (always false for boolean), empty (irrelevant)
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
-		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
-							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";	
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+		
+		String linkName = fieldInfo.getName() + "DetailsLink";
+		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
+		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+		
 		return result;
 	}
 	
@@ -710,9 +715,14 @@ public class PreferencesFactory implements IPreferencesFactory
 			result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", String.valueOf(" + fieldInfo.getSpecialValue() + "),\n";
 			result = result + "\t\t\tfalse, \"0\",\n";										// empty allowed, empty value
 			result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
-			result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
-								fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
 			result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+			
+			String linkName = fieldInfo.getName() + "DetailsLink";
+			result = result + "\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
+				fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
+			result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+			result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+			
 			return result;
 		}
 		
@@ -744,11 +754,16 @@ public class PreferencesFactory implements IPreferencesFactory
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", \"" + stripQuotes(fieldInfo.getSpecialValue()) + "\",\n";
-		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n";										// empty allowed, empty value
+		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n";	// empty allowed, empty value
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
-		result = result + "\t\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
-							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+		
+		String linkName = fieldInfo.getName() + "DetailsLink";
+		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+			fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
+		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+		
 		return result;
 	}
 	
@@ -819,7 +834,9 @@ public class PreferencesFactory implements IPreferencesFactory
 			} else {
 				fieldTypeName = "UnrecognizedFieldType";
 			}
-			fileText = fileText + "\t\t" + fieldTypeName + " " + cFieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + i++ + "];\n";
+			fileText = fileText + "\t\t" + fieldTypeName + " " + cFieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + i + "];\n";
+			fileText = fileText + "\t\tLink " +  cFieldInfo.getName() + "DetailsLink" + " = (Link) fDetailsLinks.get(" + i + ");\n";
+			i++;
 		}	
 		fileText += "\n";
 		
@@ -893,7 +910,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			if (cFieldInfo instanceof ConcreteBooleanFieldInfo) {
 				fileText = fileText + "\t\t\t\t" + holderName + " = " + fieldName + ".getChangeControl().getParent();\n";
 				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
-				fileText = fileText + "\t\t\t\t" + fieldName + ".getChangeControl().setEnabled(" + enabledRepresentation + ");\n\n";
+				fileText = fileText + "\t\t\t\t" + fieldName + ".getChangeControl().setEnabled(" + enabledRepresentation + ");\n";
 			} else if (cFieldInfo instanceof ConcreteIntFieldInfo ||
 					   cFieldInfo instanceof ConcreteStringFieldInfo)
 			{
@@ -901,8 +918,10 @@ public class PreferencesFactory implements IPreferencesFactory
 				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getTextControl().setEditable(" + enabledRepresentation + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getTextControl().setEnabled(" + enabledRepresentation + ");\n";
-				fileText = fileText + "\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n\n";
+				fileText = fileText + "\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n";
 			} // etc.
+			// enable (or not) the details link, regardless of the type of field
+			fileText = fileText + "\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectName != null);\n\n";
 		}	
 		fileText = fileText + "\t\t\t\tclearModifiedMarksOnLabels();\n"; 
 		fileText = fileText + "\t\t\t}\n\n";	// closes if not disposed ...
