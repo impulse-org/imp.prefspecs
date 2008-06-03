@@ -72,7 +72,7 @@ public class PrefspecsBuilder extends BuilderBase {
 
 
     // SMS 11 May 2006
-    // Incorporated realisitic handling of filename extensions
+    // Incorporated realistic handling of filename extensions
     // using information recorded in the language registry
     protected boolean isSourceFile(IFile file) {
         IPath path= file.getRawLocation();
@@ -94,7 +94,7 @@ public class PrefspecsBuilder extends BuilderBase {
     protected boolean isNonRootSourceFile(IFile resource)
     {
     	// TODO:  If your language has non-root source files (e.g., header files), then
-    	// reimplement this method to test for those
+    	// re-implement this method to test for those
         System.err.println("PrefspecsBuilder.isNonRootSourceFile(..) returning FALSE by default");
         return false;
     }
@@ -105,7 +105,7 @@ public class PrefspecsBuilder extends BuilderBase {
      */
     protected void collectDependencies(IFile file)
     {   
-    	// TODO:  If your langauge has inter-file dependencies then reimplement
+    	// TODO:  If your language has inter-file dependencies then re-implement
     	// this method to collect those
         System.err.println("PrefspecsBuilder.collectDependencies(..) doing nothing by default");
         return;
