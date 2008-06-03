@@ -104,8 +104,13 @@ import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
 import org.eclipse.imp.wizards.WizardUtilities;
+import org.eclipse.pde.core.plugin.IExtensions;
+import org.eclipse.pde.core.plugin.IPluginAttribute;
+import org.eclipse.pde.core.plugin.IPluginExtension;
 import org.eclipse.pde.core.plugin.IPluginModel;
+import org.eclipse.pde.core.plugin.IPluginObject;
 import org.eclipse.pde.internal.core.bundle.WorkspaceBundleModel;
+import org.eclipse.pde.internal.core.plugin.ImpPluginElement;
 
 public class PrefspecsCompiler
 {
@@ -980,20 +985,50 @@ public class PrefspecsCompiler
 				getGenerationParameters(specFile);
 				collectCodeParms(specFile);
 				
+				
+				// Remove previous extensions of this point, but only if
+				// they have the same extension id
+				// (extension "id" is an attribute of the "page" child
+				// of the "preferencePage" extension)
+				IProject project = specFile.getProject();
+				IPluginModel pluginModel = ExtensionPointEnabler.getPluginModel(project);
+				// Load the IMP way to get the complete model
+    	    	ExtensionPointEnabler.loadImpExtensionsModel(pluginModel, project);
+		    	IExtensions pmExtensions = pluginModel.getExtensions();
+		    	IPluginExtension[] pluginExtensions = pmExtensions.getExtensions();
+		    	for (int i = 0; i < pluginExtensions.length; i++) {
+		    		IPluginExtension pluginExtension = pluginExtensions[i];
+		    		if (pluginExtension == null) continue;
+		    		if (pluginExtension.getPoint() == null) continue;
+		    		String point = "org.eclipse.ui" + "." + "preferencePages";
+		    		if (pluginExtension.getPoint() == null) continue;
+		    		if (pluginExtension.getPoint().equals(point)) {
+		    			IPluginObject[] children = pluginExtension.getChildren();
+		    			for (int j = 0; j < children.length; j++) {
+		    	            if(children[j].getName().equals("page")) {
+		    	            	ImpPluginElement ipe = (ImpPluginElement) children[j];
+		    	            	IPluginAttribute pa = ipe.getAttribute("id");
+		    	            	if (pa != null && pa.getValue().equals(fPageId)) {
+				    				pmExtensions.remove(pluginExtension);
+		    	            	}
+		    	            }
+		    			}
+		    		}
+		    	}
+		    	ExtensionPointEnabler.saveAndRefresh(pluginModel);
+
+				
+				
+				
 				ExtensionPointEnabler.enable(
 					specFile.getProject(), "org.eclipse.ui", "preferencePages", 
 					new String[][] {
 						{ "page:id", fPageId },
 						{ "page:name", fPageName },
-						{ "page:class", fPagePackageName + "." + fPageClassNameBase },							// was prefClass
+						{ "page:class", fPagePackageName + "." + fPageClassNameBase },
 						{ "page:category", fPageMenuItem },
-						
-	//						{ "extension:preferencesDialog:language", fLanguageName },
-	//						{ "extension:preferencesDialog:fields", specFile.getLocation().toString() },
-	//						{ "extension:preferencesDialog:class", fPagePackageName + "." + fPageClassNameBase },	// was 	prefClass
-	//						{ "extension:preferencesDialog:category", fPageMenuItem	 },
 					},
-					false,	// don't replace previous extension--may have more than one page	
+					false,	// do not just replace previous extension, there may be more than one page
 					getPluginDependencies(),
 					monitor);
 				generateCodeStubs(specFile, mon);
@@ -1002,7 +1037,7 @@ public class PrefspecsCompiler
 		try {
 			wsop.run(new NullProgressMonitor());
 		} catch (CoreException e) {
-			ErrorHandler.reportError("PrefspecsCompiler.performGeneration:  Core exception:  ", e);
+			ErrorHandler.reportError("PrefspecsCompiler.performGeneration:  CoreException:  ", e);
 		}
 		return true;	
 	}
