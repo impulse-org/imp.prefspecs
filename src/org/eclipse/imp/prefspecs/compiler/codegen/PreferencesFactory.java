@@ -677,7 +677,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	protected static String getTextToCreateBooleanField(
 		PreferencesPageInfo pageInfo, ConcreteBooleanFieldInfo fieldInfo, String tabLevel	)
 	{
-		boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : fieldInfo.getIsEditable();
+		boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;	//fieldInfo.getIsEditable();
 		
 		String result = "\n";
 		result = result + "\t\tBooleanFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewBooleanField(\n";
@@ -703,7 +703,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	protected static String getTextToCreateIntegerField(
 			PreferencesPageInfo pageInfo, ConcreteIntFieldInfo fieldInfo, String tabLevel	)
 		{
-		    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : fieldInfo.getIsEditable();
+		    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
 		
 			String result = "\n";
 			result = result + "\t\tIntegerFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewIntegerField(\n";
@@ -739,7 +739,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	protected static String getTextToCreateStringField(
 		PreferencesPageInfo pageInfo, ConcreteStringFieldInfo fieldInfo, String tabLevel)
 	{
-	    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : fieldInfo.getIsEditable();
+	    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
 		
 		String result = "\n";
 		if (fieldInfo instanceof ConcreteDirListFieldInfo) {
@@ -760,7 +760,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 		String linkName = fieldInfo.getName() + "DetailsLink";
 		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-			fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
+			fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";
 		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
 		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
 		
