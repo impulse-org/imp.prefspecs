@@ -27,6 +27,7 @@ import org.eclipse.imp.parser.IParser;
 import org.eclipse.imp.parser.ISourcePositionLocator;
 import org.eclipse.imp.parser.MessageHandlerAdapter;
 import org.eclipse.imp.parser.SimpleLPGParseController;
+import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.services.ILanguageSyntaxProperties;
 
@@ -35,7 +36,9 @@ public class PrefspecsParseController extends SimpleLPGParseController implement
     private PrefspecsParser parser;
     private PrefspecsLexer lexer;
 
-    public PrefspecsParseController() { }
+    public PrefspecsParseController() {
+        super(PrefspecsPlugin.kLanguageName);
+    }
 
     // SMS 5 May 2006:
     // Version of initialize method corresponding to change in IParseController
