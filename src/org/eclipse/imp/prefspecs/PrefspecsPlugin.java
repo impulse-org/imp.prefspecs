@@ -107,6 +107,22 @@ public class PrefspecsPlugin extends PluginBase {
 		path = ICONS_PATH.append("prefspecs_file_error.gif");//$NON-NLS-1$
 		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
 		reg.put(IPrefspecsResources.PREFSPECS_FILE_ERROR, imageDescriptor);
+		
+		path = ICONS_PATH.append("boolean_field.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.BOOLEAN_FIELD, imageDescriptor);
+		
+		path = ICONS_PATH.append("string_field.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.STRING_FIELD, imageDescriptor);
+		
+		path = ICONS_PATH.append("int_field.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.INT_FIELD, imageDescriptor);
+		
+		path = ICONS_PATH.append("dir_list_field.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.DIRLIST_FIELD, imageDescriptor);
 	}
 
 	public static org.eclipse.jface.resource.ImageDescriptor createImageDescriptor(

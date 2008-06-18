@@ -14,6 +14,14 @@ public interface IPrefspecsResources {
 
 	public static final String PREFSPECS_FILE_ERROR = "prefspecs_file_error";
 
+	public static final String BOOLEAN_FIELD = "boolean_field";
+	
+	public static final String STRING_FIELD = "string_field";
+	
+	public static final String INT_FIELD = "int_field";
+	
+	public static final String DIRLIST_FIELD = "dirlist_field";
+	
 	// Definitions for label provider end
 
 }

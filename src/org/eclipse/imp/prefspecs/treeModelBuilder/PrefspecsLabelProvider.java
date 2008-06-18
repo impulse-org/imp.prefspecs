@@ -45,6 +45,18 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 			.get(IPrefspecsResources.PREFSPECS_FILE_WARNING);
 	private static Image FILE_WITH_ERROR_IMAGE = sImageRegistry
 			.get(IPrefspecsResources.PREFSPECS_FILE_ERROR);
+	
+	private static Image BOOLEAN_FIELD_IMAGE =
+		sImageRegistry.get(IPrefspecsResources.BOOLEAN_FIELD);
+	
+	private static Image STRING_FIELD_IMAGE =
+		sImageRegistry.get(IPrefspecsResources.STRING_FIELD);
+	
+	private static Image INT_FIELD_IMAGE =
+		sImageRegistry.get(IPrefspecsResources.INT_FIELD);
+	
+	private static Image DIRLIST_FIELD_IMAGE =
+		sImageRegistry.get(IPrefspecsResources.DIRLIST_FIELD);
 
 	public Image getImage(Object element) {
 		if (element instanceof IFile) {
@@ -71,6 +83,18 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 	public static Image getImageFor(ASTNode n) {
 		// TODO:  return specific images for specific node
 		// types, as images are available and appropriate
+		
+		if (n instanceof booleanFieldSpec)
+			return BOOLEAN_FIELD_IMAGE;
+		if (n instanceof stringFieldSpec)
+			return STRING_FIELD_IMAGE;
+		if (n instanceof intFieldSpec)
+			return INT_FIELD_IMAGE;
+		if (n instanceof fileFieldSpec)
+			return FILE_IMAGE;
+		if (n instanceof dirListFieldSpec)
+			return DIRLIST_FIELD_IMAGE;
+		
 		return DEFAULT_IMAGE;
 	}
 
