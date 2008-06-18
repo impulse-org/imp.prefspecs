@@ -1,14 +1,14 @@
 /*******************************************************************************
-* Copyright (c) 2007 IBM Corporation.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
-*******************************************************************************/
+ * Copyright (c) 2007 IBM Corporation.
+ * All rights reserved. This program and the accompanying material
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
+ *
+ *******************************************************************************/
 
 package org.eclipse.imp.prefspecs;
 
@@ -77,4 +77,51 @@ public class PrefspecsPlugin extends PluginBase {
 		}
 		return preferencesService;
 	}
+
+	// Definitions for image management
+
+	public static final org.eclipse.core.runtime.IPath ICONS_PATH = new org.eclipse.core.runtime.Path(
+			"icons/"); //$NON-NLS-1$("icons/"); //$NON-NLS-1$
+
+	protected void initializeImageRegistry(
+			org.eclipse.jface.resource.ImageRegistry reg) {
+		org.eclipse.core.runtime.IPath path = ICONS_PATH
+				.append("prefspecs_default_image.gif");//$NON-NLS-1$
+		org.eclipse.jface.resource.ImageDescriptor imageDescriptor = createImageDescriptor(
+				getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.PREFSPECS_DEFAULT_IMAGE, imageDescriptor);
+
+		path = ICONS_PATH.append("prefspecs_default_outline_item.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.PREFSPECS_DEFAULT_OUTLINE_ITEM,
+				imageDescriptor);
+
+		path = ICONS_PATH.append("prefspecs_file.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.PREFSPECS_FILE, imageDescriptor);
+
+		path = ICONS_PATH.append("prefspecs_file_warning.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.PREFSPECS_FILE_WARNING, imageDescriptor);
+
+		path = ICONS_PATH.append("prefspecs_file_error.gif");//$NON-NLS-1$
+		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+		reg.put(IPrefspecsResources.PREFSPECS_FILE_ERROR, imageDescriptor);
+	}
+
+	public static org.eclipse.jface.resource.ImageDescriptor createImageDescriptor(
+			org.osgi.framework.Bundle bundle,
+			org.eclipse.core.runtime.IPath path) {
+		java.net.URL url = org.eclipse.core.runtime.FileLocator.find(bundle,
+				path, null);
+		if (url != null) {
+			return org.eclipse.jface.resource.ImageDescriptor
+					.createFromURL(url);
+		}
+		return null;
+	}
+
+	// Definitions for image management end
+
 }
+
