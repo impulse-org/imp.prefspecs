@@ -158,5 +158,18 @@
             language="prefspecs">
       </language>
    </extension>
-
+   <extension
+         point="org.eclipse.imp.runtime.labelProvider">
+      <labelProvider
+            class="org.eclipse.imp.prefspecs.treeModelBuilder.PrefspecsLabelProvider"
+            language="prefspecs">
+      </labelProvider>
+   </extension>
+   <extension
+         point="org.eclipse.imp.runtime.modelTreeBuilder">
+      <treeBuilder
+            class="org.eclipse.imp.prefspecs.treeModelBuilder.PrefspecsTreeModelBuilder"
+            language="prefspecs">
+      </treeBuilder>
+   </extension>
 </plugin>
