@@ -98,10 +98,10 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(tabsSpec n) {
 			pushSubItem("Tabs", n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-//			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+//			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 //							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
-			addSubItem(docProvider.getDocumentation(n, editor.getParseController()), n, 
+			addSubItem(docProvider.getDocumentation(n, fParseController), n, 
 					PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage(), SWT.LEAD);
 			return true;
 		}
@@ -115,8 +115,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(defaultTabSpec n) {
 			//addSubItem("Default tab", n);
 			pushSubItem("Default tab", n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage(), SWT.LEAD);
 			inDefaultTabSpec = true;
 			return true;
@@ -130,10 +130,10 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(configurationTabSpec n) {
 			//addSubItem("Configuration tab", n);
-			//pushSubItem(docProvider.getDocumentation(n, editor.getParseController()), n);
+			//pushSubItem(docProvider.getDocumentation(n, fParseController), n);
 			pushSubItem("Configuration tab", n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -144,10 +144,10 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(instanceTabSpec n) {
 			//addSubItem("Instance tab", n);
-			//pushSubItem(docProvider.getDocumentation(n, editor.getParseController()), n);
+			//pushSubItem(docProvider.getDocumentation(n, fParseController), n);
 			pushSubItem("Instance tab", n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -158,10 +158,10 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(projectTabSpec n) {
 			//addSubItem("Project tab" , n);
-			//pushSubItem(docProvider.getDocumentation(n, editor.getParseController()), n);
+			//pushSubItem(docProvider.getDocumentation(n, fParseController), n);
 			pushSubItem("Project tab" , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -174,8 +174,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(fieldsSpec n) {
 			pushSubItem("Fields", n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -188,8 +188,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(booleanFieldSpec n) {
 			//addSubItem(((booleanFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((booleanFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -202,8 +202,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(comboFieldSpec n) {
 			//addSubItem(((comboFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((comboFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -217,8 +217,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(dirListFieldSpec n) {
 			//addSubItem(((dirListFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((dirListFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -231,8 +231,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(fileFieldSpec n) {
 			//addSubItem(((fileFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((fileFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -245,8 +245,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(intFieldSpec n) {
 			//addSubItem(((intFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((intFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -259,8 +259,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(radioFieldSpec n) {
 			//addSubItem(((radioFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((radioFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -273,8 +273,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(stringFieldSpec n) {
 			//addSubItem(((stringFieldSpec)n).getidentifier().toString() , n);
 			pushSubItem(((stringFieldSpec)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -288,8 +288,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(customSpec n) {
 			pushSubItem("Custom" , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -301,8 +301,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(customRule n) {
 			//addSubItem(n.gettab().toString() + "." + n.getidentifier().toString(), n);
 			pushSubItem(((customRule)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -316,8 +316,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(conditionalsSpec n) {
 			pushSubItem("Conditionals", n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -329,8 +329,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		
 		public boolean visit(conditionalSpec0 n) {
 			//addSubItem(n.getidentifier().toString() + " with " + n.getidentifier3().toString(), n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
@@ -343,8 +343,8 @@ public class PrefspecsOutliner extends OutlinerBase
 		public boolean visit(conditionalSpec1 n) {
 			//addSubItem(n.getidentifier().toString() + " against " + n.getidentifier3().toString(), n);
 			pushSubItem(((conditionalSpec1)n).getidentifier().toString() , n);
-			//addSubItem(docProvider.getDocumentation(n, editor.getParseController()), null);
-			createSubItem(docProvider.getDocumentation(n, editor.getParseController()), null, 
+			//addSubItem(docProvider.getDocumentation(n, fParseController), null);
+			createSubItem(docProvider.getDocumentation(n, fParseController), null, 
 							PrefspecsDocOutlineImage.getPrefspecsDocOutlineImage());
 			return true;
 		}
