@@ -109,7 +109,9 @@ import org.eclipse.pde.core.plugin.IPluginAttribute;
 import org.eclipse.pde.core.plugin.IPluginExtension;
 import org.eclipse.pde.core.plugin.IPluginModel;
 import org.eclipse.pde.core.plugin.IPluginObject;
+import org.eclipse.pde.internal.core.bundle.BundlePluginModel;
 import org.eclipse.pde.internal.core.bundle.WorkspaceBundleModel;
+import org.eclipse.pde.internal.core.ibundle.IBundleModel;
 import org.eclipse.pde.internal.core.plugin.ImpPluginElement;
 
 public class PrefspecsCompiler
@@ -992,6 +994,16 @@ public class PrefspecsCompiler
 				// of the "preferencePage" extension)
 				IProject project = specFile.getProject();
 				IPluginModel pluginModel = ExtensionPointEnabler.getPluginModel(project);
+				
+				// SMS 30 Jul 2008
+			    if (pluginModel instanceof BundlePluginModel) {
+			    	BundlePluginModel bpm = (BundlePluginModel) pluginModel;
+			    	IBundleModel bm = bpm.getBundleModel();
+			    	if (bm instanceof WorkspaceBundleModel) {
+			    		((WorkspaceBundleModel)bm).setEditable(true);
+			    	}
+			    }
+				
 				// Load the IMP way to get the complete model
     	    	ExtensionPointEnabler.loadImpExtensionsModel(pluginModel, project);
 		    	IExtensions pmExtensions = pluginModel.getExtensions();
