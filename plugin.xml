@@ -46,10 +46,10 @@
    </extension>
    <extension
          point="org.eclipse.imp.runtime.hoverHelper">
-      <hoverhelper
+      <hoverHelper
             class="org.eclipse.imp.prefspecs.hoverHelper.PrefspecsHoverHelper"
             language="prefspecs">
-      </hoverhelper>
+      </hoverHelper>
    </extension>
    <extension
          point="org.eclipse.imp.runtime.documentationProvider">
@@ -70,7 +70,7 @@
          name="prefspecs Nature"
          point="org.eclipse.core.resources.natures">
       <builder
-            id="org.eclipse.imp.prefspecs.org.eclipse.imp.prefspecs.builder">
+            id="org.eclipse.imp.prefspecs.prefspecs.builder">
       </builder>
       <runtime>
          <run
