@@ -146,29 +146,29 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
     }
 
   
-	protected ASTNode getFieldSpecNode(ASTNode node)
-	{
-   		ASTNode grandParentNode = (ASTNode) node.getParent().getParent();
-   		int nodeOffset = node.getLeftIToken().getStartOffset();
-   		int specOffset = 0;
-   		ArrayList parents = grandParentNode.getChildren();
-   		ASTNode spec = null;
-   		
-   		for (int i = 0; i < parents.size(); i++) {
-   			ASTNode parent = (ASTNode) parents.get(i);
-   			if (parent instanceof IfieldSpec) {
-   				int parentOffset = parent.getLeftIToken().getStartOffset();
-   				if (parentOffset < nodeOffset && parentOffset > specOffset) {
-   					specOffset = parentOffset;
-   					spec = parent;
-   				}
-   			}
-   		}
-   		return spec;
-	}
-
-
-    public static String getSubstring(IParseController parseController, int start, int end) {
-        return new String(((SimpleLPGParseController) parseController).getLexer().getLexStream().getInputChars(), start, end-start+1);
-    }
+//	protected ASTNode getFieldSpecNode(ASTNode node)
+//	{
+//   		ASTNode grandParentNode = (ASTNode) node.getParent().getParent();
+//   		int nodeOffset = node.getLeftIToken().getStartOffset();
+//   		int specOffset = 0;
+//   		ArrayList parents = grandParentNode.getChildren();
+//   		ASTNode spec = null;
+//   		
+//   		for (int i = 0; i < parents.size(); i++) {
+//   			ASTNode parent = (ASTNode) parents.get(i);
+//   			if (parent instanceof IfieldSpec) {
+//   				int parentOffset = parent.getLeftIToken().getStartOffset();
+//   				if (parentOffset < nodeOffset && parentOffset > specOffset) {
+//   					specOffset = parentOffset;
+//   					spec = parent;
+//   				}
+//   			}
+//   		}
+//   		return spec;
+//	}
+//
+//
+//    public static String getSubstring(IParseController parseController, int start, int end) {
+//        return new String(((SimpleLPGParseController) parseController).getLexer().getLexStream().getInputChars(), start, end-start+1);
+//    }
 }
