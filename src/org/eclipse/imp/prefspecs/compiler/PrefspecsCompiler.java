@@ -192,10 +192,8 @@ public class PrefspecsCompiler
 		
 		if (currentAst == null) {
 				System.err.println("PrefspecsCompiler.computePreferencesPageInfo:  current AST is null (parse errors?); unable to compute page info.");
+				return;
 		}
-		
-		String fileExten= specFile.getFileExtension();
-		String fileBase= specFile.getName().substring(0, specFile.getName().length() - fileExten.length() - 1);
 		
 		TranslatorVisitor visitor = new TranslatorVisitor();
 		
