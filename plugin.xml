@@ -5,7 +5,7 @@
          point="org.eclipse.imp.runtime.languageDescription">
       <language
             extensions="pfsp"
-            description="Specification language for IMP preference pages"
+            description="Language for specifying preference fields and preference pages"
             language="prefspecs">
       </language>
    </extension>
@@ -66,20 +66,15 @@
       </parser>
    </extension>
    <extension
-         id="imp.nature"
-         name="prefspecs Nature"
-         point="org.eclipse.core.resources.natures">
-      <builder
-            id="org.eclipse.imp.prefspecs.prefspecs.builder">
-      </builder>
-      <runtime>
-         <run
-               class="org.eclipse.imp.prefspecs.builders.PrefspecsNature">
-         </run>
-      </runtime>
+         id="problem"
+         name="prefspecs Error"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
    </extension>
    <extension
-         id="problem"
+         id="org.eclipse.imp.prefspecs.builder.problem"
          name="prefspecs Error"
          point="org.eclipse.core.resources.markers">
       <super
@@ -102,8 +97,8 @@
       </objectContribution>
    </extension>
    <extension
-         id="prefspecs.builder"
-         name="prefspecs builder"
+         id="builder"
+         name="Preferences Specification File builder"
          point="org.eclipse.core.resources.builders">
       <builder>
          <run
@@ -116,33 +111,17 @@
       </builder>
    </extension>
    <extension
-         id="imp.nature"
+         id="nature"
          name="prefspecs Nature"
          point="org.eclipse.core.resources.natures">
       <builder
-            id="org.eclipse.imp.prefspecs.prefspecs.builder">
+            id="org.eclipse.imp.prefspecs.builder">
       </builder>
       <runtime>
          <run
                class="org.eclipse.imp.prefspecs.builders.PrefspecsNature">
          </run>
       </runtime>
-   </extension>
-   <extension
-         id="org.eclipse.imp.prefspecs.builder.problem"
-         name="prefspecs Error"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-   </extension>
-   <extension
-         point="org.eclipse.imp.runtime.languageDescription">
-      <language
-            extensions="pfsp"
-            description="Language for specifying preference fields and preference pages"
-            language="prefspecs">
-      </language>
    </extension>
    <extension
          point="org.eclipse.imp.runtime.labelProvider">
