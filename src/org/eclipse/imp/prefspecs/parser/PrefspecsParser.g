@@ -196,53 +196,54 @@
             
     -- Rules for specifications used in various parts
         
-    generalSpecs ::= isEditableSpec isRemovableSpec
+    generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec
         
-    isEditableSpec ::= %empty | ISEDITABLE booleanValue ';'
-    
-    isRemovableSpec ::= %empty |  ISREMOVABLE booleanValue ';'
-    
+    isEditableSpec  ::= %empty | ISEDITABLE booleanValue ';'$
+
+    isRemovableSpec ::= %empty | ISREMOVABLE booleanValue ';'$
+
+    optLabelSpec    ::= %empty | LABEL STRING_LITERAL ';'$
 
     booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
 
     booleanCustomSpec ::= booleanSpecialSpec
 
-    booleanSpecialSpec ::= %empty |  HASSPECIAL booleanValue ';'
+    booleanSpecialSpec ::= %empty |  HASSPECIAL booleanValue ';'$
 
-    booleanDefValueSpec ::= DEFVALUE booleanValue ';'
+    booleanDefValueSpec ::= DEFVALUE booleanValue ';'$
 
 
     intSpecificSpec ::= intCustomSpec intDefValueSpec
-    
+
     intCustomSpec ::= intRangeSpec intSpecialSpec
 
-    intRangeSpec ::= %empty | RANGE signedNumber DOTS signedNumber ';'
-                    
-    intSpecialSpec ::= %empty | HASSPECIAL signedNumber ';'
-                            
-    intDefValueSpec ::= DEFVALUE signedNumber ';'
+    intRangeSpec ::= %empty | RANGE signedNumber DOTS signedNumber ';'$
+
+    intSpecialSpec ::= %empty | HASSPECIAL signedNumber ';'$
+
+    intDefValueSpec ::= DEFVALUE signedNumber ';'$
     
 
     radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
-    
+
     radioCustomSpec ::= radioSpecialSpec
 
-    radioSpecialSpec ::= %empty | HASSPECIAL NUMBER ';'
-    
-    radioDefValueSpec ::= DEFVALUE NUMBER ';'
+    radioSpecialSpec ::= %empty | HASSPECIAL NUMBER ';'$
+
+    radioDefValueSpec ::= DEFVALUE NUMBER ';'$
     
 
     stringSpecificSpec ::= stringCustomSpec stringDefValueSpec
     
     stringCustomSpec ::= stringSpecialSpec stringEmptySpec
                           
-    stringSpecialSpec ::= %empty | HASSPECIAL stringValue ';'                          
+    stringSpecialSpec ::= %empty | HASSPECIAL stringValue ';'$
                           
     stringEmptySpec ::= %empty
-			| EMPTYALLOWED FALSE ';'
-			| EMPTYALLOWED TRUE stringValue ';'
+			| EMPTYALLOWED FALSE ';'$
+			| EMPTYALLOWED TRUE stringValue ';'$
     
-    stringDefValueSpec ::= DEFVALUE stringValue ';'
+    stringDefValueSpec ::= DEFVALUE stringValue ';'$
 
 
     -- Rules for values and identifiers

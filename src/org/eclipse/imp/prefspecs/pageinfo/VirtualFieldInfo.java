@@ -42,6 +42,10 @@ public class VirtualFieldInfo
 	 */
 	protected boolean isRemovable = false;
 
+	/**
+	 * If non-null, the label to use for the widget corresponding to this field
+	 */
+	protected String optLabel = null;
 
 	/**
 	 * Whether concrete instances of this field have a "special" value
@@ -168,8 +172,14 @@ public class VirtualFieldInfo
 			}
 		this.isRemovable = isRemovable;
 	}
-	
-	
+
+	public String getLabel() {
+	    return optLabel;
+	}
+
+	public void setLabel(String newLabel) {
+	    this.optLabel = newLabel;
+	}
 	
 	public boolean getHasSpecialValue() {
 		return 	hasSpecialValue;

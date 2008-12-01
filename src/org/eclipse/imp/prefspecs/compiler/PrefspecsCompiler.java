@@ -89,6 +89,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.intSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.intSpecificSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optLabelSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.signedNumber0;
@@ -299,13 +300,12 @@ public class PrefspecsCompiler
         }
         
         
-        
         public boolean visit(booleanFieldSpec boolField) {
         	VirtualBooleanFieldInfo vBool = new VirtualBooleanFieldInfo(fPageInfo, boolField.getidentifier().toString());
         	booleanFieldPropertySpecs propSpecs = boolField.getbooleanFieldPropertySpecs();
         	
         	// Create a virtual field
-            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
+        	isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
         	if (editableSpec != null) {
         		vBool.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
         	}
@@ -313,7 +313,12 @@ public class PrefspecsCompiler
         	if (removableSpec != null) {
             	vBool.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         	}
-        	
+        	optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
+        	if (labelSpec != null) {
+        	    final String label= labelSpec.getSTRING_LITERAL().toString();
+                vBool.setLabel(label.substring(1, label.length() - 1));
+        	}
+
         	booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecificSpec().getbooleanCustomSpec();
         	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
         	if (specialSpec != null) {
@@ -377,6 +382,10 @@ public class PrefspecsCompiler
         	if (removableSpec != null) {
             	vDirList.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         	}
+            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
+            if (labelSpec != null) {
+                vDirList.setLabel(labelSpec.getSTRING_LITERAL().toString());
+            }
         	
         	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
         	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
@@ -462,6 +471,10 @@ public class PrefspecsCompiler
         	if (removableSpec != null) {
             	vFile.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         	}
+            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
+            if (labelSpec != null) {
+                vFile.setLabel(labelSpec.getSTRING_LITERAL().toString());
+            }
         	
         	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
         	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
@@ -548,6 +561,10 @@ public class PrefspecsCompiler
         	if (removableSpec != null) {
             	vInt.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         	}
+            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
+            if (labelSpec != null) {
+                vInt.setLabel(labelSpec.getSTRING_LITERAL().toString());
+            }
         	
         	intSpecificSpec specificSpec = propSpecs.getintSpecificSpec();
         	intCustomSpec customSpec = specificSpec.getintCustomSpec();
@@ -677,6 +694,10 @@ public class PrefspecsCompiler
         	if (removableSpec != null) {
             	vString.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         	}
+            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
+            if (labelSpec != null) {
+                vString.setLabel(labelSpec.getSTRING_LITERAL().toString());
+            }
         	
         	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
         	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)

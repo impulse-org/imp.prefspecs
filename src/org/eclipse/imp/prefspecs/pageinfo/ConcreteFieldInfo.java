@@ -39,12 +39,17 @@ public class ConcreteFieldInfo
 	 * Whether instances of this field can be edited by default
 	 */
 	protected boolean isEditable = true;
-	
+
 	/**
 	 * Whether instances of this field (that is, their values)
 	 * can be removed by default
 	 */
 	protected boolean isRemovable = false;
+
+    /**
+     * The widget label, if explicitly specified in the field properties
+     */
+    protected String optLabel = null;
 
 
 	/**
@@ -98,6 +103,8 @@ public class ConcreteFieldInfo
 		
 		this.isEditable = vFieldInfo.getIsEditable();
 		this.isRemovable = vFieldInfo.getIsRemovable();
+		this.optLabel = vFieldInfo.getLabel();
+
 		this.hasSpecialValue = vFieldInfo.getHasSpecialValue();
 		
 		parentTab.add(this);
@@ -180,8 +187,17 @@ public class ConcreteFieldInfo
 			}
 		this.isRemovable = isRemovable;
 	}
-	
-	
+
+
+	public String getLabel() {
+	    return optLabel;
+	}
+
+	public void setLabel(String newLabel) {
+	    this.optLabel = newLabel;
+	}
+
+
 	public boolean getHasSpecialValue() {
 		return 	hasSpecialValue;
 	}

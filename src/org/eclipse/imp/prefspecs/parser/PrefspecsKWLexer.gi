@@ -46,6 +46,7 @@
     --SPECIAL
     
     -- For attributes
+    LABEL
     DEFVALUE
     EMPTYALLOWED
     HASSPECIAL
@@ -203,6 +204,12 @@
     Keyword ::= i s r e m o v a b l e
         /.$BeginAction
             $setResult($_ISREMOVABLE);
+          $EndAction
+        ./
+
+    Keyword ::= l a b e l
+        /.$BeginAction
+            $setResult($_LABEL);
           $EndAction
         ./
 
