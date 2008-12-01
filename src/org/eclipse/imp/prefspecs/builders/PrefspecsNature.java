@@ -21,7 +21,7 @@ import org.eclipse.imp.smapifier.builder.SmapiProjectNature;
 
 public class PrefspecsNature extends ProjectNatureBase {
 	// SMS 28 Mar 2007:  plugin class now totally parameterized
-	public static final String k_natureID = PrefspecsPlugin.kPluginID + ".imp.nature";
+	public static final String k_natureID = PrefspecsPlugin.kPluginID + ".nature";
  
     public String getNatureID() {
         return k_natureID;

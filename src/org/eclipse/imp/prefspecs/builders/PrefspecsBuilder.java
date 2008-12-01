@@ -41,7 +41,7 @@ public class PrefspecsBuilder extends BuilderBase {
      * SMS 22 Mar 2007:  If that ID is set through the NewBuilder wizard, then so must this one be.
      */
 	// SMS 28 Mar 2007:  Make plugin class name totally parameterized
-	public static final String BUILDER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.builder";
+	public static final String BUILDER_ID= PrefspecsPlugin.kPluginID + ".builder";
 	// SMS 28 Mar 2007:  Make problem id parameterized (rather than just ".problem") so that
 	// it can be given a builde-specific value (not simply composed here using the builder id
 	// because the problem id is also needed in ExtensionPointEnabler for adding the marker
