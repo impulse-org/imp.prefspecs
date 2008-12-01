@@ -24,7 +24,7 @@ public class PreferencesTabInfo
 	private PreferencesPageInfo parent = null;
 	private String name = null;
 	
-	private List<ConcreteFieldInfo> concreteFields = new ArrayList();
+	private List<ConcreteFieldInfo> concreteFields = new ArrayList<ConcreteFieldInfo>();
 	
 	/**
 	 * Can the fields on this tab be edited by default?
@@ -167,7 +167,7 @@ public class PreferencesTabInfo
 		concreteFields.remove(vField);
 	}
 	
-	public Iterator getConcreteFields() {
+	public Iterator<ConcreteFieldInfo> getConcreteFields() {
 		return concreteFields.iterator(); 
 	}
 	
@@ -184,10 +184,9 @@ public class PreferencesTabInfo
 		System.out.println(indent + "isEditable = " + getIsEditable());
 		System.out.println(indent + "isRemovable = " + getIsRemovable());
 		System.out.println(indent + "Concrete fields:");
-		Iterator fields = getConcreteFields();
-		while (fields.hasNext()) {
-			((ConcreteFieldInfo)fields.next()).dump(indent + " ");	
+
+		for(ConcreteFieldInfo field: concreteFields) {
+			field.dump(indent + " ");	
 		}
-		
 	}
 }
