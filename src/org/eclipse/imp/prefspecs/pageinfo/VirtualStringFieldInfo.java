@@ -15,12 +15,6 @@ package org.eclipse.imp.prefspecs.pageinfo;
 public class VirtualStringFieldInfo extends VirtualFieldInfo {
 
 	/**
-	 * Whether a concrete instance of the field
-	 * can take on on a "special" value
-	 */
-	protected boolean hasSpecialValue = false;
-	
-	/**
 	 * The "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
