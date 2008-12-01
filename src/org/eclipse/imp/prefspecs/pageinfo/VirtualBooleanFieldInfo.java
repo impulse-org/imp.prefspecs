@@ -15,12 +15,6 @@ package org.eclipse.imp.prefspecs.pageinfo;
 public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 
 	/**
-	 * Whether a concrete instance of the boolean field
-	 * can by default take on on a "special" value
-	 */
-	protected boolean hasSpecialValue = false;
-	
-	/**
 	 * The "special" value that may be associated
 	 * with a concrete instance of this field
 	 */
@@ -53,17 +47,7 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 		this.specialValue = specialValue;
 	}
 	
-	
-	
-	public void setHasSpecialValue(boolean b) {
-		hasSpecialValue = b;
-	}
-	
-	public boolean getHasSpecialValue() {
-		return hasSpecialValue;
-	}
 
-	
 	public void setSpecialValue(boolean b) {
 		if (!getHasSpecialValue())
 			throw new IllegalStateException(
