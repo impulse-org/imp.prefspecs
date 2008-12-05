@@ -52,7 +52,12 @@ public class PrefspecsTreeModelBuilder extends TreeModelBuilderBase {
 			pushSubItem(n);
 			return true;
 		}
-		
+
+		@Override
+		public void endVisit(pageSpec n) {
+		    popSubItem();
+		}
+
 		// Tab specs
 		
 		public boolean visit(tabsSpec n) {
