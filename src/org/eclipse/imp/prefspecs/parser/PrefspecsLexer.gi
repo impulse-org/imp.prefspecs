@@ -40,6 +40,7 @@
         LEFTBRACE
         RIGHTBRACE
         DOTS
+        DOT
 %End
 
 %Terminals
@@ -195,6 +196,12 @@
                     makeToken($_RIGHTBRACE);
           $EndJava
         ./	
+
+    Token ::= '.'
+        /.$BeginJava
+                    makeToken($_DOT);
+          $EndJava
+        ./
 
     Token ::= '.' '.'
         /.$BeginJava
