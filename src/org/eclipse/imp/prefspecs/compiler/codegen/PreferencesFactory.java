@@ -84,12 +84,12 @@ public class PreferencesFactory implements IPreferencesFactory
 
 
 	public static IFile generatePreferencesConstants(
-		PreferencesPageInfo pageInfo,
+		List<PreferencesPageInfo> pageInfos,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
 		// Generate file text
 		String fileText = generateConstantsPartBeforeFields(packageName, className);
-		fileText = generateConstantsFields(pageInfo, fileText);
+		fileText = generateConstantsFields(pageInfos, fileText);
 		fileText = generateConstantsAfterFields(fileText);
 
 		IFile constantsFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
@@ -98,7 +98,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	
 	public static IFile generatePreferencesInitializers(
-		PreferencesPageInfo pageInfo,
+		List<PreferencesPageInfo> pageInfos,
 		String pluginProjectName, String pluginClassName, String constantsClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
@@ -106,7 +106,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 		// Generate file text
 		String fileText = generateInitializersPartBeforeFields(pluginProjectName, pluginClassName, packageName, className);
-		fileText = generateInitializersFields(pageInfo, constantsClassName, fileText);
+		fileText = generateInitializersFields(pageInfos, constantsClassName, fileText);
 		fileText = generateInitializersAfterFields(pluginClassName, fileText);
 		
 		IFile initializersFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
@@ -121,6 +121,9 @@ public class PreferencesFactory implements IPreferencesFactory
 		String pluginProjectName, String pluginClassName, String constantsClassName, String initializerClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
+	    if (pageInfo.getTabInfo(IPreferencesService.DEFAULT_LEVEL) == null) {
+	        return null;
+	    }
 		System.out.println("PreferencesFactory.generateDefaultTab():  generating (insofar as implemented)");
 		
 		// Generate file text
@@ -138,6 +141,9 @@ public class PreferencesFactory implements IPreferencesFactory
 			String pluginProjectName, String pluginClassName, String constantsClassName,
 			ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
+        if (pageInfo.getTabInfo(IPreferencesService.CONFIGURATION_LEVEL) == null) {
+            return null;
+        }
 		System.out.println("PreferencesFactory.generateConfigurationTab():  generating (insofar as implemented)");
 		
 		// Generate file text
@@ -156,6 +162,9 @@ public class PreferencesFactory implements IPreferencesFactory
 			String pluginProjectName, String pluginClassName, String constantsClassName,
 			ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 		{
+	        if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL) == null) {
+	            return null;
+	        }
 			System.out.println("PreferencesFactory.generateInstanceTab():  generating (insofar as implemented)");
 			
 			// Generate file text
@@ -173,6 +182,9 @@ public class PreferencesFactory implements IPreferencesFactory
 				String pluginProjectName, String pluginClassName, String constantsClassName,
 				ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 		{
+            if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL) == null) {
+                return null;
+            }
 			System.out.println("PreferencesFactory.generateProjectTab():  generating (insofar as implemented)");
 			
 			// Generate file text
@@ -423,14 +435,16 @@ public class PreferencesFactory implements IPreferencesFactory
 	}
 	
 	
-	protected static String generateConstantsFields(PreferencesPageInfo pageInfo, String fileText)
+	protected static String generateConstantsFields(List<PreferencesPageInfo> pageInfos, String fileText)
 	{
-		Iterator vFields = pageInfo.getVirtualFieldInfos();
-		while (vFields.hasNext()) {
-			VirtualFieldInfo vField = (VirtualFieldInfo) vFields.next();
-			fileText = fileText + "\n\tpublic static final String P_" +
-				vField.getName().toUpperCase() + " = \"" + vField.getName() + "\""+ ";\n";
-		}			
+	    for(PreferencesPageInfo pageInfo: pageInfos) {
+	        Iterator<VirtualFieldInfo> vFields = pageInfo.getVirtualFieldInfos();
+    		while (vFields.hasNext()) {
+    			VirtualFieldInfo vField = vFields.next();
+    			fileText = fileText + "\n\tpublic static final String P_" +
+    				vField.getName().toUpperCase() + " = \"" + vField.getName() + "\""+ ";\n";
+    		}
+	    }
 		return fileText;		
 	}
 
@@ -477,33 +491,35 @@ public class PreferencesFactory implements IPreferencesFactory
 	//service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, PreferenceConstants.P_EMIT_MESSAGES, getDefaultEmitMessages());
 
 	
-	protected static String generateInitializersFields(PreferencesPageInfo pageInfo, String constantsClassName, String fileText)
+	protected static String generateInitializersFields(List<PreferencesPageInfo> pageInfos, String constantsClassName, String fileText)
 	{
-		Iterator vFields = pageInfo.getVirtualFieldInfos();
-		while (vFields.hasNext()) {
-			VirtualFieldInfo vField = (VirtualFieldInfo) vFields.next();
-			if (vField instanceof VirtualBooleanFieldInfo) {
-				VirtualBooleanFieldInfo vBool = (VirtualBooleanFieldInfo) vField;
-				fileText = fileText + "\t\tservice.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, " +
-										constantsClassName + "." + preferenceConstantForName(vBool.getName()) + ", " +
-										vBool.getDefaultValue() + ");\n";
-			} else if (vField instanceof VirtualIntFieldInfo) {
-				// Int fields are a subtype of String fields, but int values are stored
-				// separately in the preferences service
-				VirtualIntFieldInfo vInt = (VirtualIntFieldInfo) vField;
-				fileText= fileText + "\t\tservice.setIntPreference(IPreferencesService.DEFAULT_LEVEL, " +
-									constantsClassName + "." + preferenceConstantForName(vInt.getName()) + ", " +
-									vInt.getDefaultValue() + ");\n";
-			} else if (vField instanceof VirtualStringFieldInfo) {
-				// Subsumes subtypes of VirtualStringFieldInfo
-				VirtualStringFieldInfo vString = (VirtualStringFieldInfo) vField;
-				fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-									constantsClassName + "." + preferenceConstantForName(vString.getName()) + ", " +
-									vString.getDefaultValue() + ");\n";
-			} else {
-				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n";
-			}
-		}			
+	    for(PreferencesPageInfo pageInfo: pageInfos) {
+	        Iterator<VirtualFieldInfo> vFields = pageInfo.getVirtualFieldInfos();
+    		while (vFields.hasNext()) {
+    			VirtualFieldInfo vField = vFields.next();
+    			if (vField instanceof VirtualBooleanFieldInfo) {
+    				VirtualBooleanFieldInfo vBool = (VirtualBooleanFieldInfo) vField;
+    				fileText = fileText + "\t\tservice.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, " +
+    										constantsClassName + "." + preferenceConstantForName(vBool.getName()) + ", " +
+    										vBool.getDefaultValue() + ");\n";
+    			} else if (vField instanceof VirtualIntFieldInfo) {
+    				// Int fields are a subtype of String fields, but int values are stored
+    				// separately in the preferences service
+    				VirtualIntFieldInfo vInt = (VirtualIntFieldInfo) vField;
+    				fileText= fileText + "\t\tservice.setIntPreference(IPreferencesService.DEFAULT_LEVEL, " +
+    									constantsClassName + "." + preferenceConstantForName(vInt.getName()) + ", " +
+    									vInt.getDefaultValue() + ");\n";
+    			} else if (vField instanceof VirtualStringFieldInfo) {
+    				// Subsumes subtypes of VirtualStringFieldInfo
+    				VirtualStringFieldInfo vString = (VirtualStringFieldInfo) vField;
+    				fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
+    									constantsClassName + "." + preferenceConstantForName(vString.getName()) + ", " +
+    									vString.getDefaultValue() + ");\n";
+    			} else {
+    				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n";
+    			}
+    		}
+	    }
 		return fileText;		
 	}
 
@@ -678,7 +694,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		PreferencesPageInfo pageInfo, ConcreteBooleanFieldInfo fieldInfo, String tabLevel	)
 	{
 		boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;	//fieldInfo.getIsEditable();
-		String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : fieldInfo.getName();
+		String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
 
 		String result = "\n";
 		result = result + "\t\tBooleanFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewBooleanField(\n";
@@ -701,11 +717,52 @@ public class PreferencesFactory implements IPreferencesFactory
 	}
 	
 	
-	protected static String getTextToCreateIntegerField(
+	private static String createLabelFor(String name) {
+	    StringBuilder sb= new StringBuilder();
+	    int from= 0;
+	    for(int i= 0; i < name.length(); i++) {
+	        if (Character.isUpperCase(name.charAt(i))) {
+	            if (i < name.length() - 1 && Character.isUpperCase(name.charAt(i+1))) {
+	                sb.append(name.charAt(from));
+	                from= i;
+	                continue;
+	            }
+	            if (i == from) {
+	                continue;
+	            }
+	            if (i > 0) {
+	                sb.append(' ');
+	            }
+	            if (from > 0 && i > from + 1) {
+	                appendLowerWord(name, from, i, sb);
+	            } else {
+	                sb.append(name.substring(from, i));
+	            }
+	            from= i;
+	        }
+	    }
+	    if (from < name.length()) {
+	        sb.append(' ');
+	        appendLowerWord(name, from, name.length(), sb);
+	    }
+        return sb.toString();
+    }
+
+	private static void appendLowerWord(String s, int from, int to, StringBuilder sb) {
+        if (from > 0 && to > from + 1) {
+            sb.append(Character.toLowerCase(s.charAt(from)));
+        } else {
+            sb.append(s.charAt(from));
+        }
+        sb.append(s.substring(from+1, to));
+	}
+
+
+    protected static String getTextToCreateIntegerField(
 			PreferencesPageInfo pageInfo, ConcreteIntFieldInfo fieldInfo, String tabLevel	)
 		{
 		    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
-	        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : fieldInfo.getName();
+	        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
 		
 			String result = "\n";
 			result = result + "\t\tIntegerFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewIntegerField(\n";
@@ -742,7 +799,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		PreferencesPageInfo pageInfo, ConcreteStringFieldInfo fieldInfo, String tabLevel)
 	{
 	    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : fieldInfo.getName();
+        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
 		
 		String result = "\n";
 		if (fieldInfo instanceof ConcreteDirListFieldInfo) {
