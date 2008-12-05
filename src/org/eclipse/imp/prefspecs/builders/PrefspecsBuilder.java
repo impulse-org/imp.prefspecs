@@ -46,7 +46,7 @@ public class PrefspecsBuilder extends BuilderBase {
 	// it can be given a builde-specific value (not simply composed here using the builder id
 	// because the problem id is also needed in ExtensionPointEnabler for adding the marker
 	// extension to the plugin.xml file)
-    public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".prefspecs.imp.builder.problem";
+    public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".problem";
     
     // SMS 11 May 2006
     public static final String LANGUAGE_NAME = "prefspecs";
