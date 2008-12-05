@@ -26,9 +26,14 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	 * (used to set the value of the concrete instance of
 	 * this field on the default level)
 	 */
-	protected String defaultValue = "";
+	protected String defaultValue = "\"\"";
 	
-	
+	/**
+	 * True iff this field has an "empty value" specification; if not, the values of
+	 * emptyValueAllowed and emptyValue are irrelevant and should be ignored.
+	 */
+	protected boolean hasEmptyValueSpec = false;
+
 	/**
 	 * Whether a concrete instance of the field
 	 * can take on a designated "empty" value
@@ -79,10 +84,15 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	public String getSpecialValue() {
 		return specialValue;
 	}
-	
+
+
+	public boolean hasEmptyValueSpec() {
+	    return hasEmptyValueSpec;
+	}
 
 	public void setEmptyValueAllowed(boolean b) {
 		emptyValueAllowed = b;
+		hasEmptyValueSpec = true;
 	}
 	
 	public boolean getEmptyValueAllowed() {
@@ -95,14 +105,14 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 			throw new IllegalStateException(
 				"VirtualStringFieldInfo.setSpecialValue(String):  attempt to set special value when field has no special value");
 		emptyValue = s;
+		hasEmptyValueSpec = true;
 	}
 	
 	public String getEmptyValue() {
 		return emptyValue != null ? emptyValue : "";
 	}
-	
 
-	
+
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
