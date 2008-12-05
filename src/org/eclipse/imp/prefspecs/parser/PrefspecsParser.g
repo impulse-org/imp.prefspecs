@@ -34,6 +34,7 @@
          STRING_LITERAL
          DoubleLiteral
          COMMA ::= ','
+         DOT   ::= '.'
          SEMICOLON ::= ';'
          PLUS ::= '+'
          MINUS ::= '-'
@@ -52,7 +53,7 @@
 %End
 
 %Start
-    pageSpec
+    prefSpecs
 %End
 
 %Recover
@@ -70,46 +71,57 @@
 //
 //Contributors:
 //    Philippe Charles (pcharles@us.ibm.com) - initial API and implementation
-
 ////////////////////////////////////////////////////////////////////////////////
 ./
 %End
 
 %Rules
+    prefSpecs ::= optPackageSpec pageSpecList
+
+    optPackageSpec ::= %empty | PACKAGE$ packageName ';'$
+
+    packageName ::= identifier
+                  | packageName '.'$ identifier
+
+    pageSpecList$$pageSpec ::= pageSpec | pageSpecList pageSpec
 
     -- Rules for the major parts:  pages and their sections
     
-    pageSpec ::= %empty
-                |  PAGE identifier '{' pageBody '}'
-                
+    pageSpec ::= PAGE$ pageName '{'$ pageBody '}'$
+
+    pageName ::= pagePath identifier$name
+
+    pagePath ::= %empty
+               | pagePath identifier '.'$
+
     pageBody ::= %empty
-                    |  tabsSpec fieldsSpec optionalSpecs
+               | tabsSpec fieldsSpec optionalSpecs
     
     optionalSpecs ::= customSpecOption conditionalsSpecOption
     
     customSpecOption ::= %empty
-                            | customSpec
+                       | customSpec
                                                            
     conditionalsSpecOption ::= %empty
-                            | conditionalsSpec
+                             | conditionalsSpec
                
                
     -- Rules for the "tabs" section
                     
-    tabsSpec ::=  TABS '{' tabSpecs '}'
+    tabsSpec ::=  %empty | TABS$ '{'$ tabSpecs '}'$
     
     tab ::= DEFAULT | CONFIGURATION | INSTANCE | PROJECT
     
     tabSpecs ::= %empty
-	|  defaultTabSpec configurationTabSpec instanceTabSpec projectTabSpec
+               | defaultTabSpec configurationTabSpec instanceTabSpec projectTabSpec
 
-    defaultTabSpec ::= DEFAULT inout '{' generalSpecs '}'
-    
-    configurationTabSpec ::= CONFIGURATION inout '{' generalSpecs '}'
-    
-    instanceTabSpec ::= INSTANCE inout '{' generalSpecs '}'
-    
-    projectTabSpec ::= PROJECT inout '{' generalSpecs '}'
+    defaultTabSpec       ::= DEFAULT$ inout '{'$ generalSpecs '}'$
+
+    configurationTabSpec ::= CONFIGURATION$ inout '{'$ generalSpecs '}'$
+
+    instanceTabSpec      ::= INSTANCE$ inout '{'$ generalSpecs '}'$
+
+    projectTabSpec       ::= PROJECT$ inout '{'$ generalSpecs '}'$
 
     --tabPropertySpecs ::= isEditableSpec isRemovableSpec
 
@@ -118,63 +130,66 @@
     
     -- Rules for the "fields" section
     
-    fieldsSpec ::= FIELDS '{' fieldSpecs '}'
+    fieldsSpec ::= FIELDS$ '{'$ fieldSpecs '}'$
     
     fieldSpecs ::= %empty
-                    | fieldSpec
-                    | fieldSpecs fieldSpec
+                 | fieldSpec
+                 | fieldSpecs fieldSpec
                     
     fieldSpec ::= booleanFieldSpec
-                    | comboFieldSpec
-                    | dirListFieldSpec
-                    | fileFieldSpec
-                    | intFieldSpec
-                    | radioFieldSpec
-                    | stringFieldSpec
+                | comboFieldSpec
+                | dirListFieldSpec
+                | fileFieldSpec
+                | intFieldSpec
+                | radioFieldSpec
+                | stringFieldSpec
                     
         
-    booleanFieldSpec ::= BOOLEAN identifier '{' booleanFieldPropertySpecs '}'
+    booleanFieldSpec ::= BOOLEAN$ identifier booleanFieldPropertySpecs optConditionalSpec
 
-    comboFieldSpec ::= COMBO identifier '{' comboFieldPropertySpecs '}'
-  
-    dirListFieldSpec ::= DIRLIST identifier '{' dirlistFieldPropertySpecs '}'
-    
-    fileFieldSpec ::= FILE identifier '{' fileFieldPropertySpecs '}'
-   
-    intFieldSpec ::= INT identifier '{' intFieldPropertySpecs '}'
-    
-    radioFieldSpec ::= RADIO identifier '{' radioFieldPropertySpecs '}'
+    comboFieldSpec   ::= COMBO$   identifier comboFieldPropertySpecs   optConditionalSpec
 
-    stringFieldSpec ::= STRING identifier '{' stringFieldPropertySpecs '}'
-    
-        
-    booleanFieldPropertySpecs ::= generalSpecs booleanSpecificSpec
+    dirListFieldSpec ::= DIRLIST$ identifier dirlistFieldPropertySpecs optConditionalSpec
 
-    comboFieldPropertySpecs ::= generalSpecs stringSpecificSpec
-    
-    dirlistFieldPropertySpecs ::= generalSpecs stringSpecificSpec
-    
-    fileFieldPropertySpecs ::= generalSpecs stringSpecificSpec
-    
-    intFieldPropertySpecs ::= generalSpecs intSpecificSpec
-    
-    radioFieldPropertySpecs ::= generalSpecs radioSpecificSpec
-    
-    stringFieldPropertySpecs ::= generalSpecs stringSpecificSpec
+    fileFieldSpec    ::= FILE$    identifier fileFieldPropertySpecs    optConditionalSpec
 
+    intFieldSpec     ::= INT$     identifier intFieldPropertySpecs     optConditionalSpec
+
+    radioFieldSpec   ::= RADIO$   identifier radioFieldPropertySpecs   optConditionalSpec
+
+    stringFieldSpec  ::= STRING$  identifier stringFieldPropertySpecs  optConditionalSpec
+
+
+    booleanFieldPropertySpecs ::= %empty | '{'$ generalSpecs booleanSpecificSpec '}'$
+
+    comboFieldPropertySpecs   ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    dirlistFieldPropertySpecs ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    fileFieldPropertySpecs    ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    intFieldPropertySpecs     ::= %empty | '{'$ generalSpecs intSpecificSpec     '}'$
+
+    radioFieldPropertySpecs   ::= %empty | '{'$ generalSpecs radioSpecificSpec   '}'$
+
+    stringFieldPropertySpecs  ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    optConditionalSpec ::= %empty | conditionType identifier
+
+    conditionType ::= IF | UNLESS
 
     -- Rules for the "custom" section
      
-    customSpec ::= CUSTOM '{' customRules '}'
+    customSpec ::= CUSTOM$ '{'$ customRules '}'$
 
     customRules ::= %empty
                        |  customRule
                        |  customRules customRule
     
-    customRule ::= tab identifier '{' newPropertySpecs '}'
+    customRule ::= tab identifier '{'$ newPropertySpecs '}'$
 
     newPropertySpecs ::= generalSpecs 
-                | generalSpecs typeCustomSpecs
+                       | generalSpecs typeCustomSpecs
                 
     typeCustomSpecs ::=  booleanCustomSpec
                      |   intCustomSpec
@@ -184,75 +199,75 @@
 
     -- Rules for the "conditionals" section
 
-    conditionalsSpec ::= CONDITIONALS '{' conditionalSpecs '}'
+    conditionalsSpec ::= CONDITIONALS$ '{'$ conditionalSpecs '}'$
     
     conditionalSpecs ::= %empty
-                            | conditionalSpec ;
-                            | conditionalSpecs conditionalSpec ;
+                       | conditionalSpec ;
+                       | conditionalSpecs conditionalSpec ;
                             
     conditionalSpec ::= identifier WITH identifier
-                            | identifier AGAINST identifier
+                      | identifier AGAINST identifier
 
             
     -- Rules for specifications used in various parts
         
     generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec
         
-    isEditableSpec  ::= %empty | ISEDITABLE booleanValue ';'$
+    isEditableSpec  ::= %empty | ISEDITABLE$ booleanValue ';'$
 
-    isRemovableSpec ::= %empty | ISREMOVABLE booleanValue ';'$
+    isRemovableSpec ::= %empty | ISREMOVABLE$ booleanValue ';'$
 
-    optLabelSpec    ::= %empty | LABEL STRING_LITERAL ';'$
+    optLabelSpec    ::= %empty | LABEL$ STRING_LITERAL ';'$
 
     booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
 
-    booleanCustomSpec ::= booleanSpecialSpec
+    booleanCustomSpec   ::= booleanSpecialSpec
 
-    booleanSpecialSpec ::= %empty |  HASSPECIAL booleanValue ';'$
+    booleanSpecialSpec  ::= %empty | HASSPECIAL$ booleanValue ';'$
 
-    booleanDefValueSpec ::= DEFVALUE booleanValue ';'$
+    booleanDefValueSpec ::= %empty | DEFVALUE$ booleanValue ';'$
 
 
     intSpecificSpec ::= intCustomSpec intDefValueSpec
 
-    intCustomSpec ::= intRangeSpec intSpecialSpec
+    intCustomSpec   ::= intRangeSpec intSpecialSpec
 
-    intRangeSpec ::= %empty | RANGE signedNumber DOTS signedNumber ';'$
+    intRangeSpec    ::= %empty | RANGE$ signedNumber$low DOTS$ signedNumber$high ';'$
 
-    intSpecialSpec ::= %empty | HASSPECIAL signedNumber ';'$
+    intSpecialSpec  ::= %empty | HASSPECIAL$ signedNumber ';'$
 
-    intDefValueSpec ::= DEFVALUE signedNumber ';'$
+    intDefValueSpec ::= %empty | DEFVALUE$ signedNumber ';'$
     
 
     radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
 
-    radioCustomSpec ::= radioSpecialSpec
+    radioCustomSpec   ::= radioSpecialSpec
 
-    radioSpecialSpec ::= %empty | HASSPECIAL NUMBER ';'$
+    radioSpecialSpec  ::= %empty | HASSPECIAL$ NUMBER ';'$
 
-    radioDefValueSpec ::= DEFVALUE NUMBER ';'$
+    radioDefValueSpec ::= %empty | DEFVALUE$ NUMBER ';'$
     
 
     stringSpecificSpec ::= stringCustomSpec stringDefValueSpec
+
+    stringCustomSpec   ::= stringSpecialSpec stringEmptySpec
+
+    stringSpecialSpec  ::= %empty | HASSPECIAL$ stringValue ';'$
+
+    stringEmptySpec    ::= %empty
+                         | EMPTYALLOWED$ FALSE ';'$
+                         | EMPTYALLOWED$ TRUE stringValue ';'$
     
-    stringCustomSpec ::= stringSpecialSpec stringEmptySpec
-                          
-    stringSpecialSpec ::= %empty | HASSPECIAL stringValue ';'$
-                          
-    stringEmptySpec ::= %empty
-			| EMPTYALLOWED FALSE ';'$
-			| EMPTYALLOWED TRUE stringValue ';'$
-    
-    stringDefValueSpec ::= DEFVALUE stringValue ';'$
+    stringDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
 
 
     -- Rules for values and identifiers
   
-    identifier ::= IDENTIFIER
+    identifier   ::= IDENTIFIER
     
     booleanValue ::= TRUE | FALSE
     
-    stringValue ::= STRING_LITERAL
+    stringValue  ::= STRING_LITERAL
     
     signedNumber ::= NUMBER |  sign NUMBER
     
