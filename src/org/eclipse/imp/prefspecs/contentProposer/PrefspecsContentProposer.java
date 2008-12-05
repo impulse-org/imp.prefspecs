@@ -69,26 +69,25 @@ public class PrefspecsContentProposer implements IContentProposer
     public ICompletionProposal[] getContentProposals(IParseController controller, int offset, ITextViewer viewer)
     {
         // START_HERE           
-    	ArrayList<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
+    	ArrayList<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
+    	ArrayList<String> fieldIDs = getFieldIdentifiers(controller, offset);
 
-    	ArrayList fieldIDs = getFieldIdentifiers(controller);	
-    	
         IToken token = getToken(controller, offset);
         int kind = -1;
         if (token != null) {
         	kind = token.getKind();
         }
         if (token == null || !kindCanBeCompleted(controller, kind)) {
-        	list.add(new SourceProposal("No completion exists for that prefix", "", offset));
-        	return list.toArray(new ICompletionProposal[list.size()]);	
+        	result.add(new SourceProposal("No completion exists for that prefix", "", offset));
+        	return result.toArray(new ICompletionProposal[result.size()]);	
         }
-        
+
         // Delimit ranges where completion is supported
-        setSectionLimits(controller);
-        
+        setSectionLimits(controller, offset);
+
         String prefix = getPrefix(token, offset);
         int tokenPosition = token.getStartOffset();
-        
+
         // Add tab-name candidates, if appropriate
         if (startCustom > 0 && tokenPosition > startCustom && tokenPosition < endCustom) {
         	switch (kind) {
@@ -97,25 +96,24 @@ public class PrefspecsContentProposer implements IContentProposer
         	case PrefspecsLexer.TK_CONFIGURATION:
         	case PrefspecsLexer.TK_DEFAULT:
               if ("default".startsWith(prefix))
-            	  list.add(new SourceProposal("default", prefix, offset));
+            	  result.add(new SourceProposal("default", prefix, offset));
               else if ("configuration".startsWith(prefix))
-            	  list.add(new SourceProposal("configuration", prefix, offset));
+            	  result.add(new SourceProposal("configuration", prefix, offset));
               else if ("instance".startsWith(prefix))
-            	  list.add(new SourceProposal("instance", prefix, offset));
+            	  result.add(new SourceProposal("instance", prefix, offset));
               else if ("project".startsWith(prefix))
-            	  list.add(new SourceProposal("project", prefix, offset));
+            	  result.add(new SourceProposal("project", prefix, offset));
             }
         }
-        
-        
+
+
         // Add field-type-name candidates, if appropriate
         if (tokenPosition > startFields && tokenPosition < endFields)
         {
-    		ArrayList ftn = getFieldTypeNames();
-        	for (int i = 0; i < ftn.size(); i++) {
-        		String candidate = (String)ftn.get(i);
+    		ArrayList<String> ftn = getFieldTypeNames();
+        	for(String candidate: ftn) {
         		if (candidate.startsWith(prefix)) {
-        			list.add(new SourceProposal(candidate, prefix, offset));
+        			result.add(new SourceProposal(candidate, prefix, offset));
         		}
         	}
         }
@@ -123,25 +121,24 @@ public class PrefspecsContentProposer implements IContentProposer
             
         // Add identifier candidates, if appropriate
         if ((startCustom > 0 && tokenPosition > startCustom && tokenPosition < endCustom) ||
-        	(startConditionals > 0 && tokenPosition > startConditionals && tokenPosition < endConditionals))
+        	(startConditionals > 0 && tokenPosition > startConditionals && tokenPosition < endConditionals) ||
+        	(startFields > 0 && tokenPosition > startFields && tokenPosition < endFields))
         {
-            for (int i = 0; i < fieldIDs.size(); i++) {
-            	String candidate = (String)fieldIDs.get(i);
+            for (String candidate: fieldIDs) {
             	if (candidate.startsWith(prefix))
-            		list.add(new SourceProposal(candidate, prefix, offset));
+            		result.add(new SourceProposal(candidate, prefix, offset));
             }
         }   
-                        
+
         // Add attribute keyword candidates, if appropriate
         if ((tokenPosition > startTabs && tokenPosition < endTabs) ||
             (tokenPosition > startFields && tokenPosition < endFields) ||
             (startCustom > 0 && tokenPosition > startCustom && tokenPosition < endCustom))
         {
-    		ArrayList kw = getAttributeKeywords();
-        	for (int i = 0; i < kw.size(); i++) {
-        		String candidate = (String)kw.get(i);
+    		ArrayList<String> kw = getAttributeKeywords();
+        	for (String candidate: kw) {
         		if (candidate.startsWith(prefix)) {
-        			list.add(new SourceProposal(candidate, prefix, offset));
+        			result.add(new SourceProposal(candidate, prefix, offset));
         		}
         	}
         }
@@ -151,23 +148,23 @@ public class PrefspecsContentProposer implements IContentProposer
             (startCustom > 0 && tokenPosition > startCustom && tokenPosition < endCustom) ||
             (startConditionals > 0 && tokenPosition > startConditionals && tokenPosition < endConditionals)))
         {
-        	list.add(new SourceProposal("No completions available at this position", "", offset));
+        	result.add(new SourceProposal("No completions available at this position", "", offset));
         }
-        return list.toArray(new ICompletionProposal[list.size()]);
+        return result.toArray(new ICompletionProposal[result.size()]);
     }
 
     
-    public ArrayList getFieldIdentifiers(IParseController controller)
+    public ArrayList<String> getFieldIdentifiers(IParseController controller, int offset)
     {
     	ArrayList<String> result = new ArrayList<String>();
-    	pageSpec ps= (pageSpec) controller.getCurrentAst();
-    	// ps may be null if there are errors
-    	if (ps == null)
-    		return result;
-    	// The value returnd by getpageBody() may be null,
+    	final prefSpecs prefSpecs= (prefSpecs) controller.getCurrentAst();
+    	if (prefSpecs == null) { // prefSpecs may be null if there are errors
+    	    return result;
+    	}
+        pageSpec ps= getPageAtOffset(prefSpecs, offset);
+        IfieldSpecs specs = null;
         pageBody pb = ps.getpageBody();
-    	IfieldSpecs specs = null;
-        if (pb != null)
+        if (pb != null) // The value returned by getpageBody() may be null
         	specs = pb.getfieldsSpec().getfieldSpecs();
         else
         	return result;
@@ -199,9 +196,23 @@ public class PrefspecsContentProposer implements IContentProposer
     }
     
     
+    private pageSpec getPageAtOffset(prefSpecs prefSpecs, int offset) {
+        pageSpecList pageList = prefSpecs.getpageSpecList();
+
+        for(int i=0; i < pageList.size(); i++) {
+            pageSpec page = pageList.getpageSpecAt(i);
+            if (page.getLeftIToken().getStartOffset() <= offset &&
+                page.getRightIToken().getEndOffset() >= offset) {
+                return page;
+            }
+        }
+        return null;
+    }
+
+
     private ArrayList<String> tabNames = null;
     
-    public ArrayList getTabNames() {
+    public ArrayList<String> getTabNames() {
     	if (tabNames == null) {
 	    	tabNames = new ArrayList<String>();
 	    	tabNames.add("default");
@@ -215,10 +226,11 @@ public class PrefspecsContentProposer implements IContentProposer
 
     private ArrayList<String> attributeKeywords = null;
     
-    public ArrayList getAttributeKeywords() {
+    public ArrayList<String> getAttributeKeywords() {
     	if (attributeKeywords == null) {
 	    	attributeKeywords = new ArrayList<String>();
-	    	attributeKeywords.add("emptyallowed");
+            attributeKeywords.add("defvalue");
+            attributeKeywords.add("emptyallowed");
 	    	attributeKeywords.add("hasspecial");
 	    	attributeKeywords.add("iseditable");
 	    	attributeKeywords.add("isremovable");
@@ -230,7 +242,7 @@ public class PrefspecsContentProposer implements IContentProposer
     
     private ArrayList<String> fieldTypeNames = null;
     
-    public ArrayList getFieldTypeNames() {
+    public ArrayList<String> getFieldTypeNames() {
     	if (fieldTypeNames == null) {
     		fieldTypeNames = new ArrayList<String>();
 	    	fieldTypeNames.add("boolean");
@@ -276,18 +288,18 @@ public class PrefspecsContentProposer implements IContentProposer
     private int endConditionals = 0;
     
     
-    private void setSectionLimits(IParseController controller)
+    private void setSectionLimits(IParseController controller, int offset)
     {
-        pageSpec ps= (pageSpec) controller.getCurrentAst();
-        // current AST may be null if there are errors
-        if (ps == null)
-        	return;
+        prefSpecs prefSpecs= (prefSpecs) controller.getCurrentAst();
+        if (prefSpecs == null) // current AST may be null if there are errors
+            return;
+        pageSpec ps= getPageAtOffset(prefSpecs, offset);
         pageBody pb= ps.getpageBody();
         final optionalSpecs optSpecs= pb.getoptionalSpecs();
 
         tabsSpec ts= pb.gettabsSpec();
-        startTabs= ts.getLeftIToken().getStartOffset();
-        endTabs= ts.getRightIToken().getEndOffset();
+        startTabs= (ts != null) ? ts.getLeftIToken().getStartOffset() : 0;
+        endTabs= (ts != null) ? ts.getRightIToken().getEndOffset() : 0;
 
         fieldsSpec fs= pb.getfieldsSpec();
         startFields= fs.getLeftIToken().getStartOffset();
