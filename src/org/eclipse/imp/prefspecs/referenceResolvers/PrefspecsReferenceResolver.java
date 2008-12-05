@@ -85,16 +85,16 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
     protected ASTNode findDeclForTab(Itab node)
     {
     	if (node instanceof tab0) {
-    		return (ASTNode) tabDecls.get(((tab0)node).getDEFAULT().toString());
+    		return tabDecls.get(((tab0)node).getDEFAULT().toString());
     	}
     	if (node instanceof tab1) {
-    		return (ASTNode) tabDecls.get(((tab1)node).getCONFIGURATION().toString());
+    		return tabDecls.get(((tab1)node).getCONFIGURATION().toString());
     	}
     	if (node instanceof tab2) {
-    		return (ASTNode) tabDecls.get(((tab2)node).getINSTANCE().toString());
+    		return tabDecls.get(((tab2)node).getINSTANCE().toString());
     	}
     	if (node instanceof tab3) {
-    		ASTNode res = (ASTNode) tabDecls.get(((tab3)node).getPROJECT().toString());
+    		ASTNode res = tabDecls.get(((tab3)node).getPROJECT().toString());
     		return res;
     	}
     	System.err.println("PrefspecsReferenceResolver.findDeclForTab:  got tab of unknown type, returning null");
@@ -104,22 +104,22 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
     
     protected ASTNode findDeclForIdentifier(identifier node)
     {
-    	return (ASTNode) fieldDecls.get(node.getIDENTIFIER().toString());
+    	return fieldDecls.get(node.getIDENTIFIER().toString());
     }
 
     
     
-	private HashMap tabDecls = null;
-	private HashMap fieldDecls = null;
-	private List customTabs = null;
-	private List customFields = null;
+	private HashMap<String,ASTNode> tabDecls = null;
+	private HashMap<String,ASTNode> fieldDecls = null;
+//	private List customTabs = null;
+//	private List customFields = null;
     
     protected void buildScopeAndDeclStructures(IParseController controller)
     {
-    	tabDecls = new HashMap();
-    	fieldDecls = new HashMap();
-    	customTabs = new ArrayList();
-    	customFields = new ArrayList();
+    	tabDecls = new HashMap<String,ASTNode>();
+    	fieldDecls = new HashMap<String,ASTNode>();
+//    	customTabs = new ArrayList();
+//    	customFields = new ArrayList();
     	
 		PageVisitor visitor = new PageVisitor();
 		ASTNode ast = (ASTNode) controller.getCurrentAst();
@@ -202,28 +202,28 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        	
        	public boolean visit(defaultTabSpec node) {
        		if (inTabsSpec) {
-       			tabDecls.put(node.getDEFAULT().toString(), node);
+       			tabDecls.put("DEFAULT", node);
        		}
        		return true;	
        	}
        	
        	public boolean visit(configurationTabSpec node) {
        		if (inTabsSpec) {
-       			tabDecls.put(node.getCONFIGURATION().toString(), node);
+       			tabDecls.put("CONFIGURATION", node);
        		}
        		return true;	
        	}
        	
        	public boolean visit(instanceTabSpec node) {
        		if (inTabsSpec) {
-       			tabDecls.put(node.getINSTANCE().toString(), node);
+       			tabDecls.put("INSTANCE", node);
        		}
        		return true;	
        	}
        	
        	public boolean visit(projectTabSpec node) {
        		if (inTabsSpec) {
-       			tabDecls.put(node.getPROJECT().toString(), node);
+       			tabDecls.put("PROJECT", node);
        		}
        		return true;	
        	}
