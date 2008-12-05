@@ -249,7 +249,7 @@ public class ConcreteFieldInfo
 		System.out.println(indent + "isRemovable = " + isRemovable);
 		System.out.println(indent + "hasSpecial = " + hasSpecialValue);
 		if (isConditional) {
-			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + conditionField.getName());
+			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
 		} else {
 			System.out.println(indent + "isConditional  = false");
 		}
