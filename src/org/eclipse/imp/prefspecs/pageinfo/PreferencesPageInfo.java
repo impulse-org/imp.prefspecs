@@ -23,12 +23,12 @@ public class PreferencesPageInfo {
 
 	private List<PreferencesTabInfo> tabs = null;
 
-	private List<VirtualFieldInfo> virtualFields = new ArrayList();
+	private List<VirtualFieldInfo> virtualFields = new ArrayList<VirtualFieldInfo>();
 	
 	
 	public PreferencesPageInfo(String name) {
 		this.name = name;
-		tabs = new ArrayList(4);
+		tabs = new ArrayList<PreferencesTabInfo>(4);
 	}
 	
 	
@@ -53,7 +53,7 @@ public class PreferencesPageInfo {
 		tabs.remove(tab);
 	}
 	
-	public Iterator getTabInfos() {
+	public Iterator<PreferencesTabInfo> getTabInfos() {
 		return tabs.iterator(); 
 	}
 	
@@ -108,7 +108,7 @@ public class PreferencesPageInfo {
 		virtualFields.remove(vField);
 	}
 	
-	public Iterator getVirtualFieldInfos() {
+	public Iterator<VirtualFieldInfo> getVirtualFieldInfos() {
 		return virtualFields.iterator(); 
 	}
 	
@@ -149,15 +149,13 @@ public class PreferencesPageInfo {
 		System.out.println("PreferencesPageInfo:  '" + getPageName() + "'");
 		
 		System.out.println("Virtual fields:");
-		Iterator vFields = getVirtualFieldInfos();
-		while (vFields.hasNext()) {
-			((VirtualFieldInfo)vFields.next()).dump(indent);
+		for(VirtualFieldInfo vField: virtualFields) {
+			vField.dump(indent);
 		}
 
 		System.out.println("Tabs:");
-		Iterator tabs = getTabInfos();
-		while (tabs.hasNext()) {
-			((PreferencesTabInfo)tabs.next()).dump(indent);
+		for(PreferencesTabInfo tab: tabs) {
+			tab.dump(indent);
 		}
 		System.out.println("\t%%%%\t%%%%\t%%%%\n");
 	}
