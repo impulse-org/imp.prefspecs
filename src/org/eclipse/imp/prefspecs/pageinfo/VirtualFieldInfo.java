@@ -30,13 +30,24 @@ public class VirtualFieldInfo
 	 * The name of the virtual field
 	 */
 	protected String name = null;
-	
-	
+
+	/**
+	 * True iff this field has an "is editable" specification; if false,
+	 * the value of isEditable is irrelevant.
+	 */
+	protected boolean hasEditableSpec = false;
+
 	/**
 	 * Whether concrete instances of this field be edited by default
 	 */
 	protected boolean isEditable = true;
 	
+    /**
+     * True iff this field has an "is removable" specification; if false,
+     * the value of isRemovable is irrelevant.
+     */
+    protected boolean hasRemovableSpec = false;
+
 	/**
 	 * Whether concrete instances of this field be removed by default
 	 */
@@ -79,7 +90,7 @@ public class VirtualFieldInfo
 	/**
 	 * List of concrete fields that are based on this virtual field
 	 */
-	List concreteFieldInfos = new ArrayList();
+	List<ConcreteFieldInfo> concreteFieldInfos = new ArrayList<ConcreteFieldInfo>();
 	
 	
 	
@@ -110,7 +121,7 @@ public class VirtualFieldInfo
 	// TODO:  Consider adding other constructors to enable attribute values to be set
 	
 	//
-	// Name is only defined through the constuctor,
+	// Name is only defined through the constructor,
 	// so only "get" methods are defined for those
 	//
 	
@@ -128,20 +139,28 @@ public class VirtualFieldInfo
 	}
 	
 	
-	public Iterator getConcreteFieldInfos() {
+	public Iterator<ConcreteFieldInfo> getConcreteFieldInfos() {
 		return concreteFieldInfos.iterator();
 	}
 	
 	
-	
+	public boolean hasEditableSpec() {
+	    return this.hasEditableSpec;
+	}
+
 	public boolean getIsEditable() {
 		return 	isEditable;
 	}
 	
 	public void setIsEditable(boolean isEditable) {
-		this.isEditable = isEditable	;
+		this.isEditable = isEditable;
+		this.hasEditableSpec = true;
 	}
 
+
+	public boolean hasRemovableSpec() {
+	    return this.hasRemovableSpec;
+	}
 
 	/**
 	 * Whether the values of fields on this tab can, by default, be
@@ -171,6 +190,7 @@ public class VirtualFieldInfo
 					"PreferenceIabInfo.setIsRemovable(..):  cannot set isRemovable ");
 			}
 		this.isRemovable = isRemovable;
+		this.hasRemovableSpec = true;
 	}
 
 	public String getLabel() {
@@ -180,7 +200,8 @@ public class VirtualFieldInfo
 	public void setLabel(String newLabel) {
 	    this.optLabel = newLabel;
 	}
-	
+
+
 	public boolean getHasSpecialValue() {
 		return 	hasSpecialValue;
 	}
@@ -229,7 +250,7 @@ public class VirtualFieldInfo
 		System.out.println(indent + "isEditable  = " + isEditable);
 		System.out.println(indent + "isRemovable = " + isRemovable);
 		if (isConditional) {
-			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + conditionField.getName());
+			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
 		} else {
 			System.out.println(indent + "isConditional  = false");
 		}
