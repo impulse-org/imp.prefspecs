@@ -113,7 +113,7 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 	public static String getLabelFor(ASTNode n) {
 
 		if (n instanceof pageSpec)
-			return "Page " + ((pageSpec)n).getidentifier().toString();
+			return "Page " + ((pageSpec)n).getpageName().toString();
 		
 		if (n instanceof tabsSpec)
 			return "Tabs";
