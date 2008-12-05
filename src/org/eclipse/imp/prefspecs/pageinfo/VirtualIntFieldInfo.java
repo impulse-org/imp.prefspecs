@@ -27,7 +27,13 @@ public class VirtualIntFieldInfo extends VirtualFieldInfo {
 	 * with a concrete instance of this field
 	 */
 	protected int specialValue = 0;
-	
+
+	/**
+	 * True iff this field has a range specification; if false, rangeHigh and rangeLow
+	 * are irrelevant and should be ignored.
+	 */
+	protected boolean hasRangeSpec = false;
+
 	/**
 	 * Values that delimit the range that the field may
 	 * take on
@@ -67,17 +73,8 @@ public class VirtualIntFieldInfo extends VirtualFieldInfo {
 	public int getDefaultValue() {
 		return defaultValue;	
 	}
-	
-	
-	public void setHasSpecial(boolean b) {
-		hasSpecialValue = b;
-	}
-	
-	public boolean getHasSpecial() {
-		return hasSpecialValue;
-	}
 
-	
+
 	public void setSpecialValue(int i) {
 		if (!getHasSpecialValue())
 			throw new IllegalArgumentException(
@@ -93,35 +90,31 @@ public class VirtualIntFieldInfo extends VirtualFieldInfo {
 		return specialValue;
 	}
 	
-	
-	public void setRangeHigh(int i) {
-		if (i < rangeLow) {
+
+	public boolean hasRangeSpec() {
+	    return hasRangeSpec;
+	}
+
+	public void setRange(int low, int high) {
+		if (high < low) {
 			throw new IllegalArgumentException(
-				"VirtualIntField.setRangeHigh(int):  given value = " + i +
-				" is less than low value for range = " + rangeLow);
+				"VirtualIntField.setRange(int,int):  given high value = " + high +
+				" is less than low value " + low);
 		}
-		rangeHigh = i;
+		hasRangeSpec = true;
+		rangeLow = low;
+		rangeHigh = high;
 	}
 	
 	public int getRangeHigh() {
 		return rangeHigh;
 	}
 	
-	
-	public void setRangeLow(int i) {
-		if (i > rangeHigh) {
-			throw new IllegalArgumentException(
-				"VirtualIintField.setRangeLow(int):  given value = " + i +
-				" is greater than high value for range = " + rangeHigh);
-		}
-		rangeLow = i;
-	}
-	
 	public int getRangeLow() {
 		return rangeLow;
 	}
 
-	
+
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
