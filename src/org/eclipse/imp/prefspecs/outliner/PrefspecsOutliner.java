@@ -90,7 +90,7 @@ public class PrefspecsOutliner extends OutlinerBase
 		// examples follow ...
 		
 		public boolean visit(pageSpec n) {
-			pushTopItem("Page " + n.getidentifier().toString(), n);
+			pushTopItem("Page " + n.getpageName().toString(), n);
 			return true;
 		}
 		
