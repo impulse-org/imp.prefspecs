@@ -13,6 +13,7 @@
     -- List all the keywords the kwlexer will export to the lexer and parser
 
     -- For parts of specs
+    PACKAGE
     PAGE
     TABS
     FIELDS
@@ -61,7 +62,8 @@
     -- For conditionals
     WITH
     AGAINST
-    
+    IF
+    UNLESS
 %End
 
 %Terminals
@@ -177,6 +179,12 @@
           $EndAction
         ./
 
+    Keyword ::= i f
+        /.$BeginAction
+            $setResult($_IF);
+          $EndAction
+        ./
+
     Keyword ::= i n s t a n c e
         /.$BeginAction
             $setResult($_INSTANCE);
@@ -219,6 +227,11 @@
           $EndAction
         ./
 
+    Keyword ::= p a c k a g e
+        /.$BeginAction
+            $setResult($_PACKAGE);
+          $EndAction
+        ./
 
     Keyword ::= p a g e
         /.$BeginAction
@@ -265,6 +278,12 @@
     Keyword ::= t r u e
         /.$BeginAction
             $setResult($_TRUE);
+          $EndAction
+        ./
+
+    Keyword ::= u n l e s s
+        /.$BeginAction
+            $setResult($_UNLESS);
           $EndAction
         ./
 
