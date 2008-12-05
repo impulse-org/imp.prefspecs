@@ -26,7 +26,7 @@ public class VirtualBooleanFieldInfo extends VirtualFieldInfo {
 	 * (used to set the value of the concrete instance of
 	 * this field on the default level)
 	 */
-	protected boolean defaultValue = true;
+	protected boolean defaultValue = false;
 	
 	
 	
