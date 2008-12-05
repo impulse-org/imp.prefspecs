@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -61,12 +63,14 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
+import org.eclipse.imp.prefspecs.parser.Ast.IbooleanValue;
 import org.eclipse.imp.prefspecs.parser.Ast.IsignedNumber;
 import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionType0;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs0;
@@ -89,17 +93,23 @@ import org.eclipse.imp.prefspecs.parser.Ast.intSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.intSpecificSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optConditionalSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.optLabelSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optPackageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.sign1;
 import org.eclipse.imp.prefspecs.parser.Ast.signedNumber0;
 import org.eclipse.imp.prefspecs.parser.Ast.signedNumber1;
+import org.eclipse.imp.prefspecs.parser.Ast.stringCustomSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringDefValueSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec0;
 import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec1;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
@@ -121,33 +131,23 @@ public class PrefspecsCompiler
 	protected String fProjectName = null;
 	protected String fLanguageName = null;
 
-    protected PreferencesPageInfo fPageInfo = null;
+	protected List<PreferencesPageInfo> fPages = new ArrayList<PreferencesPageInfo>();
+
+	protected PreferencesPageInfo fPageInfo = null;
     protected IFile fPageInfoFile = null;
     
     // Parameters gathered from the page.genparameters file
-	protected String fPagePackageName = null;
 	protected String fPageClassNameBase = null;
-	protected String fPageName = null;
 	protected String fPageId = null;
-	protected String fPageMenuItem = null;
-	protected String fAlternativeMessage = null;	
+	protected String fAlternativeMessage = null;
+    protected String fPageName = null; // ignored - page names come directly from the "page xxx { }" construct
+    protected String fPageMenuItem = null; // ignored - page names come directly from the "page xxx { }" construct
+
+	protected String fPagePackageName = null;
+	private IFile fSpecFile;	
 
 	
-	
-	private static final String sClassNameMacro= "$FILE$";
-
-    private static final String sTemplateHeader= "public class " + sClassNameMacro + " {\n" +
-        "\tpublic static void main(String[] args) {\n" +
-        "\t\tnew " + sClassNameMacro + "().main();\n" +
-        "\t\tSystem.out.println(\"done.\");\n" +
-        "\t}\n";
-
-    private static final String sTemplateFooter= "}\n";
-
-    //Stack/*<String>*/ fTranslationStack= new Stack();
-    
-    //public static final String PROBLEM_MARKER_ID= PrefspecsPlugin.kPluginID + ".$PROBLEM_ID$";
-    public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".$PROBLEM_ID$";
+    public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
     
     public PrefspecsCompiler(String problem_marker_id) {
     	PROBLEM_MARKER_ID = problem_marker_id;
@@ -155,9 +155,9 @@ public class PrefspecsCompiler
     
     
  
-    public PreferencesPageInfo getPreferencesPageInfo(IFile specFile) {
+    public List<PreferencesPageInfo> getPreferencesPageInfos(IFile specFile) {
     	computePreferencesPageInfo(specFile);
-    	return fPageInfo;	
+    	return fPages;	
     }
     
     
@@ -208,21 +208,45 @@ public class PrefspecsCompiler
         public void unimplementedVisitor(String s) {
             // System.err.println("Don't know how to translate node type '" + s + "'.");
         }
-        
+
+        @Override
+        public boolean visit(optPackageSpec ps) {
+            PrefspecsCompiler.this.fPagePackageName= ps.getpackageName().toString();
+            return false;
+        }
+
         public boolean visit(pageSpec p) {
-        	fPageInfo = new PreferencesPageInfo(p.getidentifier().toString());
+        	final String pageName= p.getpageName().toString();
+            fPageInfo = new PreferencesPageInfo(pageName);
+        	fPages.add(fPageInfo);
+
+        	if (p.getpageBody().gettabsSpec() == null) {
+        	    createStandardTab(IPreferencesService.DEFAULT_LEVEL, false);
+                createStandardTab(IPreferencesService.CONFIGURATION_LEVEL, true);
+                createStandardTab(IPreferencesService.INSTANCE_LEVEL, true);
+                createStandardTab(IPreferencesService.PROJECT_LEVEL, true);
+        	}
         	return true;
         }
-        
+
+        private void createStandardTab(String level, boolean editableRemovable) {
+            PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, level);
+            tab.setIsEditable(editableRemovable);
+            tab.setIsRemovable(editableRemovable);
+            tab.setIsUsed(true);
+        }
+
         public void endVisit(pageSpec p) {
         	fPageInfo.dump();
         }
         
         
         public boolean visit(defaultTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, tabSpec.getDEFAULT().toString());
+        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.DEFAULT_LEVEL);
         	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
 
+        	// RMF - really doesn't make sense for the user to edit or remove the default level
+        	// values; should probably disallow that here and create an error marker.
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
         	if (editableSpec != null) {
         		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
@@ -245,8 +269,7 @@ public class PrefspecsCompiler
         
         
         public boolean visit(configurationTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, tabSpec.getCONFIGURATION
-        			().toString());
+        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.CONFIGURATION_LEVEL);
         	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
 
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
@@ -265,7 +288,7 @@ public class PrefspecsCompiler
   
         
         public boolean visit(instanceTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, tabSpec.getINSTANCE().toString());
+        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.INSTANCE_LEVEL);
         	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
 
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
@@ -283,7 +306,7 @@ public class PrefspecsCompiler
         
 
 	public boolean visit(projectTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, tabSpec.getPROJECT().toString());
+        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.PROJECT_LEVEL);
         	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
         	
         	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
@@ -299,124 +322,186 @@ public class PrefspecsCompiler
         	return false;
         }
         
+
+	    private String getLabel(optLabelSpec labelSpec) {
+            final String label= labelSpec.getSTRING_LITERAL().toString();
+
+            return label.substring(1, label.length() - 1);
+	    }
+
+	    private boolean getValueOf(IbooleanValue bv) {
+	        return bv.toString().equals("true");
+	    }
+
+	    private VirtualBooleanFieldInfo findConditionalField(optConditionalSpec condSpec, String depFieldName) {
+	        String name = condSpec.getidentifier().getIDENTIFIER().toString();
+            Iterator<VirtualFieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();    
+            while (virtualFieldInfos.hasNext()) {
+                VirtualFieldInfo next = virtualFieldInfos.next();
+                String nextName = next.getName();
+                if (nextName.equals(name)) {
+                    if (next instanceof VirtualBooleanFieldInfo) {
+                        return (VirtualBooleanFieldInfo) next;
+                    } else {
+                        createErrorMarker("A field can only be made conditional on a boolean field", condSpec);
+                    }
+                }
+            }
+            createErrorMarker("Field " + depFieldName + " is conditional on a non-existent field", condSpec);
+            return null;
+	    }
+
+	    private void createErrorMarker(String msg, optConditionalSpec condSpec) {
+	        try {
+	            int startLine= condSpec.getLeftIToken().getLine();
+	            int startOffset= condSpec.getLeftIToken().getStartOffset();
+	            int endOffset= condSpec.getRightIToken().getEndOffset()+1;
+
+	            IMarker m = PrefspecsCompiler.this.fSpecFile.createMarker(PROBLEM_MARKER_ID);
+	            String[] attributeNames = new String[] {IMarker.LINE_NUMBER, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.MESSAGE, IMarker.PRIORITY, IMarker.SEVERITY};
+	            Object[] values = new Object[] {startLine, startOffset, endOffset, msg, IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR};
+
+	            m.setAttributes(attributeNames, values);
+	        } catch (CoreException e) {
+                PrefspecsPlugin.getInstance().logException("PrefspecsCompiler.createMarker: CoreException trying to create marker", e);
+	        } catch (Exception e) {
+                PrefspecsPlugin.getInstance().logException("PrefspecsCompiler.createMarker: Exception trying to create marker", e);
+	        }
+        }
+
+        private void setVirtualProperties(VirtualFieldInfo vField, generalSpecs generalSpecs, optConditionalSpec condSpec) {
+            isEditableSpec editableSpec = generalSpecs.getisEditableSpec();
+            if (editableSpec != null) {
+                vField.setIsEditable(getValueOf(editableSpec.getbooleanValue()));
+            }
+            isRemovableSpec removableSpec = generalSpecs.getisRemovableSpec();
+            if (removableSpec != null) {
+                vField.setIsRemovable(getValueOf(removableSpec.getbooleanValue()));
+            }
+            optLabelSpec labelSpec = generalSpecs.getoptLabelSpec();
+            if (labelSpec != null) {
+                vField.setLabel(getLabel(labelSpec));
+            }
+            if (condSpec != null) {
+                vField.setIsConditional(true);
+                vField.setConditionalWith(condSpec.getconditionType() instanceof conditionType0);
+                vField.setConditionField(findConditionalField(condSpec, vField.getName()));
+            }
+        }
+
+        private void setConcreteProperties(VirtualFieldInfo vField, PreferencesTabInfo tab, ConcreteFieldInfo cField) {
+            if (vField.hasEditableSpec()) {
+                cField.setIsEditable(vField.getIsEditable());
+            } else {
+                cField.setIsEditable(tab.getIsEditable());
+            }
+            if (vField.hasRemovableSpec() && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
+                cField.setIsRemovable(vField.getIsRemovable());
+            } else {
+                cField.setIsRemovable(tab.getIsRemovable());
+            }
+            if (vField.getIsConditional()) {
+                cField.setIsConditional(true);
+                cField.setConditionalWith(vField.getConditionalWith());
+                cField.setConditionField(vField.getConditionField());
+            }
+        }
+
+        private String getValueOf(stringValue sv) {
+            return sv.getSTRING_LITERAL().toString();
+        }
+        
+        private int getValueOf(IsignedNumber sn) {
+            if (sn instanceof signedNumber0) {
+                return Integer.parseInt(((signedNumber0) sn).getNUMBER().toString());
+            } else {
+                signedNumber1 sn1= (signedNumber1) sn;
+                int absVal= Integer.parseInt(sn1.getNUMBER().toString());
+                return (sn1.getsign() instanceof sign1) ? -absVal : absVal;
+            }
+        }
         
         public boolean visit(booleanFieldSpec boolField) {
         	VirtualBooleanFieldInfo vBool = new VirtualBooleanFieldInfo(fPageInfo, boolField.getidentifier().toString());
         	booleanFieldPropertySpecs propSpecs = boolField.getbooleanFieldPropertySpecs();
-        	
-        	// Create a virtual field
-        	isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
-        	if (editableSpec != null) {
-        		vBool.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
-        	if (removableSpec != null) {
-            	vBool.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
-        	if (labelSpec != null) {
-        	    final String label= labelSpec.getSTRING_LITERAL().toString();
-                vBool.setLabel(label.substring(1, label.length() - 1));
+
+        	if (propSpecs != null) {
+            	setVirtualProperties(vBool, propSpecs.getgeneralSpecs(), boolField.getoptConditionalSpec());
+
+                booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecificSpec().getbooleanCustomSpec();
+            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+            	if (specialSpec != null) {
+            		vBool.setHasSpecialValue(true);
+                	vBool.setSpecialValue(getValueOf(specialSpec.getbooleanValue()));
+            	} else {
+            		vBool.setHasSpecialValue(false);
+            	}
+
+            	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
+            	if (defValueSpec != null) {
+            		vBool.setDefaultValue(getValueOf(defValueSpec.getbooleanValue()));
+            	}
         	}
 
-        	booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecificSpec().getbooleanCustomSpec();
-        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-        	if (specialSpec != null) {
-        		vBool.setHasSpecialValue(true);
-            	vBool.setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
-        	} else {
-        		vBool.setHasSpecialValue(false);
-        		//vBool.setSpecialValue(false);
-        	}
-
-        	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
-        	if (defValueSpec != null) {
-        		vBool.setDefaultValue(defValueSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	
-        	
         	// Create an instance of a concrete field for each tab on the page
-        	Iterator tabs = fPageInfo.getTabInfos();
+        	Iterator<?> tabs = fPageInfo.getTabInfos();
         	while (tabs.hasNext()) {
         		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
         		if (!tab.getIsUsed())
         			continue;
         		ConcreteBooleanFieldInfo cBool = new ConcreteBooleanFieldInfo(vBool, tab);
-        		
+    		
         		// Set the attributes of the concrete field:
         		// if set in the virtual field, use that value;
         		// else if set for the tab, use that value;
         		// else rely on the default for the field type
-            	if (editableSpec != null) {
-            		cBool.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cBool.setIsEditable(tab.getIsEditable());
-            	}
-            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
-                	cBool.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cBool.setIsRemovable(tab.getIsRemovable());
-            	}
-            	if (specialSpec != null) {
+            	setConcreteProperties(vBool, tab, cBool);
+            	if (vBool.getHasSpecialValue()) {
             		cBool.setHasSpecialValue(true);
-                	cBool.setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
+                	cBool.setSpecialValue(vBool.getSpecialValue());
             	} else {
             		cBool.setHasSpecialValue(false);
-            		//cBool.setSpecialValue(false);
             	}
         	}
         	return false;
         }
-        
-        
+
         public boolean visit(dirListFieldSpec dirListField) {
         	VirtualDirListFieldInfo vDirList = new VirtualDirListFieldInfo(fPageInfo, dirListField.getidentifier().toString());
         	dirlistFieldPropertySpecs propSpecs = dirListField.getdirlistFieldPropertySpecs();
-        	
-        	// Create a virtual field
-            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
-        	if (editableSpec != null) {
-        		vDirList.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
-        	if (removableSpec != null) {
-            	vDirList.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
-            if (labelSpec != null) {
-                vDirList.setLabel(labelSpec.getSTRING_LITERAL().toString());
-            }
-        	
-        	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
-        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-        	if (specialSpec != null) {
-        		vDirList.setHasSpecialValue(true);
-            	vDirList.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
-        	} else {
-        		vDirList.setHasSpecialValue(false);
-        		//vString.setSpecialValue(null);
-        	}
 
-        	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
-        	if (defValueSpec != null) {
-        		vDirList.setDefaultValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
-        	}
-        	
-        	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
-        	if (emptyValueSpec instanceof stringEmptySpec0) {
-        		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
-        		vDirList.setEmptyValueAllowed(false);
-        		vDirList.setEmptyValue(null);
-        	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-           		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
-        		vDirList.setEmptyValueAllowed(ses1.getEMPTYALLOWED().toString().equals("true"));
-        		vDirList.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+        	if (propSpecs != null) {
+                setVirtualProperties(vDirList, propSpecs.getgeneralSpecs(), dirListField.getoptConditionalSpec());
+
+            	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+            	if (specialSpec != null) {
+            		vDirList.setHasSpecialValue(true);
+                	vDirList.setSpecialValue(getValueOf(specialSpec.getstringValue()));
+            	} else {
+            		vDirList.setHasSpecialValue(false);
+            	}
+
+            	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+            	if (defValueSpec != null) {
+            		vDirList.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
+            	}
+
+            	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+            	if (emptyValueSpec instanceof stringEmptySpec0) {
+            		vDirList.setEmptyValueAllowed(false);
+            		vDirList.setEmptyValue(null);
+            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+            		vDirList.setEmptyValueAllowed(true);
+            		vDirList.setEmptyValue(getValueOf(ses1.getstringValue()));
+            	}
         	}
         	
         	// Create an instance of a concrete field for each tab on the page
-        	Iterator tabs = fPageInfo.getTabInfos();
+        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
         	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		PreferencesTabInfo tab = tabs.next();
         		if (!tab.getIsUsed())
         			continue;
         		ConcreteDirListFieldInfo cDirList = new ConcreteDirListFieldInfo(vDirList, tab);
@@ -425,32 +510,21 @@ public class PrefspecsCompiler
         		// if set in the virtual field, use that value;
         		// else if set for the tab, use that value;
         		// else rely on the default for the field type
-            	if (editableSpec != null) {
-            		cDirList.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cDirList.setIsEditable(tab.getIsEditable());
-            	}
-            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
-                	cDirList.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cDirList.setIsRemovable(tab.getIsRemovable());
-            	}
-            	if (specialSpec != null) {
+        		setConcreteProperties(vDirList, tab, cDirList);
+
+        		if (vDirList.getHasSpecialValue()) {
             		cDirList.setHasSpecialValue(true);
-                	cDirList.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+                	cDirList.setSpecialValue(vDirList.getSpecialValue());
             	} else {
             		cDirList.setHasSpecialValue(false);
-            		//cString.setSpecialValue(null);
             	}
-            	if (emptyValueSpec != null) {
-	            	if (emptyValueSpec instanceof stringEmptySpec0) {
-	            		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+            	if (vDirList.hasEmptyValueSpec()) {
+	            	if (!vDirList.getEmptyValueAllowed()) {
 	            		cDirList.setEmptyValueAllowed(false);
 	            		cDirList.setEmptyValue(null);
-	            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-	               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+	            	} else {
 	            		cDirList.setEmptyValueAllowed(true);
-	            		cDirList.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+	            		cDirList.setEmptyValue(vDirList.getEmptyValue());
 	            	}
             	}
         	}
@@ -462,50 +536,38 @@ public class PrefspecsCompiler
         	VirtualFileFieldInfo vFile = new VirtualFileFieldInfo(fPageInfo, fileField.getidentifier().toString());
         	fileFieldPropertySpecs propSpecs = fileField.getfileFieldPropertySpecs();
         	
-        	// Create a virtual field
-            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
-        	if (editableSpec != null) {
-        		vFile.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
-        	if (removableSpec != null) {
-            	vFile.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
-            if (labelSpec != null) {
-                vFile.setLabel(labelSpec.getSTRING_LITERAL().toString());
-            }
+        	if (propSpecs != null) {
+            	setVirtualProperties(vFile, propSpecs.getgeneralSpecs(), fileField.getoptConditionalSpec());
         	
-        	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
-        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-        	if (specialSpec != null) {
-        		vFile.setHasSpecialValue(true);
-            	vFile.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
-        	} else {
-        		vFile.setHasSpecialValue(false);
-        		//vString.setSpecialValue(null);
-        	}
+            	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+            	if (specialSpec != null) {
+            		vFile.setHasSpecialValue(true);
+                	vFile.setSpecialValue(getValueOf(specialSpec.getstringValue()));
+            	} else {
+            		vFile.setHasSpecialValue(false);
+            	}
 
-        	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
-        	if (defValueSpec != null) {
-        		vFile.setDefaultValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
-        	}
+            	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+            	if (defValueSpec != null) {
+            		vFile.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
+            	}
         	
-        	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
-        	if (emptyValueSpec instanceof stringEmptySpec0) {
-        		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
-        		vFile.setEmptyValueAllowed(false);
-        		vFile.setEmptyValue(null);
-        	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-           		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
-        		vFile.setEmptyValueAllowed(ses1.getEMPTYALLOWED().toString().equals("true"));
-        		vFile.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+            	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+            	if (emptyValueSpec instanceof stringEmptySpec0) {
+            		vFile.setEmptyValueAllowed(false);
+            		vFile.setEmptyValue(null);
+            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+            		vFile.setEmptyValueAllowed(true);
+            		vFile.setEmptyValue(getValueOf(ses1.getstringValue()));
+            	}
         	}
         	
         	// Create an instance of a concrete field for each tab on the page
-        	Iterator tabs = fPageInfo.getTabInfos();
+        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
         	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		PreferencesTabInfo tab = tabs.next();
         		if (!tab.getIsUsed())
         			continue;
         		ConcreteFileFieldInfo cFile = new ConcreteFileFieldInfo(vFile, tab);
@@ -514,167 +576,85 @@ public class PrefspecsCompiler
         		// if set in the virtual field, use that value;
         		// else if set for the tab, use that value;
         		// else rely on the default for the field type
-            	if (editableSpec != null) {
-            		cFile.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cFile.setIsEditable(tab.getIsEditable());
-            	}
-            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
-                	cFile.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cFile.setIsRemovable(tab.getIsRemovable());
-            	}
-            	if (specialSpec != null) {
+        		setConcreteProperties(vFile, tab, cFile);
+            	if (vFile.getHasSpecialValue()) {
             		cFile.setHasSpecialValue(true);
-                	cFile.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+                	cFile.setSpecialValue(vFile.getSpecialValue());
             	} else {
             		cFile.setHasSpecialValue(false);
-            		//cString.setSpecialValue(null);
             	}
-            	if (emptyValueSpec != null) {
-	            	if (emptyValueSpec instanceof stringEmptySpec0) {
-	            		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+            	if (vFile.hasEmptyValueSpec()) {
+	            	if (!vFile.getEmptyValueAllowed()) {
 	            		cFile.setEmptyValueAllowed(false);
 	            		cFile.setEmptyValue(null);
-	            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-	               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+	            	} else {
 	            		cFile.setEmptyValueAllowed(true);
-	            		cFile.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+	            		cFile.setEmptyValue(vFile.getEmptyValue());
 	            	}
             	}
         	}
         	return false;
         }
         
-        
-        
         public boolean visit(intFieldSpec intField) {
         	VirtualIntFieldInfo vInt = new VirtualIntFieldInfo(fPageInfo, intField.getidentifier().toString());
         	intFieldPropertySpecs propSpecs = intField.getintFieldPropertySpecs();
-        	
-        	// Create a virtual field
-            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
-        	if (editableSpec != null) {
-        		vInt.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
-        	if (removableSpec != null) {
-            	vInt.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
-            if (labelSpec != null) {
-                vInt.setLabel(labelSpec.getSTRING_LITERAL().toString());
-            }
-        	
-        	intSpecificSpec specificSpec = propSpecs.getintSpecificSpec();
-        	intCustomSpec customSpec = specificSpec.getintCustomSpec();
-        	intSpecialSpec specialSpec = customSpec.getintSpecialSpec();
-        	intRangeSpec rangeSpec = customSpec.getintRangeSpec();
-        	intDefValueSpec defValueSpec = specificSpec.getintDefValueSpec();
-        	
-        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-        	if (specialSpec != null) {
-        		vInt.setHasSpecialValue(true);
-        		int intValue = 0;
-        		IsignedNumber signedNumber = specialSpec.getsignedNumber();
-        		if (signedNumber instanceof signedNumber0) {
-        			intValue = new Integer(((signedNumber0)signedNumber).getNUMBER().toString()).intValue();
-        		} else if (signedNumber instanceof signedNumber1) {
-        			intValue = new Integer(((signedNumber1)signedNumber).getNUMBER().toString()).intValue();
-        		}
-        		vInt.setSpecialValue(intValue);
-        	} else {
-        		vInt.setHasSpecialValue(false);
-        		//vInt.setSpecialValue(null);
-        	}
 
-        	if (defValueSpec != null) {
-        		int intValue = 0;
-        		IsignedNumber signedNumber = defValueSpec.getsignedNumber();
-        		if (signedNumber instanceof signedNumber0) {
-        			intValue = new Integer(((signedNumber0)signedNumber).getNUMBER().toString()).intValue();
-        		} else if (signedNumber instanceof signedNumber1) {
-        			intValue = new Integer(((signedNumber1)signedNumber).getNUMBER().toString()).intValue();
-        		}
-        		vInt.setDefaultValue(intValue);
-        	}
+        	if (propSpecs != null) {
+            	// Create a virtual field
+        	    setVirtualProperties(vInt, propSpecs.getgeneralSpecs(), intField.getoptConditionalSpec());
+
+            	intSpecificSpec specificSpec = propSpecs.getintSpecificSpec();
+            	intCustomSpec customSpec = specificSpec.getintCustomSpec();
+            	intSpecialSpec specialSpec = customSpec.getintSpecialSpec();
+            	intRangeSpec rangeSpec = customSpec.getintRangeSpec();
+            	intDefValueSpec defValueSpec = specificSpec.getintDefValueSpec();
         	
-        	if (rangeSpec != null) {
-        		int intValue = 0;
-        		IsignedNumber lower = rangeSpec.getsignedNumber();
-        		if (lower instanceof signedNumber0) {
-        			intValue = new Integer(((signedNumber0)lower).getNUMBER().toString()).intValue();
-        		} else if (lower instanceof signedNumber1) {
-        			intValue = new Integer(((signedNumber1)lower).getNUMBER().toString()).intValue();
-        		}
-        		vInt.setRangeLow(intValue);
-        		
-        		IsignedNumber upper = rangeSpec.getsignedNumber4();
-        		if (upper instanceof signedNumber0) {
-        			intValue = new Integer(((signedNumber0)upper).getNUMBER().toString()).intValue();
-        		} else if (upper instanceof signedNumber1) {
-        			intValue = new Integer(((signedNumber1)upper).getNUMBER().toString()).intValue();
-        		}
-        		vInt.setRangeHigh(intValue);
+            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+            	if (specialSpec != null) {
+            		vInt.setHasSpecialValue(true);
+            		vInt.setSpecialValue(getValueOf(specialSpec.getsignedNumber()));
+            	} else {
+            		vInt.setHasSpecialValue(false);
+            	}
+
+            	if (defValueSpec != null) {
+            		vInt.setDefaultValue(getValueOf(defValueSpec.getsignedNumber()));
+            	}
+
+            	if (rangeSpec != null) {
+            		int lowValue = getValueOf(rangeSpec.getlow());
+            		int hiValue = getValueOf(rangeSpec.gethigh());
+
+            		vInt.setRange(lowValue, hiValue);
+            	}
         	}
-        	
         	
         	// Create an instance of a concrete field for each tab on the page
-        	Iterator tabs = fPageInfo.getTabInfos();
+        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
         	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		PreferencesTabInfo tab = tabs.next();
         		if (!tab.getIsUsed())
         			continue;
         		ConcreteIntFieldInfo cInt = new ConcreteIntFieldInfo(vInt, tab);
-        		
+
         		// Set the attributes of the concrete field:
         		// if set in the virtual field, use that value;
         		// else if set for the tab, use that value;
         		// else rely on the default for the field type
-            	if (editableSpec != null) {
-            		cInt.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cInt.setIsEditable(tab.getIsEditable());
-            	}
-            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
-                	cInt.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cInt.setIsRemovable(tab.getIsRemovable());
-            	}
-            	if (specialSpec != null) {
+        		setConcreteProperties(vInt, tab, cInt);
+
+        		if (vInt.getHasSpecialValue()) {
             		cInt.setHasSpecialValue(true);
-            		int intValue = 0;
-            		IsignedNumber signedNumber = specialSpec.getsignedNumber();
-            		if (signedNumber instanceof signedNumber0) {
-            			intValue = new Integer(((signedNumber0)signedNumber).getNUMBER().toString()).intValue();
-            		} else if (signedNumber instanceof signedNumber1) {
-            			intValue = new Integer(((signedNumber1)signedNumber).getNUMBER().toString()).intValue();
-            		}
-            		cInt.setSpecialValue(intValue);
+            		cInt.setSpecialValue(vInt.getSpecialValue());
             	} else {
             		cInt.setHasSpecialValue(false);
-            		//cString.setSpecialValue(null);
             	}
 
-            	if (rangeSpec != null) {
-            		int intValue = 0;
-            		IsignedNumber lower = rangeSpec.getsignedNumber();
-            		if (lower instanceof signedNumber0) {
-            			intValue = new Integer(((signedNumber0)lower).getNUMBER().toString()).intValue();
-            		} else if (lower instanceof signedNumber1) {
-            			intValue = new Integer(((signedNumber1)lower).getNUMBER().toString()).intValue();
-            		}
-            		cInt.setRangeLow(intValue);
-            		
-            		IsignedNumber upper = rangeSpec.getsignedNumber4();
-            		if (upper instanceof signedNumber0) {
-            			intValue = new Integer(((signedNumber0)upper).getNUMBER().toString()).intValue();
-            		} else if (upper instanceof signedNumber1) {
-            			intValue = new Integer(((signedNumber1)upper).getNUMBER().toString()).intValue();
-            		}
-            		cInt.setRangeHigh(intValue);
+            	if (vInt.hasRangeSpec()) {
+            		cInt.setRangeLow(vInt.getRangeLow());
+            		cInt.setRangeHigh(vInt.getRangeHigh());
             	}
-            	
         	}
         	return false;
         }
@@ -684,51 +664,43 @@ public class PrefspecsCompiler
         public boolean visit(stringFieldSpec stringField) {
         	VirtualStringFieldInfo vString = new VirtualStringFieldInfo(fPageInfo, stringField.getidentifier().toString());
         	stringFieldPropertySpecs propSpecs = stringField.getstringFieldPropertySpecs();
-        	
-        	// Create a virtual field
-            isEditableSpec editableSpec = propSpecs.getgeneralSpecs().getisEditableSpec();
-        	if (editableSpec != null) {
-        		vString.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getgeneralSpecs().getisRemovableSpec();
-        	if (removableSpec != null) {
-            	vString.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-            optLabelSpec labelSpec = propSpecs.getgeneralSpecs().getoptLabelSpec();
-            if (labelSpec != null) {
-                vString.setLabel(labelSpec.getSTRING_LITERAL().toString());
-            }
-        	
-        	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
-        	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-        	if (specialSpec != null) {
-        		vString.setHasSpecialValue(true);
-            	vString.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
-        	} else {
-        		vString.setHasSpecialValue(false);
-        		//vString.setSpecialValue(null);
-        	}
 
-        	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
-        	if (defValueSpec != null) {
-        		vString.setDefaultValue(defValueSpec.getstringValue().getSTRING_LITERAL().toString());
-        	}
+        	if (propSpecs != null) {
+            	setVirtualProperties(vString, propSpecs.getgeneralSpecs(), stringField.getoptConditionalSpec());
+
+            	stringSpecificSpec stringSpecificSpec= propSpecs.getstringSpecificSpec();
+                final stringCustomSpec customSpec= stringSpecificSpec.getstringCustomSpec();
+                stringSpecialSpec specialSpec = customSpec.getstringSpecialSpec();
+
+                // hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+            	if (specialSpec != null) {
+            		vString.setHasSpecialValue(true);
+                	vString.setSpecialValue(getValueOf(specialSpec.getstringValue()));
+            	} else {
+            		vString.setHasSpecialValue(false);
+            		//vString.setSpecialValue(null);
+            	}
+
+            	stringDefValueSpec defValueSpec = stringSpecificSpec.getstringDefValueSpec();
+            	if (defValueSpec != null) {
+            		vString.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
+            	}
         	
-        	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
-        	if (emptyValueSpec instanceof stringEmptySpec0) {
-        		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
-        		vString.setEmptyValueAllowed(false);
-        		vString.setEmptyValue(null);
-        	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-           		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
-        		vString.setEmptyValueAllowed(ses1.getEMPTYALLOWED().toString().equals("true"));
-        		vString.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+            	IstringEmptySpec emptyValueSpec = customSpec.getstringEmptySpec();
+            	if (emptyValueSpec instanceof stringEmptySpec0) {
+            		vString.setEmptyValueAllowed(false);
+            		vString.setEmptyValue(null);
+            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
+               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+            		vString.setEmptyValueAllowed(true);
+            		vString.setEmptyValue(getValueOf(ses1.getstringValue()));
+            	}
         	}
         	
         	// Create an instance of a concrete field for each tab on the page
-        	Iterator tabs = fPageInfo.getTabInfos();
+        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
         	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+        		PreferencesTabInfo tab = tabs.next();
         		if (!tab.getIsUsed())
         			continue;
         		ConcreteStringFieldInfo cString = new ConcreteStringFieldInfo(vString, tab);
@@ -737,41 +709,29 @@ public class PrefspecsCompiler
         		// if set in the virtual field, use that value;
         		// else if set for the tab, use that value;
         		// else rely on the default for the field type
-            	if (editableSpec != null) {
-            		cString.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cString.setIsEditable(tab.getIsEditable());
-            	}
-            	if (removableSpec != null && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
-                	cString.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-            	} else {
-            		cString.setIsRemovable(tab.getIsRemovable());
-            	}
-            	if (specialSpec != null) {
+        		setConcreteProperties(vString, tab, cString);
+
+        		if (vString.getHasSpecialValue()) {
             		cString.setHasSpecialValue(true);
-                	cString.setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
+                	cString.setSpecialValue(vString.getSpecialValue());
             	} else {
             		cString.setHasSpecialValue(false);
-            		//cString.setSpecialValue(null);
             	}
-            	if (emptyValueSpec != null) {
-	            	if (emptyValueSpec instanceof stringEmptySpec0) {
-	            		stringEmptySpec0 ses0 = (stringEmptySpec0) emptyValueSpec;
+            	if (vString.hasEmptyValueSpec()) {
+	            	if (!vString.getEmptyValueAllowed()) {
 	            		cString.setEmptyValueAllowed(false);
 	            		cString.setEmptyValue(null);
-	            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-	               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+	            	} else {
 	            		cString.setEmptyValueAllowed(true);
-	            		cString.setEmptyValue(ses1.getstringValue().getSTRING_LITERAL().toString());
+	            		cString.setEmptyValue(vString.getEmptyValue());
 	            	}
             	}
         	}
         	return false;
         }
-        
-        
-        
-        
+
+
+
         /*
          * Context for processing of custom rules 
          */ 
@@ -788,10 +748,10 @@ public class PrefspecsCompiler
         	customFieldName = custRule.getidentifier().toString();
         	
         	customTabInfo = fPageInfo.getTabInfo(customTabName);
-        	Iterator concreteFields = customTabInfo.getConcreteFields();
+        	Iterator<ConcreteFieldInfo> concreteFields = customTabInfo.getConcreteFields();
         	// Should always have a field with the given name
         	while (concreteFields.hasNext()) {
-        		ConcreteFieldInfo next = (ConcreteFieldInfo) concreteFields.next();
+        		ConcreteFieldInfo next = concreteFields.next();
         		if (next.getName().equals(customFieldName)) {
         			customFieldInfo = next;
         			break;
@@ -881,9 +841,9 @@ public class PrefspecsCompiler
         	VirtualFieldInfo conditionalFieldInfo = null;
         	VirtualFieldInfo conditionFieldInfo = null;
         	
-        	Iterator virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
+        	Iterator<VirtualFieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
         	while (virtualFieldInfos.hasNext()) {
-        		VirtualFieldInfo next = (VirtualFieldInfo) virtualFieldInfos.next();
+        		VirtualFieldInfo next = virtualFieldInfos.next();
         		String nextName = next.getName();
         		if (nextName.equals(conditionalFieldName)) {
         			conditionalFieldInfo = next;
@@ -914,9 +874,9 @@ public class PrefspecsCompiler
         	VirtualFieldInfo conditionalFieldInfo = null;
         	VirtualFieldInfo conditionFieldInfo = null;
         	
-        	Iterator virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
+        	Iterator<VirtualFieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
         	while (virtualFieldInfos.hasNext()) {
-        		VirtualFieldInfo next = (VirtualFieldInfo) virtualFieldInfos.next();
+        		VirtualFieldInfo next = virtualFieldInfos.next();
         		String nextName = next.getName();
         		if (nextName.equals(conditionalFieldName)) {
         			conditionalFieldInfo = next;
@@ -950,13 +910,13 @@ public class PrefspecsCompiler
         
         protected void propagateConditionsToConcreteSpecs()
         {
-        	Iterator vFieldInfos = fPageInfo.getVirtualFieldInfos();
+        	Iterator<VirtualFieldInfo> vFieldInfos = fPageInfo.getVirtualFieldInfos();
         	while (vFieldInfos.hasNext()) {
-        		VirtualFieldInfo vInfo = (VirtualFieldInfo) vFieldInfos.next();
+        		VirtualFieldInfo vInfo = vFieldInfos.next();
         		if (vInfo.getIsConditional()) {
-        			Iterator cFieldInfos = vInfo.getConcreteFieldInfos();
+        			Iterator<ConcreteFieldInfo> cFieldInfos = vInfo.getConcreteFieldInfos();
         			while (cFieldInfos.hasNext()) {
-        				ConcreteFieldInfo cInfo = (ConcreteFieldInfo) cFieldInfos.next();
+        				ConcreteFieldInfo cInfo = cFieldInfos.next();
         				cInfo.setIsConditional(true);
         				cInfo.setConditionalWith(vInfo.getConditionalWith());
         				cInfo.setConditionField(vInfo.getConditionField());
@@ -1001,8 +961,9 @@ public class PrefspecsCompiler
     
 	public boolean performGeneration(final IFile specFile, final IProgressMonitor mon)
 	{
+	    this.fSpecFile = specFile;
 		IWorkspaceRunnable wsop= new IWorkspaceRunnable() {
-		    public void run(IProgressMonitor monitor) throws CoreException {			
+		    public void run(IProgressMonitor monitor) throws CoreException {
 				getGenerationParameters(specFile);
 				collectCodeParms(specFile);
 				
@@ -1039,7 +1000,7 @@ public class PrefspecsCompiler
 		    	            if(children[j].getName().equals("page")) {
 		    	            	ImpPluginElement ipe = (ImpPluginElement) children[j];
 		    	            	IPluginAttribute pa = ipe.getAttribute("id");
-		    	            	if (pa != null && pa.getValue().equals(fPageId)) {
+		    	            	if (pa != null && pa.getValue().startsWith(fPageId)) {
 				    				pmExtensions.remove(pluginExtension);
 		    	            	}
 		    	            }
@@ -1048,21 +1009,26 @@ public class PrefspecsCompiler
 		    	}
 		    	ExtensionPointEnabler.saveAndRefresh(pluginModel);
 
+                generateCodeStubs(specFile, mon);
 				
-				
-				
-				ExtensionPointEnabler.enable(
-					specFile.getProject(), "org.eclipse.ui", "preferencePages", 
-					new String[][] {
-						{ "page:id", fPageId },
-						{ "page:name", fPageName },
-						{ "page:class", fPagePackageName + "." + fPageClassNameBase },
-						{ "page:category", fPageMenuItem },
-					},
-					false,	// do not just replace previous extension, there may be more than one page
-					getPluginDependencies(),
-					monitor);
-				generateCodeStubs(specFile, mon);
+				for(PreferencesPageInfo pageInfo: fPages) {
+				    String pageName= pageInfo.getPageName();
+                    int lastCompIdx= (pageName.indexOf('.') > 0) ? pageName.lastIndexOf('.') + 1 : 0;
+				    String pageParent= (lastCompIdx > 0) ? (fPageId + "." + pageName.substring(0, lastCompIdx-1)) : "";
+				    String pageLabel= pageName.substring(lastCompIdx);
+
+				    ExtensionPointEnabler.enable(
+    					specFile.getProject(), "org.eclipse.ui", "preferencePages", 
+    					new String[][] {
+    						{ "page:id", fPageId + "." + pageName },
+    						{ "page:name", pageLabel },
+    						{ "page:class", fPagePackageName + "." + (pageName.replaceAll("\\.", "")) + "PreferencePage" },
+    						{ "page:category", pageParent },
+    					},
+    					false,	// do not just replace previous extension, there may be more than one page
+    					getPluginDependencies(),
+    					monitor);
+				}
 		    }	
 		};
 		try {
@@ -1152,13 +1118,8 @@ public class PrefspecsCompiler
 		IProject fProject = specFile.getProject();
         Map<String,String> subs= getStandardSubstitutions(fProject);
 
-        subs.remove("$PREFS_CLASS_NAME$");
         subs.put("$PREFS_CLASS_NAME$", fPageClassNameBase);
-        
-        subs.remove("$PREFS_PACKAGE_NAME$");
-        subs.put("$PREFS_PACKAGE_NAME$", fPagePackageName);
 
-//            subs.remove("$PREFS_ALTERNATIVE_MESSAGE$");
 //            subs.put("$PREFS_ALTERNATIVE_MESSAGE$", fAlternativeMessage);
 //            IFile pageSrc = createFileFromTemplate(fClassNamePrefix + ".java", "preferencesPageAlternative.java", fPackageFolder, subs, fProject, mon);
 //            editFile(mon, pageSrc);
@@ -1167,16 +1128,11 @@ public class PrefspecsCompiler
         
         // Generating a full tabbed preference page
 
-        PrefspecsCompiler prefspecsCompiler = new PrefspecsCompiler(PROBLEM_MARKER_ID);
-        // fFieldSpecs has full absolute path; need to give project relative path
-//        String projectLocation = fProject.getLocation().toString();
-//        String fieldSpecsLocation = fFieldSpecs;
-//        fieldSpecsLocation = fieldSpecsLocation.replace("\\", "/");
-//        if (fieldSpecsLocation.startsWith(projectLocation)) {
-//        	fieldSpecsLocation = fieldSpecsLocation.substring(projectLocation.length());
-//        }
-//        IFile fieldSpecsFile = fProject.getFile(fieldSpecsLocation);
-        PreferencesPageInfo pageInfo = getPreferencesPageInfo(specFile);	//prefspecsCompiler.compile(specFile, new NullProgressMonitor());
+        List<PreferencesPageInfo> pageInfos = getPreferencesPageInfos(specFile);
+
+        if (specFile.findMarkers(PROBLEM_MARKER_ID, true, 0).length > 0) {
+            return;
+        }
         String constantsClassName = fPageClassNameBase + "Constants";
         String initializerClassName = fPageClassNameBase + "Initializer";
 
@@ -1188,53 +1144,59 @@ public class PrefspecsCompiler
             return;
     	}
 
+        subs.put("$PREFS_PACKAGE_NAME$", fPagePackageName);
     	
         IFile constantsSrc = PreferencesFactory.generatePreferencesConstants(
-        		pageInfo, sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, constantsClassName,  mon);
+        		pageInfos, sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, constantsClassName,  mon);
         //IFile constantsSrc = createFileFromTemplate(fFullClassName + "Constants.java", "preferencesConstants.java", fPackageFolder, subs, fProject, mon);
         //editFile(mon, constantsSrc);
 
         
         IFile initializerSrc = PreferencesFactory.generatePreferencesInitializers(
-        		pageInfo,
+        		pageInfos,
         		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,	
         		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "Initializer",  mon);
         //IFile initializerSrc = createFileFromTemplate(fFullClassName + "Initializer.java", "preferencesInitializer.java", fPackageFolder, subs, fProject, mon);
         //editFile(mon, initializerSrc);
         
         //fInitializerFileName = initializerSrc.getName();
+
+        subs.put("$PREFS_INIT_CLASS_NAME$", fPageClassNameBase + "Initializer");
+
+        for(PreferencesPageInfo pageInfo: pageInfos) {
+            final String javaPageName= pageInfo.getPageName().replaceAll("\\.", "");
+
+            subs.put("$PREFS_CLASS_NAME$", javaPageName);
+
+            IFile pageSrc = WizardUtilities.createFileFromTemplate(
+            	javaPageName + "PreferencePage.java", "preferencesPageWithTabs.java", fPagePackageName, WizardUtilities.getProjectSourceLocation(fProject), subs, fProject, mon);
+            //editFile(mon, pageSrc);
         
+            IFile defaultSrc = PreferencesFactory.generateDefaultTab(
+            		pageInfo,
+            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName, initializerClassName,
+            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "DefaultTab",  mon);
+            //editFile(mon, defaultSrc);
         
-        IFile pageSrc = WizardUtilities.createFileFromTemplate(
-        	fPageClassNameBase + ".java", "preferencesPageWithTabs.java", fPagePackageName, WizardUtilities.getProjectSourceLocation(fProject), subs, fProject, mon);
-        //editFile(mon, pageSrc);
+            IFile configSrc = PreferencesFactory.generateConfigurationTab(
+            		pageInfo,
+            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
+            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "ConfigurationTab",  mon);
+            //editFile(mon, configSrc);
         
 
-        IFile defaultSrc = PreferencesFactory.generateDefaultTab(
-        		pageInfo,
-        		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName, initializerClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "DefaultTab",  mon);
-        //editFile(mon, defaultSrc);
+            IFile instanceSrc = PreferencesFactory.generateInstanceTab(
+            		pageInfo,
+            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
+            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "InstanceTab",  mon);
+            //editFile(mon, instanceSrc);
         
-        IFile configSrc = PreferencesFactory.generateConfigurationTab(
-        		pageInfo,
-        		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "ConfigurationTab",  mon);
-        //editFile(mon, configSrc);
-        
-
-        IFile instanceSrc = PreferencesFactory.generateInstanceTab(
-        		pageInfo,
-        		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "InstanceTab",  mon);
-        //editFile(mon, instanceSrc);
-        
-        IFile projectSrc = PreferencesFactory.generateProjectTab(
-        		pageInfo,
-        		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "ProjectTab",  mon);
-        //editFile(mon, projectSrc);
-
+            IFile projectSrc = PreferencesFactory.generateProjectTab(
+            		pageInfo,
+            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
+            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "ProjectTab",  mon);
+            //editFile(mon, projectSrc);
+        }
 	}
     
 
@@ -1363,7 +1325,7 @@ public class PrefspecsCompiler
     // related to the project's plugin aspect
     public Map<String,String> getStandardSubstitutions(IProject project)
     {
-        Map<String,String> result = new HashMap();
+        Map<String,String> result = new HashMap<String,String>();
         //result = ExtensionPointUtils.getASTInformation((IPluginModel)pages[0].getPluginModel(), project);
         result.put("$LANG_NAME$", fLanguageName);
         result.put("$CLASS_NAME_PREFIX$", fPageClassNameBase);
@@ -1394,7 +1356,7 @@ public class PrefspecsCompiler
     	return new Path(ExtensionPointWizard.getProjectSourceLocation(fProject));
     }
     
-	protected List getPluginDependencies() {
+	protected List<String> getPluginDependencies() {
 	    return Arrays.asList(new String[] { "org.eclipse.core.runtime", "org.eclipse.core.resources",
 		    "org.eclipse.imp.runtime" });
 	}
