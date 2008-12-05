@@ -74,14 +74,6 @@
       </super>
    </extension>
    <extension
-         id="org.eclipse.imp.prefspecs.builder.problem"
-         name="prefspecs Error"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-   </extension>
-   <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             objectClass="org.eclipse.jdt.core.IJavaProject"
