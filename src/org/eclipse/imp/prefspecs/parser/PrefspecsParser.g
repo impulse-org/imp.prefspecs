@@ -20,15 +20,6 @@
 %End        
 
 %Terminals
-    --            
-    -- Here, you may list terminals needed by this grammar.
-    -- Furthermore, a terminal may be mapped into an alias
-    -- that can also be used in a grammar rule. In addition,
-    -- when an alias is specified here it instructs the
-    -- generated parser to use the alias in question when
-    -- referring to the symbol to which it is aliased. For
-    -- example, consider the following definitions:
-    --
          IDENTIFIER
          NUMBER
          STRING_LITERAL
@@ -42,14 +33,8 @@
          RIGHTPAREN ::= ')'
          LEFTBRACE ::= '{'
          RIGHTBRACE ::= '}'
-    --
-    -- Here the terminals int, float, identifier and NUMBER are
-    -- defined without an alias; SEMICOLON is aliased to ';';
-    -- PLUS is aliased to '+'... etc...
-    --
     -- Note that the terminals that do not have aliases are declared
     -- above only for documentation purposes.
-    --
 %End
 
 %Start
@@ -70,7 +55,8 @@
 // http://www.eclipse.org/legal/epl-v10.html
 //
 //Contributors:
-//    Philippe Charles (pcharles@us.ibm.com) - initial API and implementation
+//    Stan Sutton (suttons@us.ibm.com) - initial API and implementation
+//    Robert Fuhrer (rfuhrer@watson.ibm.com)
 ////////////////////////////////////////////////////////////////////////////////
 ./
 %End
@@ -140,11 +126,12 @@
                 | comboFieldSpec
                 | dirListFieldSpec
                 | fileFieldSpec
+                | fontFieldSpec
                 | intFieldSpec
                 | radioFieldSpec
                 | stringFieldSpec
-                    
-        
+
+
     booleanFieldSpec ::= BOOLEAN$ identifier booleanFieldPropertySpecs optConditionalSpec
 
     comboFieldSpec   ::= COMBO$   identifier comboFieldPropertySpecs   optConditionalSpec
@@ -152,6 +139,8 @@
     dirListFieldSpec ::= DIRLIST$ identifier dirlistFieldPropertySpecs optConditionalSpec
 
     fileFieldSpec    ::= FILE$    identifier fileFieldPropertySpecs    optConditionalSpec
+
+    fontFieldSpec    ::= FONT$    identifier fontFieldPropertySpecs    optConditionalSpec
 
     intFieldSpec     ::= INT$     identifier intFieldPropertySpecs     optConditionalSpec
 
@@ -162,11 +151,13 @@
 
     booleanFieldPropertySpecs ::= %empty | '{'$ generalSpecs booleanSpecificSpec '}'$
 
-    comboFieldPropertySpecs   ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+    comboFieldPropertySpecs   ::= %empty | '{'$ generalSpecs comboSpecificSpec   '}'$
 
     dirlistFieldPropertySpecs ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
 
     fileFieldPropertySpecs    ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    fontFieldPropertySpecs    ::= %empty | '{'$ generalSpecs fontSpecificSpec    '}'$
 
     intFieldPropertySpecs     ::= %empty | '{'$ generalSpecs intSpecificSpec     '}'$
 
@@ -185,39 +176,40 @@
     customRules ::= %empty
                        |  customRule
                        |  customRules customRule
-    
+
     customRule ::= tab identifier '{'$ newPropertySpecs '}'$
 
     newPropertySpecs ::= generalSpecs 
                        | generalSpecs typeCustomSpecs
-                
+
     typeCustomSpecs ::=  booleanCustomSpec
                      |   intCustomSpec
                      |   radioCustomSpec
                      |   stringCustomSpec
-                     
+
 
     -- Rules for the "conditionals" section
 
     conditionalsSpec ::= CONDITIONALS$ '{'$ conditionalSpecs '}'$
-    
+
     conditionalSpecs ::= %empty
                        | conditionalSpec ;
                        | conditionalSpecs conditionalSpec ;
-                            
+
     conditionalSpec ::= identifier WITH identifier
                       | identifier AGAINST identifier
 
-            
+
     -- Rules for specifications used in various parts
-        
+
     generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec
-        
+
     isEditableSpec  ::= %empty | ISEDITABLE$ booleanValue ';'$
 
     isRemovableSpec ::= %empty | ISREMOVABLE$ booleanValue ';'$
 
     optLabelSpec    ::= %empty | LABEL$ STRING_LITERAL ';'$
+
 
     booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
 
@@ -226,6 +218,29 @@
     booleanSpecialSpec  ::= %empty | HASSPECIAL$ booleanValue ';'$
 
     booleanDefValueSpec ::= %empty | DEFVALUE$ booleanValue ';'$
+
+
+    comboSpecificSpec ::= comboCustomSpec comboDefValueSpec
+    comboCustomSpec   ::= columnsSpec comboValuesSpec
+    comboValuesSpec   ::= VALUES$ '{'$ labelledStringValueList '}'$
+    comboDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
+
+    radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
+    radioCustomSpec   ::= columnsSpec radioValuesSpec
+    radioDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
+    radioValuesSpec   ::= VALUES$ '{'$ labelledStringValueList '}'$
+
+    columnsSpec       ::= %empty | COLUMNS$ NUMBER ';'$
+
+    labelledStringValueList$$labelledStringValue ::=
+        labelledStringValue | labelledStringValueList ','$ labelledStringValue
+    labelledStringValue ::= identifier optLabelSpec
+
+
+    fontSpecificSpec ::= fontDefValueSpec
+    -- The following represents the information needed to construct a FontData object
+    fontDefValueSpec ::= %empty | DEFVALUE$ stringValue$name NUMBER$height fontStyle$style
+    fontStyle        ::= NORMAL | BOLD | ITALIC
 
 
     intSpecificSpec ::= intCustomSpec intDefValueSpec
@@ -237,16 +252,7 @@
     intSpecialSpec  ::= %empty | HASSPECIAL$ signedNumber ';'$
 
     intDefValueSpec ::= %empty | DEFVALUE$ signedNumber ';'$
-    
 
-    radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
-
-    radioCustomSpec   ::= radioSpecialSpec
-
-    radioSpecialSpec  ::= %empty | HASSPECIAL$ NUMBER ';'$
-
-    radioDefValueSpec ::= %empty | DEFVALUE$ NUMBER ';'$
-    
 
     stringSpecificSpec ::= stringCustomSpec stringDefValueSpec
 
@@ -257,22 +263,21 @@
     stringEmptySpec    ::= %empty
                          | EMPTYALLOWED$ FALSE ';'$
                          | EMPTYALLOWED$ TRUE stringValue ';'$
-    
+
     stringDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
 
 
     -- Rules for values and identifiers
-  
-    identifier   ::= IDENTIFIER
-    
-    booleanValue ::= TRUE | FALSE
-    
-    stringValue  ::= STRING_LITERAL
-    
-    signedNumber ::= NUMBER |  sign NUMBER
-    
-    sign ::= PLUS | MINUS
 
+    identifier   ::= IDENTIFIER
+
+    booleanValue ::= TRUE | FALSE
+
+    stringValue  ::= STRING_LITERAL
+
+    signedNumber ::= NUMBER |  sign NUMBER
+
+    sign ::= PLUS | MINUS
 %End
 
 %Headers

@@ -34,18 +34,26 @@ import org.eclipse.imp.preferences.fields.FileFieldEditor;
 import org.eclipse.imp.preferences.fields.IntegerFieldEditor;
 import org.eclipse.imp.preferences.fields.StringFieldEditor;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteEnumFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFileFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteFontFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteIntFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.IPreferencesGeneratorData;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualFontFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 
@@ -474,7 +482,6 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "/**\n";
 		fileText = fileText + " * Initializations of default values for preferences.\n";
 		fileText = fileText + " */\n";
-		fileText = fileText + "\n\n";
 		fileText = fileText + "public class " + className + " extends PreferencesInitializer {\n";
 		fileText = fileText + "\t/*\n";
 		fileText = fileText + "\t * (non-Javadoc)\n";
@@ -509,12 +516,27 @@ public class PreferencesFactory implements IPreferencesFactory
     				fileText= fileText + "\t\tservice.setIntPreference(IPreferencesService.DEFAULT_LEVEL, " +
     									constantsClassName + "." + preferenceConstantForName(vInt.getName()) + ", " +
     									vInt.getDefaultValue() + ");\n";
+                } else if (vField instanceof VirtualFontFieldInfo) {
+                    VirtualFontFieldInfo vFont = (VirtualFontFieldInfo) vField;
+                    fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
+                                        constantsClassName + "." + preferenceConstantForName(vFont.getName()) + ", " +
+                                        vFont.getDefaultName() + ");\n";
     			} else if (vField instanceof VirtualStringFieldInfo) {
     				// Subsumes subtypes of VirtualStringFieldInfo
     				VirtualStringFieldInfo vString = (VirtualStringFieldInfo) vField;
     				fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
     									constantsClassName + "." + preferenceConstantForName(vString.getName()) + ", " +
     									vString.getDefaultValue() + ");\n";
+    			} else if (vField instanceof VirtualComboFieldInfo) {
+                    VirtualComboFieldInfo vCombo= (VirtualComboFieldInfo) vField;
+                    fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
+                    constantsClassName + "." + preferenceConstantForName(vCombo.getName()) + ", " +
+                    vCombo.getDefaultValue() + ");\n";
+                } else if (vField instanceof VirtualRadioFieldInfo) {
+                    VirtualRadioFieldInfo vRadio= (VirtualRadioFieldInfo) vField;
+                    fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
+                    constantsClassName + "." + preferenceConstantForName(vRadio.getName()) + ", " +
+                    vRadio.getDefaultValue() + ");\n";
     			} else {
     				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n";
     			}
@@ -603,7 +625,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\tprotected FieldEditor[] createFields(\n";
 		fileText = fileText + "\t\tTabbedPreferencesPage page, PreferencesTab tab, String tabLevel,\n";
 		fileText = fileText + "\t\tComposite parent)\n\t{\n";
-		fileText = fileText + "\t\tList fields = new ArrayList();\n";
+		fileText = fileText + "\t\tList<FieldEditor> fields = new ArrayList<FieldEditor>();\n";
 
 		return fileText;
 	}
@@ -628,6 +650,15 @@ public class PreferencesFactory implements IPreferencesFactory
 				// Subsumes subtypes of ConcreteStringFieldInfo
 				ConcreteStringFieldInfo cStringFieldInfo = (ConcreteStringFieldInfo) cFieldInfo;
 				fileText = fileText + getTextToCreateStringField(pageInfo, cStringFieldInfo, tabLevel);
+			} else if (cFieldInfo instanceof ConcreteFontFieldInfo) {
+                ConcreteFontFieldInfo cFontFieldInfo= (ConcreteFontFieldInfo) cFieldInfo;
+                fileText = fileText + getTextToCreateFontField(pageInfo, cFontFieldInfo, tabLevel);
+			} else if (cFieldInfo instanceof ConcreteComboFieldInfo) {
+                ConcreteComboFieldInfo cComboFieldInfo= (ConcreteComboFieldInfo) cFieldInfo;
+                fileText = fileText + getTextToCreateComboField(pageInfo, cComboFieldInfo, tabLevel);
+            } else if (cFieldInfo instanceof ConcreteRadioFieldInfo) {
+                ConcreteRadioFieldInfo cRadioFieldInfo= (ConcreteRadioFieldInfo) cFieldInfo;
+                fileText = fileText + getTextToCreateRadioField(pageInfo, cRadioFieldInfo, tabLevel);
 			} else {
 				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + cFieldInfo.getName() + "\n\n";
 			}
@@ -730,7 +761,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	            if (i == from) {
 	                continue;
 	            }
-	            if (i > 0) {
+	            if (i > 0 && from > 0) {
 	                sb.append(' ');
 	            }
 	            if (from > 0 && i > from + 1) {
@@ -742,8 +773,12 @@ public class PreferencesFactory implements IPreferencesFactory
 	        }
 	    }
 	    if (from < name.length()) {
-	        sb.append(' ');
-	        appendLowerWord(name, from, name.length(), sb);
+	        if (from > 0) {
+	            sb.append(' ');
+	            appendLowerWord(name, from, name.length(), sb);
+	        } else {
+	            sb.append(name.substring(from, name.length()));
+	        }
 	    }
         return sb.toString();
     }
@@ -829,15 +864,118 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 
 
-	
+    /**
+     * Returns the text needed to create a field of type String or one of the
+     * supported subtypes of type String
+     * 
+     * @param pageInfo
+     * @param fieldInfo
+     * @param tabLevel
+     * @return
+     */
+    protected static String getTextToCreateFontField(
+        PreferencesPageInfo pageInfo, ConcreteFontFieldInfo fieldInfo, String tabLevel)
+    {
+        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
+        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        
+        String result = "\n";
+        result = result + "\t\tFontFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFontField(\n";
+
+        result = result + "\t\t\tpage, tab, fPrefService,\n";
+        result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\tparent,\n";
+        result = result + "\t\t\t" + editable + ", " + editable + ",\n";        // enabled, editable (treat as same)\n";
+        result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+        result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+        
+        String linkName = fieldInfo.getName() + "DetailsLink";
+        result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+            fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
+        result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+        result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        
+        return result;
+    }
+
+    /**
+     * Returns the text needed to create a field of type combo
+     * 
+     * @param pageInfo
+     * @param fieldInfo
+     * @param tabLevel
+     * @return
+     */
+    protected static String getTextToCreateComboField(
+        PreferencesPageInfo pageInfo, ConcreteComboFieldInfo fieldInfo, String tabLevel)
+    {
+        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
+        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        
+        String result = "\n";
+
+        result = result + "\t\tComboFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewComboField(\n";
+        result = result + "\t\t\tpage, tab, fPrefService,\n";
+        result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
+        result = result + "\t\t\tnew String[] " + toString(fieldInfo.getValueList()) + ",\n"; // values
+        result = result + "\t\t\tnew String[] " + getLabelStrings(fieldInfo) + ",\n"; // labels
+        result = result + "\t\t\tparent,\n";
+        result = result + "\t\t\t" + editable + ",\n";
+        result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+        result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+        
+        String linkName = fieldInfo.getName() + "DetailsLink";
+        result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+            fieldInfo.getName() + ", " + fieldInfo.getName() + ".getComboBoxControl().getParent()" + ", \"Details ...\");\n\n";
+        result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+        result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        
+        return result;
+    }
+
+
+    /**
+     * Returns the text needed to create a field of type combo
+     * 
+     * @param pageInfo
+     * @param fieldInfo
+     * @param tabLevel
+     * @return
+     */
+    protected static String getTextToCreateRadioField(
+        PreferencesPageInfo pageInfo, ConcreteRadioFieldInfo fieldInfo, String tabLevel)
+    {
+        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
+        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        
+        String result = "\n";
+
+        result = result + "\t\tRadioGroupFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewRadioGroupField(\n";
+        result = result + "\t\t\tpage, tab, fPrefService,\n";
+        result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
+        result = result + "\t\t\tnew String[] " + toString(fieldInfo.getValueList()) + ",\n";
+        result = result + "\t\t\tnew String[] " + getLabelStrings(fieldInfo) + ",\n";
+        result = result + "\t\t\tparent,\n";
+        result = result + "\t\t\ttrue,\n";
+        result = result + "\t\t\t" + editable + ",\n";
+        result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+        result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+        
+        String linkName = fieldInfo.getName() + "DetailsLink";
+        result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+            fieldInfo.getName() + ", " + fieldInfo.getName() + ".getRadioBoxControl().getParent()" + ", \"Details ...\");\n\n";
+        result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+        result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        
+        return result;
+    }
+
 
 	protected static String generateTabAfterFields(String fileText)
 	{
-		fileText = fileText + "\t\tFieldEditor[] fieldsArray = new FieldEditor[fields.size()];\n";
-		fileText = fileText + "\t\tfor (int i = 0; i < fields.size(); i++) {\n";
-		fileText = fileText + "\t\t\tfieldsArray[i] = (FieldEditor) fields.get(i);\n";
-		fileText = fileText + "\t\t}\n";
-		fileText = fileText + "\t\treturn fieldsArray;\n";
+		fileText = fileText + "\t\treturn fields.toArray(new FieldEditor[fields.size()]);\n";
 		
 		// Note:  first closing brace in text is for the createFields method
 		return fileText + "\t}\n}\n";
@@ -891,6 +1029,12 @@ public class PreferencesFactory implements IPreferencesFactory
 				fieldTypeName = "IntegerFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteStringFieldInfo) {
 				fieldTypeName = "StringFieldEditor";
+			} else if (cFieldInfo instanceof ConcreteFontFieldInfo) {
+			    fieldTypeName = "FontFieldEditor";
+			} else if (cFieldInfo instanceof ConcreteComboFieldInfo) {
+			    fieldTypeName = "ComboFieldEditor";
+            } else if (cFieldInfo instanceof ConcreteRadioFieldInfo) {
+                fieldTypeName = "RadioGroupFieldEditor";
 			} else {
 				fieldTypeName = "UnrecognizedFieldType";
 			}
@@ -1163,5 +1307,47 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 		return s.substring(newStart, newEnd);
 	}
-	
+
+	public static String toString(String[] strings) {
+	    StringBuilder sb= new StringBuilder();
+        sb.append("{ ");
+	    for(int i= 0; i < strings.length; i++) {
+	        if (i > 0) { sb.append(", "); }
+	        final String s= strings[i];
+            if (s != null) {
+	            appendWithQuotes(s, sb);
+	        } else {
+	            sb.append("null");
+	        }
+        }
+        sb.append(" }");
+	    return sb.toString();
+	}
+
+    private static void appendWithQuotes(final String s, StringBuilder sb) {
+        if (!s.startsWith("\"")) {
+            sb.append("\"");
+        }
+        sb.append(s);
+        if (!s.endsWith("\"")) {
+            sb.append("\"");
+        }
+    }
+
+	public static String getLabelStrings(ConcreteEnumFieldInfo fieldInfo) {
+	    StringBuilder sb= new StringBuilder();
+	    sb.append("{ ");
+	    String[] values= fieldInfo.getValueList();
+        String[] labels= fieldInfo.getLabelList();
+        for(int i=0; i < labels.length; i++) {
+            if (i > 0) { sb.append(", "); }
+            if (labels[i] != null) {
+                appendWithQuotes(labels[i], sb);
+            } else {
+                appendWithQuotes(createLabelFor(values[i]), sb);
+            }
+        }
+        sb.append(" }");
+	    return sb.toString();
+	}
 }

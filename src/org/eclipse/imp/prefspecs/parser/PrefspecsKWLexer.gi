@@ -39,6 +39,7 @@
     DIRLIST
     FILE
     -- float
+    FONT
     INT
     RADIO
     STRING
@@ -47,14 +48,19 @@
     --SPECIAL
     
     -- For attributes
-    LABEL
+    BOLD
+    COLUMNS
     DEFVALUE
     EMPTYALLOWED
     HASSPECIAL
     ISEDITABLE
     ISREMOVABLE
+    ITALIC
+    LABEL
+    NORMAL
     RANGE
-    
+    VALUES
+
     -- For boolean properties of fields (or anything else)
     TRUE
     FALSE
@@ -107,6 +113,18 @@
           $EndAction
         ./
 
+    Keyword ::= b o l d
+        /.$BeginAction
+            $setResult($_BOLD);
+          $EndAction
+        ./
+
+    Keyword ::= c o l u m n s
+        /.$BeginAction
+            $setResult($_COLUMNS);
+          $EndAction
+        ./
+        
     Keyword ::= c o m b o
         /.$BeginAction
             $setResult($_COMBO);
@@ -173,6 +191,12 @@
           $EndAction
         ./
 
+    Keyword ::= f o n t
+        /.$BeginAction
+            $setResult($_FONT);
+          $EndAction
+        ./
+
     Keyword ::= h a s s p e c i a l
         /.$BeginAction
             $setResult($_HASSPECIAL);
@@ -215,9 +239,21 @@
           $EndAction
         ./
 
+    Keyword ::= i t a l i c
+        /.$BeginAction
+            $setResult($_ITALIC);
+          $EndAction
+        ./
+
     Keyword ::= l a b e l
         /.$BeginAction
             $setResult($_LABEL);
+          $EndAction
+        ./
+
+    Keyword ::= n o r m a l
+        /.$BeginAction
+            $setResult($_NORMAL);
           $EndAction
         ./
 
@@ -284,6 +320,12 @@
     Keyword ::= u n l e s s
         /.$BeginAction
             $setResult($_UNLESS);
+          $EndAction
+        ./
+
+    Keyword ::= v a l u e s
+        /.$BeginAction
+            $setResult($_VALUES);
           $EndAction
         ./
 

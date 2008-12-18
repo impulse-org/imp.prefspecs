@@ -18,14 +18,6 @@
 %End
 
 %Export
-    --
-    -- List all the token types the lexer will directly process
-    -- and export to the parser. If a keyword lexer is used as
-    -- a filter for this lexer, it may export a set of keywords
-    -- that will also be passed along to the parser.
-    -- 
-    -- For example:
-    --
         SINGLE_LINE_COMMENT
         IDENTIFIER 
         NUMBER
@@ -111,7 +103,6 @@
 //
 //Contributors:
 //    Philippe Charles (pcharles@us.ibm.com) - initial API and implementation
-
 ////////////////////////////////////////////////////////////////////////////////
 ./
 %End
@@ -123,7 +114,7 @@
           $EndJava
         ./
     
-    Token ::= number
+    Token ::= integer
         /.$BeginJava
                     makeToken($_NUMBER);
           $EndJava
@@ -215,12 +206,12 @@
                 | identifier '_'
 
 
-    number ::= digit
-             | number digit
+    integer ::= digit
+              | integer digit
 
 
     stringliteral ::= singleQuoteString
-    		|     doubleQuoteString
+                    | doubleQuoteString
     
     doubleQuoteString ::= DoubleQuote doubleQuoteStringChars DoubleQuote
     
