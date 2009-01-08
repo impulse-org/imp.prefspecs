@@ -47,13 +47,13 @@ public class PreferencesTabInfo
 		// All tabInfos must have a parentInfo
 		if (parent == null) {
 			throw new IllegalArgumentException(
-				"PreferencesIabInfo(..):  page is null; not allowed");		
+				"PreferencesTabInfo(..):  page is null; not allowed");		
 		}
 		
 		// All tabInfos must have a name that is a valid tab name
 		if (name == null) {
 			throw new IllegalArgumentException(
-				"PreferencesIabInfo(..):  name is null; not allowed");		
+				"PreferencesTabInfo(..):  name is null; not allowed");		
 		}
 		String[] levels = IPreferencesService.levels;
 		boolean nameOK = false;
@@ -65,13 +65,13 @@ public class PreferencesTabInfo
 		}
 		if (!nameOK) {
 			throw new IllegalArgumentException(
-				"PreferencesIabInfo.setName(..):  name = '" + name + "' does not correspond to a legal tab name");
+				"PreferencesTabInfo.setName(..):  name = '" + name + "' does not correspond to a legal tab name");
 		}
 
 		// All tabInfos must represent a unique tab within their parentInfo
 		if (parent.hasTabInfo(name))  {
 			throw new IllegalArgumentException(
-				"PreferencesIabInfo.setName(..):  name = '" + name + "' represents a duplicate tab; not allowed");
+				"PreferencesTabInfo.setName(..):  name = '" + name + "' represents a duplicate tab; not allowed");
 		}
 		
 		// Okay
@@ -84,7 +84,7 @@ public class PreferencesTabInfo
 	// TODO:  Consider adding other constructors to enable attribute values to be set
 	
 	//
-	// Parent and name are only defined through the constuctor,
+	// Parent and name are only defined through the constructor,
 	// so only "get" methods are defined for those
 	//
 	
@@ -102,7 +102,7 @@ public class PreferencesTabInfo
 	
 
 	public void setIsEditable(boolean isEditable) {
-		this.isEditable = isEditable	;
+		this.isEditable = isEditable;
 	}
 	
 	public boolean getIsEditable() {
@@ -118,7 +118,7 @@ public class PreferencesTabInfo
 		if (getName().equals(IPreferencesService.DEFAULT_LEVEL))
 			if (isRemovable) {
 				throw new IllegalArgumentException(
-					"PreferencesIabInfo.setIsRemovable(..):  cannot set isRemovable ");
+					"PreferencesTabInfo.setIsRemovable(..):  cannot set isRemovable ");
 			}
 		this.isRemovable = isRemovable;
 	}
