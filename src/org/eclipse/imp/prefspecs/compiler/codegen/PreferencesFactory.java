@@ -107,13 +107,13 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	public static IFile generatePreferencesInitializers(
 		List<PreferencesPageInfo> pageInfos,
-		String pluginProjectName, String pluginClassName, String constantsClassName,
+		String pluginPkgName, String pluginClassName, String constantsClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
 		System.out.println("PreferencesFactory.generatePreferencesInitializers():  generating (insofar as implemented)");
 		
 		// Generate file text
-		String fileText = generateInitializersPartBeforeFields(pluginProjectName, pluginClassName, packageName, className);
+		String fileText = generateInitializersPartBeforeFields(pluginPkgName, pluginClassName, packageName, className);
 		fileText = generateInitializersFields(pageInfos, constantsClassName, fileText);
 		fileText = generateInitializersAfterFields(pluginClassName, fileText);
 		
@@ -122,20 +122,106 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 	}
 
-		
-	
-	public static IFile generateDefaultTab(
+	public static IFile generatePreferencesPage(
+	        PreferencesPageInfo pageInfo,
+            String pluginPkgName, String pluginClassName, String constantsClassName, String initializerClassName,
+            ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
+	{
+	    StringBuilder sb= new StringBuilder();
+
+	    generatePageBeforeTabs(sb, pluginPkgName, pluginClassName, packageName, className);
+	    generateTabs(sb, pageInfo);
+	    generatePageAfterTabs(sb, initializerClassName);
+
+	    IFile prefPageFile = createFileWithText(sb.toString(), project, projectSourceLocation, packageName, className, mon);
+	    return prefPageFile;
+	}
+
+    protected static void generatePageBeforeTabs(StringBuilder fileText,
+            String pluginPackageName, String pluginClassName, String packageName, String className)
+    {
+        if (className.endsWith(".java")) {
+            className = className.substring(0, className.length()-5);
+        }
+
+        fileText.append("package " + packageName + ";\n\n");
+        fileText.append("import org.eclipse.swt.widgets.TabFolder;");
+        fileText.append("import org.eclipse.imp.preferences.IPreferencesService;");
+        fileText.append("import org.eclipse.imp.preferences.PreferencesInitializer;");
+        fileText.append("import org.eclipse.imp.preferences.PreferencesTab;");
+        fileText.append("import org.eclipse.imp.preferences.TabbedPreferencesPage;");
+        fileText.append("import " + pluginPackageName + "." + pluginClassName + ";");
+
+        fileText.append("\n\n/**\n");
+        fileText.append(" * A preference page class.\n");
+        fileText.append(" */\n");
+        fileText.append("\n\n");
+        fileText.append("public class " + className + " extends TabbedPreferencesPage {\n");
+
+        fileText.append("\tpublic " + className + "() {\n");
+        fileText.append("\t\tsuper();\n");
+        fileText.append("\t\tprefService = " + pluginClassName + ".getPreferencesService();\n");
+        fileText.append("\t}\n\n");
+
+        fileText.append("\tprotected PreferencesTab[] createTabs(IPreferencesService prefService,\n");
+        fileText.append("\t\tTabbedPreferencesPage page, TabFolder tabFolder) {\n");
+    }
+
+    private static void generateTabs(StringBuilder fileText, PreferencesPageInfo pageInfo) {
+        int tabCount= 0;
+
+        Iterator<PreferencesTabInfo> tabIter= pageInfo.getTabInfos();
+        while (tabIter.hasNext()) {
+            PreferencesTabInfo tab= tabIter.next();
+            if (tab.getIsUsed()) {
+                tabCount++;
+            }
+        }
+        String pageName= pageInfo.getPageName();
+
+        fileText.append("\t\tPreferencesTab[] tabs = new PreferencesTab[" + tabCount + "];\n");
+        fileText.append("\n");
+
+        tabIter= pageInfo.getTabInfos();
+        int tabIdx= 0;
+        while (tabIter.hasNext()) {
+            PreferencesTabInfo tab= tabIter.next();
+            if (tab.getIsUsed()) {
+                String tabName= tab.getName();
+                String upperTab= Character.toUpperCase(tabName.charAt(0)) + tabName.substring(1);
+                String tabClass= pageName + upperTab + "Tab";
+                String tabVar= tabName + "Tab";
+                fileText.append("\t\t" + tabClass + " " + tabVar + " = new " + tabClass + "(prefService);\n");
+                fileText.append("\t\t" + tabVar + ".createTabContents(page, tabFolder);\n");
+                fileText.append("\t\ttabs[" + tabIdx + "] = " + tabVar + ";\n");
+                fileText.append("\n");
+                tabIdx++;
+            }
+        }
+    }
+
+    protected static void generatePageAfterTabs(StringBuilder fileText, String initializerClassName) {
+        fileText.append("\t\treturn tabs;\n");
+        fileText.append("\t}\n");
+        fileText.append("\n");
+        fileText.append("\tpublic PreferencesInitializer getPreferenceInitializer() {\n");
+        fileText.append("\t\treturn new " + initializerClassName + "();\n");
+        fileText.append("\t}\n");
+        fileText.append("}\n");
+    }
+
+    public static IFile generateDefaultTab(
 		PreferencesPageInfo pageInfo,
-		String pluginProjectName, String pluginClassName, String constantsClassName, String initializerClassName,
+		String pluginPkgName, String pluginClassName, String constantsClassName, String initializerClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
 	    if (pageInfo.getTabInfo(IPreferencesService.DEFAULT_LEVEL) == null) {
 	        return null;
 	    }
-		System.out.println("PreferencesFactory.generateDefaultTab():  generating (insofar as implemented)");
+//		System.out.println("PreferencesFactory.generateDefaultTab():  generating (insofar as implemented)");
 		
 		// Generate file text
-		String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, initializerClassName, IPreferencesService.DEFAULT_LEVEL);
+		String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, initializerClassName, IPreferencesService.DEFAULT_LEVEL);
 		fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.DEFAULT_LEVEL);
 		fileText = generateTabAfterFields(fileText);
 		
@@ -146,16 +232,16 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	public static IFile generateConfigurationTab(
 			PreferencesPageInfo pageInfo,
-			String pluginProjectName, String pluginClassName, String constantsClassName,
+			String pluginPkgName, String pluginClassName, String constantsClassName,
 			ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
         if (pageInfo.getTabInfo(IPreferencesService.CONFIGURATION_LEVEL) == null) {
             return null;
         }
-		System.out.println("PreferencesFactory.generateConfigurationTab():  generating (insofar as implemented)");
+//		System.out.println("PreferencesFactory.generateConfigurationTab():  generating (insofar as implemented)");
 		
 		// Generate file text
-		String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, null, IPreferencesService.CONFIGURATION_LEVEL);
+		String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.CONFIGURATION_LEVEL);
 		fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.CONFIGURATION_LEVEL);
 		fileText = generateTabAfterFields(fileText);
 		
@@ -167,16 +253,16 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	public static IFile generateInstanceTab(
 			PreferencesPageInfo pageInfo,
-			String pluginProjectName, String pluginClassName, String constantsClassName,
+			String pluginPkgName, String pluginClassName, String constantsClassName,
 			ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 		{
 	        if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL) == null) {
 	            return null;
 	        }
-			System.out.println("PreferencesFactory.generateInstanceTab():  generating (insofar as implemented)");
+//			System.out.println("PreferencesFactory.generateInstanceTab():  generating (insofar as implemented)");
 			
 			// Generate file text
-			String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, null, IPreferencesService.INSTANCE_LEVEL);
+			String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.INSTANCE_LEVEL);
 			fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.INSTANCE_LEVEL);
 			fileText = generateTabAfterFields(fileText);
 			
@@ -187,16 +273,16 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 		public static IFile generateProjectTab(
 				PreferencesPageInfo pageInfo,
-				String pluginProjectName, String pluginClassName, String constantsClassName,
+				String pluginPkgName, String pluginClassName, String constantsClassName,
 				ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 		{
             if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL) == null) {
                 return null;
             }
-			System.out.println("PreferencesFactory.generateProjectTab():  generating (insofar as implemented)");
+//			System.out.println("PreferencesFactory.generateProjectTab():  generating (insofar as implemented)");
 			
 			// Generate file text
-			String fileText = generateTabBeforeFields(pluginProjectName, pluginClassName, packageName, className, null, IPreferencesService.PROJECT_LEVEL);
+			String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.PROJECT_LEVEL);
 			fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.PROJECT_LEVEL);
 			fileText = generateTabAfterFields(fileText);
 			fileText = regenerateEndOfProjectTab(pageInfo, fileText);
@@ -328,6 +414,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			prefUtils.makeNewBooleanField(
 			   		prefsPage, prefsTab, prefsService,
 					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
+					fieldInfo.getToolTip(),
 					parent,
 					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
 					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
@@ -346,6 +433,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			prefUtils.makeNewDirectoryListField(
 			   		prefsPage, prefsTab, prefsService,
 					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
+					fieldInfo.getToolTip(),
 					parent,
 					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
 					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
@@ -364,6 +452,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			prefUtils.makeNewFileField(
 			   		prefsPage, prefsTab, prefsService,
 					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
+					fieldInfo.getToolTip(),
 					parent,
 					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
 					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
@@ -381,6 +470,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			prefUtils.makeNewIntegerField(
 			   		prefsPage, prefsTab, prefsService,
 					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
+					fieldInfo.getToolTip(),
 					parent,
 					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
 					fieldInfo.getHasSpecialValue(), String.valueOf(fieldInfo.getSpecialValue()),
@@ -397,6 +487,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			prefUtils.makeNewStringField(
 			   		prefsPage, prefsTab, prefsService,
 					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
+					fieldInfo.getToolTip(),
 					parent,
 					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
 					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
@@ -571,7 +662,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	
 	protected static String generateTabBeforeFields(
-			String pluginPackageName, String pluginClassName, String packageName, String className, String initializerClassName, String levelName)
+			PreferencesPageInfo pageInfo, String pluginPackageName, String pluginClassName, String packageName, String className, String initializerClassName, String levelName)
 	{
 		if (className.endsWith(".java")) {
 			className = className.substring(0, className.length()-5);
@@ -589,16 +680,15 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "import org.eclipse.imp.preferences.*;\n";
 		fileText = fileText + "import org.eclipse.imp.preferences.fields.*;\n";
 		fileText = fileText + "import org.osgi.service.prefs.Preferences;\n";
-		fileText = fileText + "\n//		 TODO:  Import additional classes for specific field types from\n";
-		fileText = fileText + "//		 org.eclipse.uide.preferences.fields";
+
 		fileText = fileText + "\n\n/**\n";
 		fileText = fileText + " * The " + levelName + " level preferences tab.\n";
 		fileText = fileText + " */\n";
-		fileText = fileText + "\n\n";
 		fileText = fileText + "public class " + className + " extends " + levelNameUpperInitial + "PreferencesTab {\n\n";
 		
 		fileText = fileText + "\tpublic " + className + "(IPreferencesService prefService) {\n";
-		fileText = fileText + "\t\tsuper(prefService);\n\t}\n\n";
+		fileText = fileText + "\t\tsuper(prefService, " + pageInfo.getNoDetails() + ");\n";
+		fileText = fileText + "\t}\n\n";
 		
 		if (initializerClassName != null) {
 			fileText = fileText + "\t/**\n";
@@ -622,9 +712,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\t * @return    An array that contains the created preference fields\n";
 		fileText = fileText + "\t *\n";
 		fileText = fileText + "\t */\n";
-		fileText = fileText + "\tprotected FieldEditor[] createFields(\n";
-		fileText = fileText + "\t\tTabbedPreferencesPage page, PreferencesTab tab, String tabLevel,\n";
-		fileText = fileText + "\t\tComposite parent)\n\t{\n";
+		fileText = fileText + "\tprotected FieldEditor[] createFields(TabbedPreferencesPage page, Composite parent)\n\t{\n";
 		fileText = fileText + "\t\tList<FieldEditor> fields = new ArrayList<FieldEditor>();\n";
 
 		return fileText;
@@ -635,7 +723,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	protected static String generateTabFields(PreferencesPageInfo pageInfo, String constantsClassName, String fileText, String tabLevel)
 	{
 		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(tabLevel);
-		Iterator cFields = tabInfo.getConcreteFields();
+		Iterator<ConcreteFieldInfo> cFields = tabInfo.getConcreteFields();
 
 		while (cFields.hasNext()) {
 			ConcreteFieldInfo cFieldInfo = (ConcreteFieldInfo) cFields.next();
@@ -726,24 +814,28 @@ public class PreferencesFactory implements IPreferencesFactory
 	{
 		boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;	//fieldInfo.getIsEditable();
 		String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        String toolTip = fieldInfo.getToolTip();
 
 		String result = "\n";
 		result = result + "\t\tBooleanFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewBooleanField(\n";
-		result = result + "\t\t\tpage, tab, fPrefService,\n";
+		result = result + "\t\t\tpage, this, fPrefService,\n";
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";	// tab level, key, text\n";
+        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", " + fieldInfo.getSpecialValue() + ",\n";
 		result = result + "\t\t\tfalse, false,\n";										// empty allowed (always false for boolean), empty (irrelevant)
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
-		
-		String linkName = fieldInfo.getName() + "DetailsLink";
-		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
-		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
-		
+
+		if (!pageInfo.getNoDetails()) {
+    		String linkName = fieldInfo.getName() + "DetailsLink";
+    		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+    							fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
+    		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+    		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+		}
+
 		return result;
 	}
 	
@@ -798,24 +890,29 @@ public class PreferencesFactory implements IPreferencesFactory
 		{
 		    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
 	        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+	        String toolTip = fieldInfo.getToolTip();
 		
 			String result = "\n";
 			result = result + "\t\tIntegerFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewIntegerField(\n";
 			
-			result = result + "\t\t\tpage, tab, fPrefService,\n";
+			result = result + "\t\t\tpage, this, fPrefService,\n";
 			result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";	// tab level, key, text\n";
+	        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
 			result = result + "\t\t\tparent,\n";
 			result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 			result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", String.valueOf(" + fieldInfo.getSpecialValue() + "),\n";
 			result = result + "\t\t\tfalse, \"0\",\n";										// empty allowed, empty value
 			result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
+
 			result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
-			
-			String linkName = fieldInfo.getName() + "DetailsLink";
-			result = result + "\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
-				fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
-			result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-			result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+
+			if (!pageInfo.getNoDetails()) {
+    			String linkName = fieldInfo.getName() + "DetailsLink";
+    			result = result + "\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
+    				fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";	
+    			result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+    			result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+			}
 			
 			return result;
 		}
@@ -835,6 +932,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	{
 	    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
         String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        String toolTip = fieldInfo.getToolTip();
 		
 		String result = "\n";
 		if (fieldInfo instanceof ConcreteDirListFieldInfo) {
@@ -844,20 +942,24 @@ public class PreferencesFactory implements IPreferencesFactory
 		} else if (fieldInfo instanceof ConcreteStringFieldInfo) {
 			result = result + "\t\tStringFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewStringField(\n";
 		}
-		result = result + "\t\t\tpage, tab, fPrefService,\n";
+		result = result + "\t\t\tpage, this, fPrefService,\n";
 		result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";	// tab level, key, text\n";
+        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
 		result = result + "\t\t\tparent,\n";
 		result = result + "\t\t\t" + editable + ", " + editable + ",\n";		// enabled, editable (treat as same)\n";
 		result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", \"" + stripQuotes(fieldInfo.getSpecialValue()) + "\",\n";
 		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n";	// empty allowed, empty value
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
+
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
 		
-		String linkName = fieldInfo.getName() + "DetailsLink";
-		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-			fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";
-		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        if (!pageInfo.getNoDetails()) {
+    		String linkName = fieldInfo.getName() + "DetailsLink";
+    		result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+    			fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n";
+    		result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+    		result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        }
 		
 		return result;
 	}
@@ -878,22 +980,27 @@ public class PreferencesFactory implements IPreferencesFactory
     {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        String toolTip = fieldInfo.getToolTip();
         
         String result = "\n";
         result = result + "\t\tFontFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFontField(\n";
 
-        result = result + "\t\t\tpage, tab, fPrefService,\n";
+        result = result + "\t\t\tpage, this, fPrefService,\n";
         result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
         result = result + "\t\t\tparent,\n";
         result = result + "\t\t\t" + editable + ", " + editable + ",\n";        // enabled, editable (treat as same)\n";
         result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+
         result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
         
-        String linkName = fieldInfo.getName() + "DetailsLink";
-        result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-            fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
-        result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-        result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        if (!pageInfo.getNoDetails()) {
+            String linkName = fieldInfo.getName() + "DetailsLink";
+            result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
+            result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+            result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        }
         
         return result;
     }
@@ -911,12 +1018,14 @@ public class PreferencesFactory implements IPreferencesFactory
     {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        String toolTip = fieldInfo.getToolTip();
         
         String result = "\n";
 
         result = result + "\t\tComboFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewComboField(\n";
-        result = result + "\t\t\tpage, tab, fPrefService,\n";
+        result = result + "\t\t\tpage, this, fPrefService,\n";
         result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
         result = result + "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
         result = result + "\t\t\tnew String[] " + toString(fieldInfo.getValueList()) + ",\n"; // values
         result = result + "\t\t\tnew String[] " + getLabelStrings(fieldInfo) + ",\n"; // labels
@@ -925,11 +1034,13 @@ public class PreferencesFactory implements IPreferencesFactory
         result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
         result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
         
-        String linkName = fieldInfo.getName() + "DetailsLink";
-        result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-            fieldInfo.getName() + ", " + fieldInfo.getName() + ".getComboBoxControl().getParent()" + ", \"Details ...\");\n\n";
-        result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-        result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        if (!pageInfo.getNoDetails()) {
+            String linkName = fieldInfo.getName() + "DetailsLink";
+            result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getComboBoxControl().getParent()" + ", \"Details ...\");\n\n";
+            result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+            result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        }
         
         return result;
     }
@@ -948,12 +1059,14 @@ public class PreferencesFactory implements IPreferencesFactory
     {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        String toolTip = fieldInfo.getToolTip();
         
         String result = "\n";
 
         result = result + "\t\tRadioGroupFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewRadioGroupField(\n";
-        result = result + "\t\t\tpage, tab, fPrefService,\n";
+        result = result + "\t\t\tpage, this, fPrefService,\n";
         result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
         result = result + "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
         result = result + "\t\t\tnew String[] " + toString(fieldInfo.getValueList()) + ",\n";
         result = result + "\t\t\tnew String[] " + getLabelStrings(fieldInfo) + ",\n";
@@ -961,13 +1074,16 @@ public class PreferencesFactory implements IPreferencesFactory
         result = result + "\t\t\ttrue,\n";
         result = result + "\t\t\t" + editable + ",\n";
         result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+
         result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
         
-        String linkName = fieldInfo.getName() + "DetailsLink";
-        result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-            fieldInfo.getName() + ", " + fieldInfo.getName() + ".getRadioBoxControl().getParent()" + ", \"Details ...\");\n\n";
-        result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-        result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        if (!pageInfo.getNoDetails()) {
+            String linkName = fieldInfo.getName() + "DetailsLink";
+            result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getRadioBoxControl().getParent()" + ", \"Details ...\");\n\n";
+            result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+            result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        }
         
         return result;
     }
