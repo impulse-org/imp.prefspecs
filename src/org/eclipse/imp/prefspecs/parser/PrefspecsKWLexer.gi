@@ -20,12 +20,15 @@
     CONDITIONALS
     CUSTOM
 
+    -- For page options
+    DETAILS
+
     -- For tab types
     DEFAULT
     CONFIGURATION
     INSTANCE
     PROJECT
-    
+
     -- For tab inclusion
     IN
     OUT
@@ -59,11 +62,14 @@
     LABEL
     NORMAL
     RANGE
+    TOOLTIP
     VALUES
 
     -- For boolean properties of fields (or anything else)
     TRUE
     FALSE
+    ON
+    OFF
     
     -- For conditionals
     WITH
@@ -158,6 +164,12 @@
     Keyword ::= d e f v a l u e
         /.$BeginAction
             $setResult($_DEFVALUE);
+          $EndAction
+        ./
+
+    Keyword ::= d e t a i l s
+        /.$BeginAction
+            $setResult($_DETAILS);
           $EndAction
         ./
 
@@ -257,6 +269,18 @@
           $EndAction
         ./
 
+    Keyword ::= o n
+        /.$BeginAction
+            $setResult($_ON);
+          $EndAction
+        ./
+
+    Keyword ::= o f f
+        /.$BeginAction
+            $setResult($_OFF);
+          $EndAction
+        ./
+
     Keyword ::= o u t
         /.$BeginAction
             $setResult($_OUT);
@@ -308,6 +332,12 @@
     Keyword ::= t a b s
         /.$BeginAction
             $setResult($_TABS);
+          $EndAction
+        ./
+
+    Keyword ::= t o o l t i p
+        /.$BeginAction
+            $setResult($_TOOLTIP);
           $EndAction
         ./
 

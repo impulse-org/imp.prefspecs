@@ -62,12 +62,16 @@
 %End
 
 %Rules
-    prefSpecs ::= optPackageSpec pageSpecList
+    prefSpecs ::= optPackageSpec optDetailsSpec pageSpecList
 
     optPackageSpec ::= %empty | PACKAGE$ packageName ';'$
 
     packageName ::= identifier
                   | packageName '.'$ identifier
+
+    optDetailsSpec ::= %empty | DETAILS$ onOff ';'$
+
+    onOff ::= ON | OFF
 
     pageSpecList$$pageSpec ::= pageSpec | pageSpecList pageSpec
 
@@ -82,12 +86,12 @@
 
     pageBody ::= %empty
                | tabsSpec fieldsSpec optionalSpecs
-    
+
     optionalSpecs ::= customSpecOption conditionalsSpecOption
-    
+
     customSpecOption ::= %empty
                        | customSpec
-                                                           
+
     conditionalsSpecOption ::= %empty
                              | conditionalsSpec
                
@@ -112,8 +116,8 @@
     --tabPropertySpecs ::= isEditableSpec isRemovableSpec
 
     inout ::= IN | OUT
-    
-    
+
+
     -- Rules for the "fields" section
     
     fieldsSpec ::= FIELDS$ '{'$ fieldSpecs '}'$
@@ -202,21 +206,16 @@
 
     -- Rules for specifications used in various parts
 
-    generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec
+    generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec optToolTipSpec
 
     isEditableSpec  ::= %empty | ISEDITABLE$ booleanValue ';'$
-
     isRemovableSpec ::= %empty | ISREMOVABLE$ booleanValue ';'$
-
     optLabelSpec    ::= %empty | LABEL$ STRING_LITERAL ';'$
-
+    optToolTipSpec  ::= %empty | TOOLTIP$ STRING_LITERAL ';'$
 
     booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
-
     booleanCustomSpec   ::= booleanSpecialSpec
-
     booleanSpecialSpec  ::= %empty | HASSPECIAL$ booleanValue ';'$
-
     booleanDefValueSpec ::= %empty | DEFVALUE$ booleanValue ';'$
 
 
@@ -244,26 +243,18 @@
 
 
     intSpecificSpec ::= intCustomSpec intDefValueSpec
-
     intCustomSpec   ::= intRangeSpec intSpecialSpec
-
     intRangeSpec    ::= %empty | RANGE$ signedNumber$low DOTS$ signedNumber$high ';'$
-
     intSpecialSpec  ::= %empty | HASSPECIAL$ signedNumber ';'$
-
     intDefValueSpec ::= %empty | DEFVALUE$ signedNumber ';'$
 
 
     stringSpecificSpec ::= stringCustomSpec stringDefValueSpec
-
     stringCustomSpec   ::= stringSpecialSpec stringEmptySpec
-
     stringSpecialSpec  ::= %empty | HASSPECIAL$ stringValue ';'$
-
     stringEmptySpec    ::= %empty
                          | EMPTYALLOWED$ FALSE ';'$
                          | EMPTYALLOWED$ TRUE stringValue ';'$
-
     stringDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
 
 
