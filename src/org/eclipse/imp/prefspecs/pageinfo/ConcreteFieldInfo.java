@@ -14,7 +14,11 @@ package org.eclipse.imp.prefspecs.pageinfo;
 
 import org.eclipse.imp.preferences.IPreferencesService;
 
-
+/**
+ * Instances of this class contain the info for concrete (per-page) instances
+ * of preference fields.
+ * @author suttons@us.ibm.com
+ */
 public class ConcreteFieldInfo
 {
 	/**
@@ -78,8 +82,6 @@ public class ConcreteFieldInfo
 	 * if isConditional and depending on conditionalWith
 	 */
 	protected VirtualBooleanFieldInfo conditionField = null;
-	
-	
 	
 	
 	public ConcreteFieldInfo(VirtualFieldInfo vFieldInfo, PreferencesTabInfo parentTab)
@@ -207,7 +209,11 @@ public class ConcreteFieldInfo
 	}
 
 
-	
+	public String getToolTip() {
+	    return this.vFieldInfo.getToolTipText();
+	}
+
+
 	public boolean getIsConditional() {
 		return isConditional;
 	}

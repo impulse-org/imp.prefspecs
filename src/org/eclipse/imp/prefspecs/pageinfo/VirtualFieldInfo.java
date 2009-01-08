@@ -32,6 +32,11 @@ public class VirtualFieldInfo
 	protected String name = null;
 
 	/**
+	 * If non-null, the text to be displayed as a tooltip for this field
+	 */
+	protected String toolTipText = null;
+
+	/**
 	 * True iff this field has an "is editable" specification; if false,
 	 * the value of isEditable is irrelevant.
 	 */
@@ -202,7 +207,16 @@ public class VirtualFieldInfo
 	}
 
 
-	public boolean getHasSpecialValue() {
+	public String getToolTipText() {
+        return toolTipText;
+    }
+
+    public void setToolTipText(String toolTipText) {
+        this.toolTipText= toolTipText;
+    }
+
+
+    public boolean getHasSpecialValue() {
 		return 	hasSpecialValue;
 	}
 	
