@@ -24,8 +24,10 @@ public class PreferencesPageInfo {
 	private List<PreferencesTabInfo> tabs = null;
 
 	private List<VirtualFieldInfo> virtualFields = new ArrayList<VirtualFieldInfo>();
-	
-	
+
+	private boolean noDetails = false;
+
+
 	public PreferencesPageInfo(String name) {
 		this.name = name;
 		tabs = new ArrayList<PreferencesTabInfo>(4);
@@ -39,10 +41,19 @@ public class PreferencesPageInfo {
 	public String getPageName() {
 		return name;
 	}
-	
 
-	public void addTabInfo(PreferencesTabInfo tab) {
-		if (tab == null || tabs	.contains(tab))
+
+	public boolean getNoDetails() {
+        return noDetails;
+    }
+
+    public void setNoDetails(boolean noDetails) {
+        this.noDetails= noDetails;
+    }
+
+
+    public void addTabInfo(PreferencesTabInfo tab) {
+		if (tab == null || tabs.contains(tab))
 			return;
 		tabs.add(tab);
 	}
