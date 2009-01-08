@@ -68,6 +68,7 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
 import org.eclipse.imp.prefspecs.parser.Ast.IbooleanValue;
 import org.eclipse.imp.prefspecs.parser.Ast.IfontStyle;
@@ -116,8 +117,10 @@ import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.labelledStringValue;
 import org.eclipse.imp.prefspecs.parser.Ast.labelledStringValueList;
 import org.eclipse.imp.prefspecs.parser.Ast.optConditionalSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optDetailsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.optLabelSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.optPackageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optToolTipSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioCustomSpec;
@@ -173,6 +176,9 @@ public class PrefspecsCompiler
     protected String fPageMenuItem = null; // ignored - page names come directly from the "page xxx { }" construct
 
 	protected String fPagePackageName = null;
+
+	protected boolean fNoDetails = false;
+
 	private IFile fSpecFile;	
 
 	
@@ -181,15 +187,14 @@ public class PrefspecsCompiler
     public PrefspecsCompiler(String problem_marker_id) {
     	PROBLEM_MARKER_ID = problem_marker_id;
     }
-    
-    
- 
+
+
     public List<PreferencesPageInfo> getPreferencesPageInfos(IFile specFile) {
     	computePreferencesPageInfo(specFile);
     	return fPages;	
     }
-    
-    
+
+
     protected void computePreferencesPageInfo(IFile specFile)
     {
     	if (specFile == null) {
@@ -246,9 +251,16 @@ public class PrefspecsCompiler
         }
 
         @Override
+        public boolean visit(optDetailsSpec n) {
+            PrefspecsCompiler.this.fNoDetails= n.getonOff().toString().equalsIgnoreCase("off");
+            return false;
+        }
+
+        @Override
         public boolean visit(pageSpec p) {
         	final String pageName= p.getpageName().toString();
             fPageInfo = new PreferencesPageInfo(pageName);
+            fPageInfo.setNoDetails(PrefspecsCompiler.this.fNoDetails);
         	fPages.add(fPageInfo);
 
         	if (p.getpageBody().gettabsSpec() == null) {
@@ -357,12 +369,14 @@ public class PrefspecsCompiler
         	tab.setIsUsed(tabSpec.getinout().toString().equals("in"));
         	return false;
         }
-        
+
+        private String unquoteString(ASTNodeToken stringLit) {
+            String text= stringLit.toString();
+            return text.substring(1, text.length() - 1);
+        }
 
 	    private String getLabel(optLabelSpec labelSpec) {
-            final String label= labelSpec.getSTRING_LITERAL().toString();
-
-            return label.substring(1, label.length() - 1);
+	        return unquoteString(labelSpec.getSTRING_LITERAL());
 	    }
 
 	    private boolean getValueOf(IbooleanValue bv) {
@@ -443,7 +457,11 @@ public class PrefspecsCompiler
             }
             optLabelSpec labelSpec = generalSpecs.getoptLabelSpec();
             if (labelSpec != null) {
-                vField.setLabel(getLabel(labelSpec));
+                vField.setLabel(unquoteString(labelSpec.getSTRING_LITERAL()));
+            }
+            optToolTipSpec toolTipSpec = generalSpecs.getoptToolTipSpec();
+            if (toolTipSpec != null) {
+                vField.setToolTipText(unquoteString(toolTipSpec.getSTRING_LITERAL()));
             }
             if (condSpec != null) {
                 vField.setIsConditional(true);
@@ -1346,13 +1364,15 @@ public class PrefspecsCompiler
 
         subs.put("$PREFS_PACKAGE_NAME$", fPagePackageName);
     	
-        IFile constantsSrc = PreferencesFactory.generatePreferencesConstants(
-        		pageInfos, sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, constantsClassName,  mon);
-        
-        IFile initializerSrc = PreferencesFactory.generatePreferencesInitializers(
-        		pageInfos,
-        		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,	
-        		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, fPageClassNameBase + "Initializer",  mon);
+        String projectSourceLoc= ExtensionPointWizard.getProjectSourceLocation(fProject);
+        String pluginPkgName= getPluginPackageName(fProject, null);
+        String pluginClassName= getPluginClassName(fProject, null);
+
+        PreferencesFactory.generatePreferencesConstants(pageInfos, sourceProject, projectSourceLoc, fPagePackageName, constantsClassName, mon);
+
+        PreferencesFactory.generatePreferencesInitializers(pageInfos,
+        		pluginPkgName, pluginClassName, constantsClassName,	
+        		sourceProject, projectSourceLoc, fPagePackageName, fPageClassNameBase + "Initializer",  mon);
 
         subs.put("$PREFS_INIT_CLASS_NAME$", fPageClassNameBase + "Initializer");
 
@@ -1361,28 +1381,33 @@ public class PrefspecsCompiler
 
             subs.put("$PREFS_CLASS_NAME$", javaPageName);
 
-            IFile pageSrc = WizardUtilities.createFileFromTemplate(
-            	javaPageName + "PreferencePage.java", "preferencesPageWithTabs.java", fPagePackageName, WizardUtilities.getProjectSourceLocation(fProject), subs, fProject, mon);
-        
-            IFile defaultSrc = PreferencesFactory.generateDefaultTab(
-            		pageInfo,
-            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName, initializerClassName,
-            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "DefaultTab",  mon);
-        
-            IFile configSrc = PreferencesFactory.generateConfigurationTab(
-            		pageInfo,
-            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "ConfigurationTab",  mon);
+            PreferencesFactory.generatePreferencesPage(pageInfo, pluginPkgName, pluginClassName,
+                    constantsClassName, initializerClassName, sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "PreferencePage", mon);
 
-            IFile instanceSrc = PreferencesFactory.generateInstanceTab(
+            if (pageInfo.getTabInfo(IPreferencesService.DEFAULT_LEVEL).getIsUsed()) {
+                PreferencesFactory.generateDefaultTab(
             		pageInfo,
-            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "InstanceTab",  mon);
-        
-            IFile projectSrc = PreferencesFactory.generateProjectTab(
+            		pluginPkgName, pluginClassName, constantsClassName, initializerClassName,
+            		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "DefaultTab",  mon);
+            }
+            if (pageInfo.getTabInfo(IPreferencesService.CONFIGURATION_LEVEL).getIsUsed()) {
+                PreferencesFactory.generateConfigurationTab(
             		pageInfo,
-            		getPluginPackageName(fProject, null), getPluginClassName(fProject, null), constantsClassName,
-            		sourceProject, ExtensionPointWizard.getProjectSourceLocation(fProject), fPagePackageName, javaPageName + "ProjectTab",  mon);
+            		pluginPkgName, pluginClassName, constantsClassName,
+            		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "ConfigurationTab",  mon);
+            }
+            if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL).getIsUsed()) {
+                PreferencesFactory.generateInstanceTab(
+            		pageInfo,
+            		pluginPkgName, pluginClassName, constantsClassName,
+            		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "InstanceTab",  mon);
+            }
+            if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL).getIsUsed()) {
+                PreferencesFactory.generateProjectTab(
+            		pageInfo,
+            		pluginPkgName, pluginClassName, constantsClassName,
+            		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "ProjectTab",  mon);
+            }
         }
 	}
     
