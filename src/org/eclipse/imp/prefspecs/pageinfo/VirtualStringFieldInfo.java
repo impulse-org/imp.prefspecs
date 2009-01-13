@@ -46,7 +46,8 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	 */
 	protected String emptyValue = "";
 	
-	
+
+	protected String validatorQualClass = null;
 	
 	
 	public VirtualStringFieldInfo(PreferencesPageInfo parentPage, String name) {
@@ -66,8 +67,7 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 		this.specialValue = special;
 	}
 	
-	
-	
+
 	public void setDefaultValue(String s) {
 		defaultValue = s;
 	}
@@ -113,11 +113,19 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	}
 
 
+    public String getValidatorQualClass() {
+        return validatorQualClass;
+    }
+
+    public void setValidatorQualClass(String qualClass) {
+        this.validatorQualClass= qualClass;
+    }
+
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
 	
-	public void dump(String prefix) {
+    public void dump(String prefix) {
 		super.dump(prefix);
 		String indent = prefix + "  ";
 		System.out.println(indent + "hasSpecial  = " + hasSpecialValue);

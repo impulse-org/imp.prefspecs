@@ -115,7 +115,9 @@ public class ConcreteStringFieldInfo
 		return vStringFieldInfo.getEmptyValue();
 	}
 
-	
+	public String getValidatorQualClass() {
+	    return vStringFieldInfo.getValidatorQualClass();
+	}
 	
 	
 	//

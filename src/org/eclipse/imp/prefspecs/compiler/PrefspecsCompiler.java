@@ -140,12 +140,17 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
 import org.eclipse.imp.wizards.WizardUtilities;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.pde.core.plugin.IExtensions;
 import org.eclipse.pde.core.plugin.IPluginAttribute;
 import org.eclipse.pde.core.plugin.IPluginExtension;
@@ -183,7 +188,12 @@ public class PrefspecsCompiler
 
 	
     public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
-    
+
+
+    public PrefspecsCompiler() {
+        super();
+    }
+
     public PrefspecsCompiler(String problem_marker_id) {
     	PROBLEM_MARKER_ID = problem_marker_id;
     }
@@ -191,7 +201,7 @@ public class PrefspecsCompiler
 
     public List<PreferencesPageInfo> getPreferencesPageInfos(IFile specFile) {
     	computePreferencesPageInfo(specFile);
-    	return fPages;	
+    	return fPages;
     }
 
 
@@ -372,6 +382,10 @@ public class PrefspecsCompiler
 
         private String unquoteString(ASTNodeToken stringLit) {
             String text= stringLit.toString();
+            return unquoteString(text);
+        }
+
+        private String unquoteString(String text) {
             return text.substring(1, text.length() - 1);
         }
 
@@ -428,11 +442,11 @@ public class PrefspecsCompiler
             return null;
 	    }
 
-	    private void createErrorMarker(String msg, optConditionalSpec condSpec) {
+	    private void createErrorMarker(String msg, ASTNode node) {
 	        try {
-	            int startLine= condSpec.getLeftIToken().getLine();
-	            int startOffset= condSpec.getLeftIToken().getStartOffset();
-	            int endOffset= condSpec.getRightIToken().getEndOffset()+1;
+	            int startLine= node.getLeftIToken().getLine();
+	            int startOffset= node.getLeftIToken().getStartOffset();
+	            int endOffset= node.getRightIToken().getEndOffset()+1;
 
 	            IMarker m = PrefspecsCompiler.this.fSpecFile.createMarker(PROBLEM_MARKER_ID);
 	            String[] attributeNames = new String[] {IMarker.LINE_NUMBER, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.MESSAGE, IMarker.PRIORITY, IMarker.SEVERITY};
@@ -765,6 +779,14 @@ public class PrefspecsCompiler
                		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
             		vString.setEmptyValueAllowed(true);
             		vString.setEmptyValue(getValueOf(ses1.getstringValue()));
+            	}
+            	stringValidatorSpec validatorSpec= stringSpecificSpec.getstringValidatorSpec();
+            	if (validatorSpec != null) {
+            	    String validatorQualClass= unquoteString(validatorSpec.getqualClassName().getSTRING_LITERAL().toString());
+                    vString.setValidatorQualClass(validatorQualClass);
+                    if (!findClass(validatorQualClass)) {
+                        createErrorMarker("Validator class " + validatorQualClass + " does not exist", validatorSpec);
+                    }
             	}
         	}
         	
@@ -1144,10 +1166,32 @@ public class PrefspecsCompiler
     }
 
     
-    
-    public PrefspecsCompiler() {
-        super();
+    public boolean findClass(String validatorQualClass) {
+        IJavaProject javaProj= JavaCore.create(fProject);
+        String validatorPathSuffix= validatorQualClass.replace('.', File.separatorChar);
+        try {
+            return javaProj.findElement(new Path(validatorPathSuffix).addFileExtension("java")) != null;
+        } catch (JavaModelException e) {
+            return false;
+        }
     }
+
+
+    private List<IClasspathEntry> getSourceCPEntries(IJavaProject javaProj) {
+        List<IClasspathEntry> result= new ArrayList<IClasspathEntry>();
+        try {
+            IClasspathEntry[] cpEntries= javaProj.getResolvedClasspath(true);
+            for(int i= 0; i < cpEntries.length; i++) {
+                if (cpEntries[i].getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+                    result.add(cpEntries[i]);
+                }
+            }
+        } catch (JavaModelException e) {
+            
+        }
+        return result;
+    }
+
 
     public String getFileContents(IFile file) {
         char[] buf= null;

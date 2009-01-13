@@ -951,6 +951,9 @@ public class PreferencesFactory implements IPreferencesFactory
 		result = result + "\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n";	// empty allowed, empty value
 		result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";	// false for default tab but not necessarily any others\n";
 
+		if (fieldInfo.getValidatorQualClass() != null && fieldInfo.getValidatorQualClass().length() > 0) {
+		    result = result + "\t\t" + fieldInfo.getName() + ".setValidator(new " + fieldInfo.getValidatorQualClass() + "());\n";
+		}
 		result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
 		
         if (!pageInfo.getNoDetails()) {

@@ -63,6 +63,7 @@
     NORMAL
     RANGE
     TOOLTIP
+    VALIDATOR
     VALUES
 
     -- For boolean properties of fields (or anything else)
@@ -356,6 +357,12 @@
     Keyword ::= v a l u e s
         /.$BeginAction
             $setResult($_VALUES);
+          $EndAction
+        ./
+
+    Keyword ::= v a l i d a t o r
+        /.$BeginAction
+            $setResult($_VALIDATOR);
           $EndAction
         ./
 

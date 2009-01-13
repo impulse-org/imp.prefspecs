@@ -249,14 +249,14 @@
     intDefValueSpec ::= %empty | DEFVALUE$ signedNumber ';'$
 
 
-    stringSpecificSpec ::= stringCustomSpec stringDefValueSpec
+    stringSpecificSpec ::= stringCustomSpec stringDefValueSpec stringValidatorSpec
     stringCustomSpec   ::= stringSpecialSpec stringEmptySpec
     stringSpecialSpec  ::= %empty | HASSPECIAL$ stringValue ';'$
     stringEmptySpec    ::= %empty
                          | EMPTYALLOWED$ FALSE ';'$
                          | EMPTYALLOWED$ TRUE stringValue ';'$
     stringDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
-
+    stringValidatorSpec ::= %empty | VALIDATOR$ stringValue$qualClassName ';'$
 
     -- Rules for values and identifiers
 
