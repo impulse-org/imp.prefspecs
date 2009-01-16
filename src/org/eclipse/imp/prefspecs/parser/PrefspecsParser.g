@@ -238,7 +238,7 @@
 
     fontSpecificSpec ::= fontDefValueSpec
     -- The following represents the information needed to construct a FontData object
-    fontDefValueSpec ::= %empty | DEFVALUE$ stringValue$name NUMBER$height fontStyle$style
+    fontDefValueSpec ::= %empty | DEFVALUE$ stringValue$name NUMBER$height fontStyle$style ';'$
     fontStyle        ::= NORMAL | BOLD | ITALIC
 
 
