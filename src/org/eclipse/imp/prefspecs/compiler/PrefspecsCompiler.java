@@ -921,7 +921,7 @@ public class PrefspecsCompiler
                 setVirtualProperties(vRadio, propSpecs.getgeneralSpecs(), radioField.getoptConditionalSpec());
 
                 if (defValueSpec != null) {
-                    vRadio.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
+                    vRadio.setDefaultValue(defValueSpec.getidentifier().getIDENTIFIER().toString());
                 }
 
                 List<String> valuesList= new ArrayList<String>();
@@ -957,7 +957,7 @@ public class PrefspecsCompiler
                 labelledStringValue lsv= stringValues.getlabelledStringValueAt(i);
                 String value= lsv.getidentifier().toString();
                 values.add(value);
-                String label= lsv.getoptLabelSpec() != null ? lsv.getoptLabelSpec().getSTRING_LITERAL().toString() : null;
+                String label= lsv.getoptLabel() != null ? lsv.getoptLabel().getSTRING_LITERAL().toString() : null;
                 labels.add(label);
             }
         }
@@ -1227,7 +1227,9 @@ public class PrefspecsCompiler
 		    public void run(IProgressMonitor monitor) throws CoreException {
 				getGenerationParameters(specFile);
 				collectCodeParms(specFile);
-				
+				if (fPageId == null) {
+				    PrefspecsCompiler.this.fPageId= PrefspecsCompiler.this.fPagePackageName;
+				}
 				
 				// Remove previous extensions of this point, but only if
 				// they have the same extension id
@@ -1336,6 +1338,7 @@ public class PrefspecsCompiler
 		}
 		if (genParamsFile == null) {
 			System.err.println("PrefspecsCompiler.getGenerationParameters:  no parameters file found located with specification file = " + file.getName());
+			return;
 		}
 
         try {
