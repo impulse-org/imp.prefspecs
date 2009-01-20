@@ -626,8 +626,8 @@ public class PreferencesFactory implements IPreferencesFactory
                 } else if (vField instanceof VirtualRadioFieldInfo) {
                     VirtualRadioFieldInfo vRadio= (VirtualRadioFieldInfo) vField;
                     fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                    constantsClassName + "." + preferenceConstantForName(vRadio.getName()) + ", " +
-                    vRadio.getDefaultValue() + ");\n";
+                    constantsClassName + "." + preferenceConstantForName(vRadio.getName()) + ", \"" +
+                    vRadio.getDefaultValue() + "\");\n";
     			} else {
     				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n";
     			}
