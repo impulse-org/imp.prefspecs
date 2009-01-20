@@ -160,7 +160,7 @@ public class PreferencesFactory implements IPreferencesFactory
 
         fileText.append("\tpublic " + className + "() {\n");
         fileText.append("\t\tsuper();\n");
-        fileText.append("\t\tprefService = " + pluginClassName + ".getPreferencesService();\n");
+        fileText.append("\t\tprefService = " + pluginClassName + ".getInstance().getPreferencesService();\n");
         fileText.append("\t}\n\n");
 
         fileText.append("\tprotected PreferencesTab[] createTabs(IPreferencesService prefService,\n");
@@ -579,7 +579,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\t * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()\n";
 		fileText = fileText + "\t */\n";
 		fileText = fileText + "\tpublic void initializeDefaultPreferences() {\n";
-		fileText = fileText + "\t\tIPreferencesService service = " + pluginClassName + ".getPreferencesService();\n\n";
+		fileText = fileText + "\t\tIPreferencesService service = " + pluginClassName + ".getInstance().getPreferencesService();\n\n";
 		
 		return fileText;
 	}
@@ -647,7 +647,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\t * Clear (remove) any preferences set on the given level.\n";	
 		fileText = fileText + "\t */\n";
 		fileText = fileText + "\tpublic void clearPreferencesOnLevel(String level) {\n";
-		fileText = fileText + "\t\tIPreferencesService service = " + pluginClassName + ".getPreferencesService();\n";
+		fileText = fileText + "\t\tIPreferencesService service = " + pluginClassName + ".getInstance().getPreferencesService();\n";
 		fileText = fileText + "\t\tservice.clearPreferencesAtLevel(level);\n\n";
 		fileText = fileText + "\t}\n}\n";
 		return fileText;
