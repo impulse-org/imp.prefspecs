@@ -226,15 +226,15 @@
 
     radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
     radioCustomSpec   ::= columnsSpec radioValuesSpec
-    radioDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
+    radioDefValueSpec ::= %empty | DEFVALUE$ identifier ';'$
     radioValuesSpec   ::= VALUES$ '{'$ labelledStringValueList '}'$
 
     columnsSpec       ::= %empty | COLUMNS$ NUMBER ';'$
 
     labelledStringValueList$$labelledStringValue ::=
         labelledStringValue | labelledStringValueList ','$ labelledStringValue
-    labelledStringValue ::= identifier optLabelSpec
-
+    labelledStringValue ::= identifier optLabel
+    optLabel            ::= %empty | stringValue
 
     fontSpecificSpec ::= fontDefValueSpec
     -- The following represents the information needed to construct a FontData object
