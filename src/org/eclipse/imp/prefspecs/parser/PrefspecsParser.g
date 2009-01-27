@@ -543,7 +543,6 @@
                                 (fieldType.equals(FILE_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
                                 (fieldType.equals(INT_TYPE) && !(typeCustomSpecs instanceof intCustomSpec)) ||
                                 //(fieldType.equals(RADIO_TYPE) && !(typeCustomSpecs instanceof radioCustomSpec)) ||
-                                (fieldType.equals(RADIO_TYPE) && !(typeCustomSpecs instanceof radioSpecialSpec)) ||
                                 (fieldType.equals(STRING_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)))
                             {
                                 //emitError(n.getidentifier().getIToken(), ""); //"Field type not consistent with property specification");
@@ -557,8 +556,6 @@
                                     emitError((intCustomSpec)typeCustomSpecs, propertyMsg);
                                 //} else if (typeCustomSpecs instanceof radioCustomSpec) {
                                 //    emitError((radioCustomSpec)typeCustomSpecs, propertyMsg);
-                                 } else if (typeCustomSpecs instanceof radioSpecialSpec) {
-                                    emitError((radioSpecialSpec)typeCustomSpecs, propertyMsg);
                                 } else if (typeCustomSpecs instanceof stringCustomSpec) {
                                     emitError((stringCustomSpec)typeCustomSpecs, propertyMsg);
                                 }
