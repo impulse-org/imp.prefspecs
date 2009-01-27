@@ -12,20 +12,12 @@
 
 package org.eclipse.imp.prefspecs.documentationProvider;
 
-
-import java.util.ArrayList;
-
 import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.parser.SimpleLPGParseController;
-import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
-import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.PrefspecsParsersym;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
 import org.eclipse.imp.prefspecs.parser.Ast.IASTNodeToken;
-import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 import org.eclipse.imp.services.IDocumentationProvider;
-
-
 
 public class PrefspecsDocumentationProvider implements IDocumentationProvider, ILanguageService {
 
@@ -43,98 +35,98 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         	
         	switch (tokenKind) {
         	
-        	case PrefspecsLexer.TK_TABS:
+        	case PrefspecsParsersym.TK_TABS:
         		return "Introduces required section for specifying participation of tabs on the preference page " +
         			"and optionally specifying certain properties of fields on those tabs";
-        	case PrefspecsLexer.TK_FIELDS:
+        	case PrefspecsParsersym.TK_FIELDS:
         		return "Introduces required section for specifying fields for tabs on the preference page " +
 						"and optionally specifying certain properties of those fields";
-        	case PrefspecsLexer.TK_CUSTOM:
+        	case PrefspecsParsersym.TK_CUSTOM:
         		return "Introduces optional section for specifying fiel-property values that apply to specific fields on specific tabs.";
-        	case PrefspecsLexer.TK_CONDITIONALS:
+        	case PrefspecsParsersym.TK_CONDITIONALS:
         		return "Introduces optional section for specifying fields that are enabled depending on the states other fields.";
  
-        	case PrefspecsLexer.TK_DEFAULT:
+        	case PrefspecsParsersym.TK_DEFAULT:
         		return "Designates the 'default' level preferences tab";
-        	case PrefspecsLexer.TK_CONFIGURATION:
+        	case PrefspecsParsersym.TK_CONFIGURATION:
         		return "Designates the 'configuration' level preferences tab";
-        	case PrefspecsLexer.TK_INSTANCE:
+        	case PrefspecsParsersym.TK_INSTANCE:
         		return "Designates the 'instance' level preferences tab";
-        	case PrefspecsLexer.TK_PROJECT:
+        	case PrefspecsParsersym.TK_PROJECT:
         		return "Designates the 'project' level preferences tab";
 
-        	case PrefspecsLexer.TK_BOOLEAN:
+        	case PrefspecsParsersym.TK_BOOLEAN:
         		return "Designates the 'boolean' (checkbox) field type";
-        	case PrefspecsLexer.TK_COMBO:
+        	case PrefspecsParsersym.TK_COMBO:
         		return "Designates the 'combo' (combo box) field type";
-        	case PrefspecsLexer.TK_DIRLIST:
+        	case PrefspecsParsersym.TK_DIRLIST:
         		return "Designates the 'dirlist' (directory list) field type";
-        	case PrefspecsLexer.TK_FILE:
+        	case PrefspecsParsersym.TK_FILE:
         		return "Designates the 'file' (file name) field type";
-        	case PrefspecsLexer.TK_INT:
+        	case PrefspecsParsersym.TK_INT:
         		return "Designates the 'int' field type";
-        	case PrefspecsLexer.TK_RADIO:
+        	case PrefspecsParsersym.TK_RADIO:
         		return "Designates the 'radio' (radio buttons) field type";
-        	case PrefspecsLexer.TK_STRING:
+        	case PrefspecsParsersym.TK_STRING:
         		return "Designates the 'string' field type";
 
-        	case PrefspecsLexer.TK_DEFVALUE:
+        	case PrefspecsParsersym.TK_DEFVALUE:
         		return "'defvalue' indicates a default value for the field, which is used to set " +
         				"the value of the field on the 'default' preferences level; takes a value " +
         				"of the type of the field";
-        	case PrefspecsLexer.TK_EMPTYALLOWED:
+        	case PrefspecsParsersym.TK_EMPTYALLOWED:
         		return "'emptyallowed' indicates whether the field has, and is allowed to take on, " +
         				"an 'empty' value; this attribute takes a boolean value; if 'true' then a value " +
            				"of the field type must be provided (to serve as the 'empty' value); " +
         				"if 'false', then no other argument is needed";
-        	case PrefspecsLexer.TK_HASSPECIAL:
+        	case PrefspecsParsersym.TK_HASSPECIAL:
         		return "'hasspecial' requires a value of the type of the field that " +
         				"will serve as a distinguished value; omit if no such value";
-        	case PrefspecsLexer.TK_ISEDITABLE:
+        	case PrefspecsParsersym.TK_ISEDITABLE:
         		return "'iseditable' takes a boolean value:  'true' indicates that the field " +
         				"can be edited (normal case); false indicates that it cannot (field is 'read only')";
-        	case PrefspecsLexer.TK_ISREMOVABLE:
+        	case PrefspecsParsersym.TK_ISREMOVABLE:
         		return "'isremovable' takes a boolean value:  'true' indicates that the value " +
         				"can be removed from this field an inherited from a higher level; " +
         				"'false' means that the field must always have a local value (not inherited";
-        	case PrefspecsLexer.TK_RANGE:
+        	case PrefspecsParsersym.TK_RANGE:
         		return "'range' sets a range for numeric field types in the form 'lowVal .. highVal'";
 
 
-        	case PrefspecsLexer.TK_AGAINST:
+        	case PrefspecsParsersym.TK_AGAINST:
         		return "'against' means that the preceding field (of any type) is enabled if and only if " +
         				"the following field (of boolean type) is set to 'false'";
-        	case PrefspecsLexer.TK_WITH:
+        	case PrefspecsParsersym.TK_WITH:
         		return "'with' means that the preceding field (of any type) is enabled if and only if " +
         				"the following field (of boolean type) is set to 'true'";
         		
-        	case PrefspecsLexer.TK_STRING_LITERAL:
+        	case PrefspecsParsersym.TK_STRING_LITERAL:
         		return "String literal";
         		
-        	case PrefspecsLexer.TK_IDENTIFIER:
+        	case PrefspecsParsersym.TK_IDENTIFIER:
         		int tokenNumber = ((IASTNodeToken) node).getLeftIToken().getTokenIndex();
         		if (tokenNumber == 2)
         			return "Preference-page identifier";
         		else
         			return "Preference-field identifier";
 
-        	case PrefspecsLexer.TK_SINGLE_LINE_COMMENT:
+        	case PrefspecsParsersym.TK_SINGLE_LINE_COMMENT:
         		// Comment tokens may not appear as such, and I don't want
         		// to go digging around in the adjuncts of "real" tokens,
         		// so don't expect much here
         		return "Comment (no effect on page generation)";
         	
-           	case PrefspecsLexer.TK_IN:
+           	case PrefspecsParsersym.TK_IN:
         		return "'in' means that the associated tab will be included in the generated preferences page";
-        	case PrefspecsLexer.TK_OUT:
+        	case PrefspecsParsersym.TK_OUT:
            		return "'out' means that the associated tab will not be included in the generated preferences page";
  
-           	case PrefspecsLexer.TK_TRUE:
+           	case PrefspecsParsersym.TK_TRUE:
         		return "The opposite of false.";
-        	case PrefspecsLexer.TK_FALSE:
+        	case PrefspecsParsersym.TK_FALSE:
            		return "The opposite of true.";
        		
-        	case PrefspecsLexer.TK_PAGE:
+        	case PrefspecsParsersym.TK_PAGE:
         		return "This designates the beginning of a preference-page specification";
       		
         	default:

@@ -20,8 +20,8 @@ import lpg.runtime.PrsStream;
 import org.eclipse.imp.editor.SourceProposal;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.SimpleLPGParseController;
-import org.eclipse.imp.prefspecs.parser.PrefspecsLexer;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
+import org.eclipse.imp.prefspecs.parser.PrefspecsParsersym;
 import org.eclipse.imp.prefspecs.parser.Ast.*;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.jface.text.ITextViewer;
@@ -35,7 +35,7 @@ public class PrefspecsContentProposer implements IContentProposer
         int index = stream.getTokenIndexAtCharacter(offset),
             token_index = (index < 0 ? -(index - 1) : index),
             previous_index = stream.getPrevious(token_index);
-        return stream.getIToken(((stream.getKind(previous_index) == PrefspecsLexer.TK_IDENTIFIER ||
+        return stream.getIToken(((stream.getKind(previous_index) == PrefspecsParsersym.TK_IDENTIFIER ||
                                   psPC.isKeyword(stream.getKind(previous_index))) &&
                                  offset == stream.getEndOffset(previous_index) + 1)
                                          ? previous_index
@@ -91,10 +91,10 @@ public class PrefspecsContentProposer implements IContentProposer
         // Add tab-name candidates, if appropriate
         if (startCustom > 0 && tokenPosition > startCustom && tokenPosition < endCustom) {
         	switch (kind) {
-        	case PrefspecsLexer.TK_PROJECT:
-        	case PrefspecsLexer.TK_INSTANCE:
-        	case PrefspecsLexer.TK_CONFIGURATION:
-        	case PrefspecsLexer.TK_DEFAULT:
+        	case PrefspecsParsersym.TK_PROJECT:
+        	case PrefspecsParsersym.TK_INSTANCE:
+        	case PrefspecsParsersym.TK_CONFIGURATION:
+        	case PrefspecsParsersym.TK_DEFAULT:
               if ("default".startsWith(prefix))
             	  result.add(new SourceProposal("default", prefix, offset));
               else if ("configuration".startsWith(prefix))
@@ -260,11 +260,11 @@ public class PrefspecsContentProposer implements IContentProposer
     public boolean kindCanBeCompleted(IParseController controller, int kind) {
     	// TODO:  revise this appropriately for new sets of kinds
     	switch (kind) {
-    	case PrefspecsLexer.TK_PROJECT:
-    	case PrefspecsLexer.TK_INSTANCE:
-    	case PrefspecsLexer.TK_CONFIGURATION:
-    	case PrefspecsLexer.TK_DEFAULT:
-    	case PrefspecsLexer.TK_IDENTIFIER:
+    	case PrefspecsParsersym.TK_PROJECT:
+    	case PrefspecsParsersym.TK_INSTANCE:
+    	case PrefspecsParsersym.TK_CONFIGURATION:
+    	case PrefspecsParsersym.TK_DEFAULT:
+    	case PrefspecsParsersym.TK_IDENTIFIER:
     		return true;
     	}
         PrefspecsParseController psPC= (PrefspecsParseController) controller;
