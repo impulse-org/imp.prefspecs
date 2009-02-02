@@ -1,5 +1,5 @@
 --
--- The Java KeyWord Lexer
+-- The PrefSpecs KeyWord Lexer
 --
 %options package=org.eclipse.imp.prefspecs.parser
 %options template=KeywordTemplateF.gi
@@ -18,6 +18,7 @@
     TABS
     FIELDS
     CONDITIONALS
+    CHOICETYPE
     CUSTOM
 
     -- For page options
@@ -34,19 +35,18 @@
     OUT
     
     -- For field types
-    -- commented types not available for pages
     BOOLEAN
     -- bytes -- byte array
+    COLOR
     COMBO
-    -- double
+    DOUBLE
     DIRLIST
     FILE
-    -- float
     FONT
     INT
     RADIO
     STRING
-    
+
     -- For field specifications
     --SPECIAL
     
@@ -63,6 +63,7 @@
     NORMAL
     RANGE
     TOOLTIP
+    TYPE
     VALIDATOR
     VALUES
 
@@ -126,6 +127,18 @@
           $EndAction
         ./
 
+    Keyword ::= c h o i c e t y p e
+        /.$BeginAction
+            $setResult($_CHOICETYPE);
+          $EndAction
+        ./
+        
+    Keyword ::= c o l o r
+        /.$BeginAction
+            $setResult($_COLOR);
+          $EndAction
+        ./
+        
     Keyword ::= c o l u m n s
         /.$BeginAction
             $setResult($_COLUMNS);
@@ -177,6 +190,12 @@
     Keyword ::= d i r l i s t
         /.$BeginAction
             $setResult($_DIRLIST);
+          $EndAction
+        ./
+
+    Keyword ::= d o u b l e
+        /.$BeginAction
+            $setResult($_DOUBLE);
           $EndAction
         ./
 
@@ -345,6 +364,12 @@
     Keyword ::= t r u e
         /.$BeginAction
             $setResult($_TRUE);
+          $EndAction
+        ./
+
+    Keyword ::= t y p e
+        /.$BeginAction
+            $setResult($_TYPE);
           $EndAction
         ./
 

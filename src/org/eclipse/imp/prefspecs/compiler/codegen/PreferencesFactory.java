@@ -34,8 +34,10 @@ import org.eclipse.imp.preferences.fields.FileFieldEditor;
 import org.eclipse.imp.preferences.fields.IntegerFieldEditor;
 import org.eclipse.imp.preferences.fields.StringFieldEditor;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteEnumFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFileFieldInfo;
@@ -47,7 +49,9 @@ import org.eclipse.imp.prefspecs.pageinfo.IPreferencesGeneratorData;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualComboFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFontFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
@@ -607,11 +611,23 @@ public class PreferencesFactory implements IPreferencesFactory
     				fileText= fileText + "\t\tservice.setIntPreference(IPreferencesService.DEFAULT_LEVEL, " +
     									constantsClassName + "." + preferenceConstantForName(vInt.getName()) + ", " +
     									vInt.getDefaultValue() + ");\n";
+                } else if (vField instanceof VirtualDoubleFieldInfo) {
+                    // Double fields are a subtype of String fields, but double values are stored
+                    // separately in the preferences service
+                    VirtualDoubleFieldInfo vDouble = (VirtualDoubleFieldInfo) vField;
+                    fileText= fileText + "\t\tservice.setDoublePreference(IPreferencesService.DEFAULT_LEVEL, " +
+                                        constantsClassName + "." + preferenceConstantForName(vDouble.getName()) + ", " +
+                                        vDouble.getDefaultValue() + ");\n";
                 } else if (vField instanceof VirtualFontFieldInfo) {
                     VirtualFontFieldInfo vFont = (VirtualFontFieldInfo) vField;
                     fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
                                         constantsClassName + "." + preferenceConstantForName(vFont.getName()) + ", " +
                                         vFont.getDefaultName() + ");\n";
+                } else if (vField instanceof VirtualColorFieldInfo) {
+                    VirtualColorFieldInfo vFont = (VirtualColorFieldInfo) vField;
+                    fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
+                                        constantsClassName + "." + preferenceConstantForName(vFont.getName()) + ", \"" +
+                                        vFont.getDefaultColor() + "\");\n";
     			} else if (vField instanceof VirtualStringFieldInfo) {
     				// Subsumes subtypes of VirtualStringFieldInfo
     				VirtualStringFieldInfo vString = (VirtualStringFieldInfo) vField;
@@ -734,6 +750,9 @@ public class PreferencesFactory implements IPreferencesFactory
 			} else if (cFieldInfo instanceof ConcreteIntFieldInfo) {
 				ConcreteIntFieldInfo cIntFieldInfo = (ConcreteIntFieldInfo) cFieldInfo;
 				fileText = fileText + getTextToCreateIntegerField(pageInfo, cIntFieldInfo, tabLevel);	
+            } else if (cFieldInfo instanceof ConcreteDoubleFieldInfo) {
+                ConcreteDoubleFieldInfo cDoubleFieldInfo = (ConcreteDoubleFieldInfo) cFieldInfo;
+                fileText = fileText + getTextToCreateDoubleField(pageInfo, cDoubleFieldInfo, tabLevel);   
 			} else if (cFieldInfo instanceof ConcreteStringFieldInfo) {
 				// Subsumes subtypes of ConcreteStringFieldInfo
 				ConcreteStringFieldInfo cStringFieldInfo = (ConcreteStringFieldInfo) cFieldInfo;
@@ -741,6 +760,9 @@ public class PreferencesFactory implements IPreferencesFactory
 			} else if (cFieldInfo instanceof ConcreteFontFieldInfo) {
                 ConcreteFontFieldInfo cFontFieldInfo= (ConcreteFontFieldInfo) cFieldInfo;
                 fileText = fileText + getTextToCreateFontField(pageInfo, cFontFieldInfo, tabLevel);
+            } else if (cFieldInfo instanceof ConcreteColorFieldInfo) {
+                ConcreteColorFieldInfo cColorFieldInfo= (ConcreteColorFieldInfo) cFieldInfo;
+                fileText = fileText + getTextToCreateColorField(pageInfo, cColorFieldInfo, tabLevel);
 			} else if (cFieldInfo instanceof ConcreteComboFieldInfo) {
                 ConcreteComboFieldInfo cComboFieldInfo= (ConcreteComboFieldInfo) cFieldInfo;
                 fileText = fileText + getTextToCreateComboField(pageInfo, cComboFieldInfo, tabLevel);
@@ -918,6 +940,39 @@ public class PreferencesFactory implements IPreferencesFactory
 		}
 		
 	
+    protected static String getTextToCreateDoubleField(
+            PreferencesPageInfo pageInfo, ConcreteDoubleFieldInfo fieldInfo, String tabLevel   )
+        {
+            boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
+            String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+            String toolTip = fieldInfo.getToolTip();
+        
+            String result = "\n";
+            result = result + "\t\tDoubleFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewDoubleField(\n";
+            
+            result = result + "\t\t\tpage, this, fPrefService,\n";
+            result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+            result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
+            result = result + "\t\t\tparent,\n";
+            result = result + "\t\t\t" + editable + ", " + editable + ",\n";        // enabled, editable (treat as same)\n";
+//          result = result + "\t\t\t" + fieldInfo.getHasSpecialValue() + ", String.valueOf(" + fieldInfo.getSpecialValue() + "),\n";
+            result = result + "\t\t\tfalse, \"0\",\n";                                      // empty allowed, empty value
+            result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+
+            result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+
+            if (!pageInfo.getNoDetails()) {
+                String linkName = fieldInfo.getName() + "DetailsLink";
+                result = result + "\t\tLink " + fieldInfo.getName() + "DetailsLink = fPrefUtils.createDetailsLink(parent, " +
+                    fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n"; 
+                result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+                result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+            }
+            
+            return result;
+        }
+        
+    
 	/**
 	 * Returns the text needed to create a field of type String or one of the
 	 * supported subtypes of type String
@@ -970,8 +1025,7 @@ public class PreferencesFactory implements IPreferencesFactory
 
 
     /**
-     * Returns the text needed to create a field of type String or one of the
-     * supported subtypes of type String
+     * Returns the text needed to create a field of type Font
      * 
      * @param pageInfo
      * @param fieldInfo
@@ -987,6 +1041,44 @@ public class PreferencesFactory implements IPreferencesFactory
         
         String result = "\n";
         result = result + "\t\tFontFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFontField(\n";
+
+        result = result + "\t\t\tpage, this, fPrefService,\n";
+        result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
+        result = result + "\t\t\tparent,\n";
+        result = result + "\t\t\t" + editable + ", " + editable + ",\n";        // enabled, editable (treat as same)\n";
+        result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+
+        result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+        
+        if (!pageInfo.getNoDetails()) {
+            String linkName = fieldInfo.getName() + "DetailsLink";
+            result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
+            result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+            result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+        }
+        
+        return result;
+    }
+
+    /**
+     * Returns the text needed to create a field of type Color
+     * 
+     * @param pageInfo
+     * @param fieldInfo
+     * @param tabLevel
+     * @return
+     */
+    protected static String getTextToCreateColorField(
+        PreferencesPageInfo pageInfo, ConcreteColorFieldInfo fieldInfo, String tabLevel)
+    {
+        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
+        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
+        String toolTip = fieldInfo.getToolTip();
+        
+        String result = "\n";
+        result = result + "\t\tColorFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewColorField(\n";
 
         result = result + "\t\t\tpage, this, fPrefService,\n";
         result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
@@ -1111,17 +1203,17 @@ public class PreferencesFactory implements IPreferencesFactory
 		fileText = fileText + "\tprotected void addressProjectSelection(IPreferencesService.ProjectSelectionEvent event, Composite composite)\n";
 		fileText = fileText + "\t{\n";
 		fileText = fileText + "\t\tboolean haveCurrentListeners = false;\n\n";
-		fileText = fileText + "\t\tPreferences oldeNode = event.getPrevious();\n";
+		fileText = fileText + "\t\tPreferences oldNode = event.getPrevious();\n";
 		fileText = fileText + "\t\tPreferences newNode = event.getNew();\n\n";
 		
-		fileText = fileText + "\t\tif (oldeNode == null && newNode == null) {\n";		
+		fileText = fileText + "\t\tif (oldNode == null && newNode == null) {\n";		
 		fileText = fileText + "\t\t\t// Happens sometimes when you clear the project selection.\n";
 		fileText = fileText + "\t\t\t// Nothing, really, to do in this case ...\n";
 		fileText = fileText + "\t\t\treturn;\n";
 		fileText = fileText + "\t\t}\n\n";
 		
 		fileText = fileText + "\t\t// If oldeNode is not null, we want to remove any preference-change listeners from it\n";
-		fileText = fileText + "\t\tif (oldeNode != null && oldeNode instanceof IEclipsePreferences && haveCurrentListeners) {\n";
+		fileText = fileText + "\t\tif (oldNode != null && oldNode instanceof IEclipsePreferences && haveCurrentListeners) {\n";
 		fileText = fileText + "\t\t\tremoveProjectPreferenceChangeListeners();\n";
 		fileText = fileText + "\t\t\thaveCurrentListeners = false;\n";
 		fileText = fileText + "\t\t} else {\n";
@@ -1144,12 +1236,16 @@ public class PreferencesFactory implements IPreferencesFactory
 				fieldTypeName = "DirectoryListFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteFileFieldInfo) {
 				fieldTypeName = "FileFieldEditor";
-			} else if (cFieldInfo instanceof ConcreteIntFieldInfo) {
-				fieldTypeName = "IntegerFieldEditor";
+            } else if (cFieldInfo instanceof ConcreteIntFieldInfo) {
+                fieldTypeName = "IntegerFieldEditor";
+            } else if (cFieldInfo instanceof ConcreteDoubleFieldInfo) {
+                fieldTypeName = "DoubleFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteStringFieldInfo) {
 				fieldTypeName = "StringFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteFontFieldInfo) {
 			    fieldTypeName = "FontFieldEditor";
+            } else if (cFieldInfo instanceof ConcreteColorFieldInfo) {
+                fieldTypeName = "ColorFieldEditor";
 			} else if (cFieldInfo instanceof ConcreteComboFieldInfo) {
 			    fieldTypeName = "ComboFieldEditor";
             } else if (cFieldInfo instanceof ConcreteRadioFieldInfo) {

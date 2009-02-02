@@ -20,9 +20,9 @@
 %Export
         SINGLE_LINE_COMMENT
         IDENTIFIER 
-        NUMBER
+        INTEGER
         STRING_LITERAL
-        --DoubleLiteral
+        DECIMAL
         COMMA
         SEMICOLON
         PLUS
@@ -113,22 +113,25 @@
                     checkForKeyWord();
           $EndJava
         ./
-    
+
     Token ::= integer
         /.$BeginJava
-                    makeToken($_NUMBER);
+                    makeToken($_INTEGER);
           $EndJava
         ./
+
+    Token ::= decimal
+        /.$BeginJava
+                    makeToken($_DECIMAL);
+          $EndJava
+        ./
+
     Token ::= stringliteral
         /.$BeginJava
                makeToken($_STRING_LITERAL);
           $EndJava
         ./
---    Token ::= DoubleLiteral
---        /.$BeginJava
---                    makeToken($_DoubleLiteral);
---          $EndJava
---        ./
+
     Token ::= white
         /.$BeginJava
                     skipToken();
@@ -209,6 +212,7 @@
     integer ::= digit
               | integer digit
 
+    decimal ::= integer '.' integer
 
     stringliteral ::= singleQuoteString
                     | doubleQuoteString

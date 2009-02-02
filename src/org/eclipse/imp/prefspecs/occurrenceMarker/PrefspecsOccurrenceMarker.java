@@ -239,8 +239,8 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 
 		public boolean visit(signedNumber0 n) {
 			if (ast instanceof signedNumber0
-					&& n.getNUMBER().toString().equals(
-							((signedNumber0) ast).getNUMBER().toString())) {
+					&& n.getINTEGER().toString().equals(
+							((signedNumber0) ast).getINTEGER().toString())) {
 				fOccurrences.add(n);
 			}
 			return false;
@@ -248,8 +248,8 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 
 		public boolean visit(signedNumber1 n) {
 			if (ast instanceof signedNumber1
-					&& n.getNUMBER().toString().equals(
-							((signedNumber1) ast).getNUMBER().toString())) {
+					&& n.getINTEGER().toString().equals(
+							((signedNumber1) ast).getINTEGER().toString())) {
 				fOccurrences.add(n);
 			}
 			return false;

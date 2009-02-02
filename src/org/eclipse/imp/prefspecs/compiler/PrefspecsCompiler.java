@@ -47,8 +47,10 @@ import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.compiler.codegen.PreferencesFactory;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFileFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFontFieldInfo;
@@ -58,8 +60,10 @@ import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFontFieldInfo;
@@ -74,17 +78,20 @@ import org.eclipse.imp.prefspecs.parser.Ast.IbooleanValue;
 import org.eclipse.imp.prefspecs.parser.Ast.IfontStyle;
 import org.eclipse.imp.prefspecs.parser.Ast.IsignedNumber;
 import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
+import org.eclipse.imp.prefspecs.parser.Ast.ItypeOrValuesSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.colorDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.colorFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.colorFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.columnsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboCustomSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboDefValueSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.comboValuesSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionType0;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
@@ -95,6 +102,11 @@ import org.eclipse.imp.prefspecs.parser.Ast.customRule;
 import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirlistFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleRangeSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleSpecificSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fileFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fontDefValueSpec;
@@ -128,7 +140,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.radioDefValueSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.radioValuesSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.sign1;
 import org.eclipse.imp.prefspecs.parser.Ast.signedNumber0;
 import org.eclipse.imp.prefspecs.parser.Ast.signedNumber1;
@@ -142,15 +153,19 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
+import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec0;
+import org.eclipse.imp.prefspecs.parser.Ast.typeSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.valuesSpec;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
-import org.eclipse.imp.wizards.WizardUtilities;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.pde.core.plugin.IExtensions;
 import org.eclipse.pde.core.plugin.IPluginAttribute;
 import org.eclipse.pde.core.plugin.IPluginExtension;
@@ -161,9 +176,29 @@ import org.eclipse.pde.internal.core.bundle.WorkspaceBundleModel;
 import org.eclipse.pde.internal.core.ibundle.IBundleModel;
 import org.eclipse.pde.internal.core.plugin.ImpPluginElement;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.RGB;
 
 public class PrefspecsCompiler
 {
+    private static class LabelledValueDescriptor {
+        private final List<String> fValues= new ArrayList<String>();
+        private final List<String> fLabels= new ArrayList<String>();
+
+        public LabelledValueDescriptor(labelledStringValueList svList) {
+            for(int i=0; i < svList.size(); i++) {
+                labelledStringValue lsv= svList.getlabelledStringValueAt(i);
+                stringValue sv= lsv.getoptLabel();
+                fValues.add(lsv.getidentifier().getIDENTIFIER().toString());
+                fLabels.add(sv != null ? sv.getSTRING_LITERAL().toString() : null);
+            }
+        }
+        public int size() { return fValues.size(); }
+        public String getValue(int i) { return fValues.get(i); }
+        public String getLabel(int i) { return fLabels.get(i); }
+        public List<String> getValues() { return fValues; }
+        public List<String> getLabels() { return fLabels; }
+    }
+
 	protected IProject fProject = null;
 	protected String fProjectName = null;
 	protected String fLanguageName = null;
@@ -185,6 +220,8 @@ public class PrefspecsCompiler
 	protected boolean fNoDetails = false;
 
 	private IFile fSpecFile;	
+
+    private Map<String,LabelledValueDescriptor> fTypeMap= new HashMap<String, LabelledValueDescriptor>();
 
 	
     public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
@@ -400,17 +437,17 @@ public class PrefspecsCompiler
         private String getValueOf(stringValue sv) {
             return sv.getSTRING_LITERAL().toString();
         }
-        
+
         private int getValueOf(IsignedNumber sn) {
             if (sn instanceof signedNumber0) {
-                return Integer.parseInt(((signedNumber0) sn).getNUMBER().toString());
+                return Integer.parseInt(((signedNumber0) sn).getINTEGER().toString());
             } else {
                 signedNumber1 sn1= (signedNumber1) sn;
-                int absVal= Integer.parseInt(sn1.getNUMBER().toString());
+                int absVal= Integer.parseInt(sn1.getINTEGER().toString());
                 return (sn1.getsign() instanceof sign1) ? -absVal : absVal;
             }
         }
-        
+
         private int getValueOf(IfontStyle style) {
             if (style instanceof fontStyle0) {
                 return SWT.NORMAL;
@@ -746,6 +783,54 @@ public class PrefspecsCompiler
 
 
         @Override
+        public boolean visit(doubleFieldSpec doubleField) {
+            VirtualDoubleFieldInfo vDouble = new VirtualDoubleFieldInfo(fPageInfo, doubleField.getidentifier().toString());
+            doubleFieldPropertySpecs propSpecs = doubleField.getdoubleFieldPropertySpecs();
+
+            if (propSpecs != null) {
+                // Create a virtual field
+                setVirtualProperties(vDouble, propSpecs.getgeneralSpecs(), doubleField.getoptConditionalSpec());
+
+                doubleSpecificSpec specificSpec = propSpecs.getdoubleSpecificSpec();
+                doubleRangeSpec rangeSpec = (doubleRangeSpec) specificSpec.getdoubleCustomSpec();
+                doubleDefValueSpec defValueSpec = specificSpec.getdoubleDefValueSpec();
+
+                if (defValueSpec != null) {
+                    vDouble.setDefaultValue(Double.parseDouble(defValueSpec.getDECIMAL().toString()));
+                }
+
+                if (rangeSpec != null) {
+                    double lowValue = Double.parseDouble(rangeSpec.getlow().toString());
+                    double hiValue = Double.parseDouble(rangeSpec.gethigh().toString());
+
+                    vDouble.setRange(lowValue, hiValue);
+                }
+            }
+            
+            // Create an instance of a concrete field for each tab on the page
+            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+            while (tabs.hasNext()) {
+                PreferencesTabInfo tab = tabs.next();
+                if (!tab.getIsUsed())
+                    continue;
+                ConcreteDoubleFieldInfo cDouble = new ConcreteDoubleFieldInfo(vDouble, tab);
+
+                // Set the attributes of the concrete field:
+                // if set in the virtual field, use that value;
+                // else if set for the tab, use that value;
+                // else rely on the default for the field type
+                setConcreteProperties(vDouble, tab, cDouble);
+
+                if (vDouble.hasRangeSpec()) {
+                    cDouble.setRangeLow(vDouble.getRangeLow());
+                    cDouble.setRangeHigh(vDouble.getRangeHigh());
+                }
+            }
+            return false;
+        }
+
+
+        @Override
         public boolean visit(stringFieldSpec stringField) {
         	VirtualStringFieldInfo vString = new VirtualStringFieldInfo(fPageInfo, stringField.getidentifier().toString());
         	stringFieldPropertySpecs propSpecs = stringField.getstringFieldPropertySpecs();
@@ -825,6 +910,41 @@ public class PrefspecsCompiler
 
 
         @Override
+        public boolean visit(colorFieldSpec colorField) {
+            VirtualColorFieldInfo vColor= new VirtualColorFieldInfo(fPageInfo, colorField.getidentifier().toString());
+            colorFieldPropertySpecs propSpecs = colorField.getcolorFieldPropertySpecs();
+
+            if (propSpecs != null) {
+                setVirtualProperties(vColor, propSpecs.getgeneralSpecs(), colorField.getoptConditionalSpec());
+
+                colorDefValueSpec defValueSpec = propSpecs.getcolorSpecificSpec();
+
+                if (defValueSpec != null) {
+                    int r= Integer.parseInt(defValueSpec.getred().toString());
+                    int g= Integer.parseInt(defValueSpec.getgreen().toString());
+                    int b= Integer.parseInt(defValueSpec.getblue().toString());
+                    vColor.setDefaultColor(StringConverter.asString(new RGB(r, g, b)));
+                }
+            }
+            
+            // Create an instance of a concrete field for each tab on the page
+            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+            while (tabs.hasNext()) {
+                PreferencesTabInfo tab = tabs.next();
+                if (!tab.getIsUsed())
+                    continue;
+                ConcreteColorFieldInfo cColor= new ConcreteColorFieldInfo(vColor, tab);
+                
+                // Set the attributes of the concrete field:
+                // if set in the virtual field, use that value;
+                // else if set for the tab, use that value;
+                // else rely on the default for the field type
+                setConcreteProperties(vColor, tab, cColor);
+            }
+            return false;
+        }
+
+        @Override
         public boolean visit(fontFieldSpec fontField) {
             VirtualFontFieldInfo vFont= new VirtualFontFieldInfo(fPageInfo, fontField.getidentifier().toString());
             fontFieldPropertySpecs propSpecs = fontField.getfontFieldPropertySpecs();
@@ -858,6 +978,14 @@ public class PrefspecsCompiler
             return false;
         }
 
+        @Override
+        public boolean visit(typeSpec n) {
+            String typeName= n.getidentifier().getIDENTIFIER().toString();
+            LabelledValueDescriptor vd= new LabelledValueDescriptor(n.getlabelledStringValueList());
+
+            fTypeMap.put(typeName, vd);
+            return false;
+        }
 
         @Override
         public boolean visit(comboFieldSpec comboField) {
@@ -868,9 +996,15 @@ public class PrefspecsCompiler
                 comboSpecificSpec comboSpecificSpec= propSpecs.getcomboSpecificSpec();
                 comboDefValueSpec defValueSpec = comboSpecificSpec.getcomboDefValueSpec();
                 comboCustomSpec customSpec = comboSpecificSpec.getcomboCustomSpec();
-                comboValuesSpec valuesSpec = customSpec.getcomboValuesSpec();
+                ItypeOrValuesSpec tovSpec = customSpec.gettypeOrValuesSpec();
                 columnsSpec columnsSpec = customSpec.getcolumnsSpec();
-                labelledStringValueList stringValues= valuesSpec.getlabelledStringValueList();
+                LabelledValueDescriptor lvd;
+
+                if (tovSpec instanceof valuesSpec) {
+                    lvd= new LabelledValueDescriptor(((valuesSpec) tovSpec).getlabelledStringValueList());
+                } else {
+                    lvd= fTypeMap.get(((typeOrValuesSpec) tovSpec).getidentifier().getIDENTIFIER().toString());
+                }
 
                 setVirtualProperties(vCombo, propSpecs.getgeneralSpecs(), comboField.getoptConditionalSpec());
 
@@ -878,13 +1012,13 @@ public class PrefspecsCompiler
                     vCombo.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
                 }
 
-                List<String> valuesList= new ArrayList<String>();
-                List<String> labelsList= new ArrayList<String>();
-                collectValuesAndLabels(stringValues, valuesList, labelsList);
+                List<String> valuesList= lvd.getValues();
+                List<String> labelsList= lvd.getLabels();
+
                 vCombo.setValuesAndLabels(valuesList, labelsList);
 
                 if (columnsSpec != null) {
-                    vCombo.setNumColumns(Integer.parseInt((columnsSpec.getNUMBER().toString())));
+                    vCombo.setNumColumns(Integer.parseInt((columnsSpec.getINTEGER().toString())));
                 }
             }
 
@@ -914,9 +1048,16 @@ public class PrefspecsCompiler
                 radioSpecificSpec radioSpecificSpec= propSpecs.getradioSpecificSpec();
                 radioDefValueSpec defValueSpec = radioSpecificSpec.getradioDefValueSpec();
                 radioCustomSpec customSpec = radioSpecificSpec.getradioCustomSpec();
-                radioValuesSpec valuesSpec = customSpec.getradioValuesSpec();
+                ItypeOrValuesSpec tovSpec = customSpec.gettypeOrValuesSpec();
                 columnsSpec columnsSpec = customSpec.getcolumnsSpec();
-                labelledStringValueList stringValues= valuesSpec.getlabelledStringValueList();
+
+                LabelledValueDescriptor lvd;
+
+                if (tovSpec instanceof valuesSpec) {
+                    lvd= new LabelledValueDescriptor(((valuesSpec) tovSpec).getlabelledStringValueList());
+                } else {
+                    lvd= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
+                }
 
                 setVirtualProperties(vRadio, propSpecs.getgeneralSpecs(), radioField.getoptConditionalSpec());
 
@@ -924,14 +1065,13 @@ public class PrefspecsCompiler
                     vRadio.setDefaultValue(defValueSpec.getidentifier().getIDENTIFIER().toString());
                 }
 
-                List<String> valuesList= new ArrayList<String>();
-                List<String> labelsList= new ArrayList<String>();
+                List<String> valuesList= lvd.getValues();
+                List<String> labelsList= lvd.getLabels();
 
-                collectValuesAndLabels(stringValues, valuesList, labelsList);
                 vRadio.setValuesAndLabels(valuesList, labelsList);
 
                 if (columnsSpec != null) {
-                    vRadio.setNumColumns(Integer.parseInt((columnsSpec.getNUMBER().toString())));
+                    vRadio.setNumColumns(Integer.parseInt((columnsSpec.getINTEGER().toString())));
                 }
             }
 
@@ -950,16 +1090,6 @@ public class PrefspecsCompiler
                 setConcreteProperties(vRadio, tab, cRadio);
             }
             return false;
-        }
-
-        private void collectValuesAndLabels(labelledStringValueList stringValues, List<String> values, List<String> labels) {
-            for(int i=0; i < stringValues.size(); i++) {
-                labelledStringValue lsv= stringValues.getlabelledStringValueAt(i);
-                String value= lsv.getidentifier().toString();
-                values.add(value);
-                String label= lsv.getoptLabel() != null ? lsv.getoptLabel().getSTRING_LITERAL().toString() : null;
-                labels.add(label);
-            }
         }
 
         /*

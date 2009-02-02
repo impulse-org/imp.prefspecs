@@ -35,9 +35,9 @@ public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer 
             // START_HERE
             case TK_IDENTIFIER:
                  return identifierAttribute;
-            case TK_NUMBER:
+            case TK_INTEGER:
                 return numberAttribute;
-            case TK_DoubleLiteral:
+            case TK_DOUBLE:
                 return doubleAttribute;
 //          case TK_StringLiteral:
 //               return stringAttribute;

@@ -7,7 +7,6 @@
     /.import org.eclipse.imp.parser.IParser;
     import java.util.Hashtable;
     import java.util.Stack;
-    // SMS 2 Apr 2007
     import java.util.List;
     import java.util.ArrayList;
     import java.util.HashMap;
@@ -20,10 +19,6 @@
 %End        
 
 %Terminals
-         IDENTIFIER
-         NUMBER
-         STRING_LITERAL
-         DoubleLiteral
          COMMA ::= ','
          DOT   ::= '.'
          SEMICOLON ::= ';'
@@ -33,16 +28,10 @@
          RIGHTPAREN ::= ')'
          LEFTBRACE ::= '{'
          RIGHTBRACE ::= '}'
-    -- Note that the terminals that do not have aliases are declared
-    -- above only for documentation purposes.
 %End
 
 %Start
     prefSpecs
-%End
-
-%Recover
-   MissingExpression
 %End
 
 %Notice
@@ -62,7 +51,7 @@
 %End
 
 %Rules
-    prefSpecs ::= optPackageSpec optDetailsSpec pageSpecList
+    prefSpecs ::= optPackageSpec optDetailsSpec topLevelItems
 
     optPackageSpec ::= %empty | PACKAGE$ packageName ';'$
 
@@ -73,10 +62,14 @@
 
     onOff ::= ON | OFF
 
-    pageSpecList$$pageSpec ::= pageSpec | pageSpecList pageSpec
+    topLevelItems$$topLevelItem ::= topLevelItem | topLevelItems topLevelItem
 
-    -- Rules for the major parts:  pages and their sections
+    topLevelItem ::= typeSpec | pageSpec
+
+    -- Rules for the major parts:  types, pages and their sections
     
+    typeSpec ::= CHOICETYPE$ identifier '{'$ labelledStringValueList '}'$
+
     pageSpec ::= PAGE$ pageName '{'$ pageBody '}'$
 
     pageName ::= pagePath identifier$name
@@ -105,13 +98,13 @@
     tabSpecs ::= %empty
                | defaultTabSpec configurationTabSpec instanceTabSpec projectTabSpec
 
-    defaultTabSpec       ::= DEFAULT$ inout '{'$ generalSpecs '}'$
+    defaultTabSpec       ::= DEFAULT$       inout '{'$ generalSpecs '}'$
 
     configurationTabSpec ::= CONFIGURATION$ inout '{'$ generalSpecs '}'$
 
-    instanceTabSpec      ::= INSTANCE$ inout '{'$ generalSpecs '}'$
+    instanceTabSpec      ::= INSTANCE$      inout '{'$ generalSpecs '}'$
 
-    projectTabSpec       ::= PROJECT$ inout '{'$ generalSpecs '}'$
+    projectTabSpec       ::= PROJECT$       inout '{'$ generalSpecs '}'$
 
     --tabPropertySpecs ::= isEditableSpec isRemovableSpec
 
@@ -121,14 +114,16 @@
     -- Rules for the "fields" section
     
     fieldsSpec ::= FIELDS$ '{'$ fieldSpecs '}'$
-    
+
     fieldSpecs ::= %empty
                  | fieldSpec
                  | fieldSpecs fieldSpec
                     
     fieldSpec ::= booleanFieldSpec
+                | colorFieldSpec
                 | comboFieldSpec
                 | dirListFieldSpec
+                | doubleFieldSpec
                 | fileFieldSpec
                 | fontFieldSpec
                 | intFieldSpec
@@ -138,9 +133,13 @@
 
     booleanFieldSpec ::= BOOLEAN$ identifier booleanFieldPropertySpecs optConditionalSpec
 
+    colorFieldSpec   ::= COLOR$   identifier colorFieldPropertySpecs   optConditionalSpec
+
     comboFieldSpec   ::= COMBO$   identifier comboFieldPropertySpecs   optConditionalSpec
 
     dirListFieldSpec ::= DIRLIST$ identifier dirlistFieldPropertySpecs optConditionalSpec
+
+    doubleFieldSpec  ::= DOUBLE$  identifier doubleFieldPropertySpecs  optConditionalSpec
 
     fileFieldSpec    ::= FILE$    identifier fileFieldPropertySpecs    optConditionalSpec
 
@@ -155,9 +154,13 @@
 
     booleanFieldPropertySpecs ::= %empty | '{'$ generalSpecs booleanSpecificSpec '}'$
 
+    colorFieldPropertySpecs   ::= %empty | '{'$ generalSpecs colorSpecificSpec   '}'$
+
     comboFieldPropertySpecs   ::= %empty | '{'$ generalSpecs comboSpecificSpec   '}'$
 
     dirlistFieldPropertySpecs ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    doubleFieldPropertySpecs  ::= %empty | '{'$ generalSpecs doubleSpecificSpec  '}'$
 
     fileFieldPropertySpecs    ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
 
@@ -168,6 +171,7 @@
     radioFieldPropertySpecs   ::= %empty | '{'$ generalSpecs radioSpecificSpec   '}'$
 
     stringFieldPropertySpecs  ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
 
     optConditionalSpec ::= %empty | conditionType identifier
 
@@ -213,6 +217,7 @@
     optLabelSpec    ::= %empty | LABEL$ STRING_LITERAL ';'$
     optToolTipSpec  ::= %empty | TOOLTIP$ STRING_LITERAL ';'$
 
+
     booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
     booleanCustomSpec   ::= booleanSpecialSpec
     booleanSpecialSpec  ::= %empty | HASSPECIAL$ booleanValue ';'$
@@ -220,25 +225,30 @@
 
 
     comboSpecificSpec ::= comboCustomSpec comboDefValueSpec
-    comboCustomSpec   ::= columnsSpec comboValuesSpec
-    comboValuesSpec   ::= VALUES$ '{'$ labelledStringValueList '}'$
+    comboCustomSpec   ::= columnsSpec typeOrValuesSpec
     comboDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
 
     radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
-    radioCustomSpec   ::= columnsSpec radioValuesSpec
+    radioCustomSpec   ::= columnsSpec typeOrValuesSpec
     radioDefValueSpec ::= %empty | DEFVALUE$ identifier ';'$
-    radioValuesSpec   ::= VALUES$ '{'$ labelledStringValueList '}'$
 
-    columnsSpec       ::= %empty | COLUMNS$ NUMBER ';'$
+    typeOrValuesSpec  ::= TYPE$ identifier ';'$ | valuesSpec ';'$
+    valuesSpec        ::= VALUES$ '{'$ labelledStringValueList '}'$
+    columnsSpec       ::= %empty | COLUMNS$ INTEGER ';'$
 
     labelledStringValueList$$labelledStringValue ::=
         labelledStringValue | labelledStringValueList ','$ labelledStringValue
     labelledStringValue ::= identifier optLabel
     optLabel            ::= %empty | stringValue
 
+
+    colorSpecificSpec ::= colorDefValueSpec
+    colorDefValueSpec ::= %empty | DEFVALUE$ INTEGER$red ','$ INTEGER$green ','$ INTEGER$blue ';'$
+
+
     fontSpecificSpec ::= fontDefValueSpec
     -- The following represents the information needed to construct a FontData object
-    fontDefValueSpec ::= %empty | DEFVALUE$ stringValue$name NUMBER$height fontStyle$style ';'$
+    fontDefValueSpec ::= %empty | DEFVALUE$ stringValue$name INTEGER$height fontStyle$style ';'$
     fontStyle        ::= NORMAL | BOLD | ITALIC
 
 
@@ -248,6 +258,10 @@
     intSpecialSpec  ::= %empty | HASSPECIAL$ signedNumber ';'$
     intDefValueSpec ::= %empty | DEFVALUE$ signedNumber ';'$
 
+    doubleSpecificSpec ::= doubleCustomSpec doubleDefValueSpec
+    doubleCustomSpec   ::= doubleRangeSpec
+    doubleRangeSpec    ::= %empty | RANGE$ DECIMAL$low DOTS$ DECIMAL$high ';'$
+    doubleDefValueSpec ::= %empty | DEFVALUE$ DECIMAL ';'$
 
     stringSpecificSpec ::= stringCustomSpec stringDefValueSpec stringValidatorSpec
     stringCustomSpec   ::= stringSpecialSpec stringEmptySpec
@@ -266,45 +280,41 @@
 
     stringValue  ::= STRING_LITERAL
 
-    signedNumber ::= NUMBER |  sign NUMBER
+    signedNumber ::= INTEGER | sign INTEGER
 
     sign ::= PLUS | MINUS
 %End
 
 %Headers
     /.
+        public final String DEFAULT_TAB = "default";
+        public final String CONFIGURATION_TAB = "configuration";
+        public final String INSTANCE_TAB = "instance";
+        public final String PROJECT_TAB = "project";
+        public final String BOOLEAN_TYPE = "boolean";
+        public final String COMBO_TYPE = "combo";
+        public final String DIRLIST_TYPE = "dirlist";
+        public final String FILE_TYPE = "file";
+        public final String INT_TYPE = "int";
+        public final String RADIO_TYPE = "radio";
+        public final String STRING_TYPE = "string";
 
-            // SMS 2 Apr 2007 custom code
-            
-            public final String DEFAULT_TAB = "default";
-            public final String CONFIGURATION_TAB = "configuration";
-            public final String INSTANCE_TAB = "instance";
-            public final String PROJECT_TAB = "project";
-            public final String BOOLEAN_TYPE = "boolean";
-            public final String COMBO_TYPE = "combo";
-            public final String DIRLIST_TYPE = "dirlist";
-            public final String FILE_TYPE = "file";
-            public final String INT_TYPE = "int";
-            public final String RADIO_TYPE = "radio";
-            public final String STRING_TYPE = "string";
-
-            public static List<String> fieldNames = new ArrayList<String>();        
+        public static List<String> fieldNames = new ArrayList<String>();        
         public static List<String> booleanFields = new ArrayList<String>();
         public static HashMap<String,String> fieldTypes = new HashMap<String,String>();
-          
-          public static void reportError(String msg) {
-                  System.err.println(msg);
-          }
-          
-                        
-            //////////////////////////////////////////////////////////////////
-            
-            //
-            // Code here is from the original grammar template; it is used by
-            // the parse controller template (although parts evidently can be
-            // commented out)
-            //
-              
+
+        public static void reportError(String msg) {
+            System.err.println(msg);
+        }
+
+
+        //////////////////////////////////////////////////////////////////
+        //
+        // Code here is from the original grammar template; it is used by
+        // the parse controller template (although parts evidently can be
+        // commented out)
+        //
+
         public class SymbolTable extends Hashtable {
             SymbolTable parent;
             SymbolTable(SymbolTable parent) { this.parent = parent; }

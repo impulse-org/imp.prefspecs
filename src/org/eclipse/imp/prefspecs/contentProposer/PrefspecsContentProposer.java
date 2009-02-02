@@ -197,13 +197,16 @@ public class PrefspecsContentProposer implements IContentProposer
     
     
     private pageSpec getPageAtOffset(prefSpecs prefSpecs, int offset) {
-        pageSpecList pageList = prefSpecs.getpageSpecList();
+        topLevelItemList itemList= prefSpecs.gettopLevelItems();
 
-        for(int i=0; i < pageList.size(); i++) {
-            pageSpec page = pageList.getpageSpecAt(i);
-            if (page.getLeftIToken().getStartOffset() <= offset &&
-                page.getRightIToken().getEndOffset() >= offset) {
-                return page;
+        for(int i=0; i < itemList.size(); i++) {
+            ItopLevelItem item= itemList.gettopLevelItemAt(i);
+            if (item instanceof pageSpec) {
+                pageSpec page = (pageSpec) item;
+                if (page.getLeftIToken().getStartOffset() <= offset &&
+                    page.getRightIToken().getEndOffset() >= offset) {
+                    return page;
+                }
             }
         }
         return null;
