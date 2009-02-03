@@ -153,7 +153,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
-import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec0;
 import org.eclipse.imp.prefspecs.parser.Ast.typeSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.valuesSpec;
@@ -1003,7 +1002,7 @@ public class PrefspecsCompiler
                 if (tovSpec instanceof valuesSpec) {
                     lvd= new LabelledValueDescriptor(((valuesSpec) tovSpec).getlabelledStringValueList());
                 } else {
-                    lvd= fTypeMap.get(((typeOrValuesSpec) tovSpec).getidentifier().getIDENTIFIER().toString());
+                    lvd= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
                 }
 
                 setVirtualProperties(vCombo, propSpecs.getgeneralSpecs(), comboField.getoptConditionalSpec());
