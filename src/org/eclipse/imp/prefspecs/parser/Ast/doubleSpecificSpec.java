@@ -68,8 +68,14 @@ public class doubleSpecificSpec extends ASTNode implements IdoubleSpecificSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof doubleSpecificSpec)) return false;
-        if (! super.equals(o)) return false;
         doubleSpecificSpec other = (doubleSpecificSpec) o;
         if (_doubleCustomSpec == null)
             if (other._doubleCustomSpec != null) return false;
@@ -84,7 +90,7 @@ public class doubleSpecificSpec extends ASTNode implements IdoubleSpecificSpec
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_doubleCustomSpec == null ? 0 : _doubleCustomSpec.hashCode());
         hash = hash * 31 + (_doubleDefValueSpec == null ? 0 : _doubleDefValueSpec.hashCode());
         return hash;

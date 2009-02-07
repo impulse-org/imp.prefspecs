@@ -65,8 +65,14 @@ public class intSpecificSpec extends ASTNode implements IintSpecificSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof intSpecificSpec)) return false;
-        if (! super.equals(o)) return false;
         intSpecificSpec other = (intSpecificSpec) o;
         if (! _intCustomSpec.equals(other._intCustomSpec)) return false;
         if (_intDefValueSpec == null)
@@ -78,7 +84,7 @@ public class intSpecificSpec extends ASTNode implements IintSpecificSpec
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_intCustomSpec.hashCode());
         hash = hash * 31 + (_intDefValueSpec == null ? 0 : _intDefValueSpec.hashCode());
         return hash;

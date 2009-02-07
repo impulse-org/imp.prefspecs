@@ -70,8 +70,14 @@ public class customRules extends ASTNode implements IcustomRules
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof customRules)) return false;
-        if (! super.equals(o)) return false;
         customRules other = (customRules) o;
         if (_customRules == null)
             if (other._customRules != null) return false;
@@ -83,7 +89,7 @@ public class customRules extends ASTNode implements IcustomRules
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_customRules == null ? 0 : _customRules.hashCode());
         hash = hash * 31 + (_customRule.hashCode());
         return hash;

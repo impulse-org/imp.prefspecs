@@ -59,8 +59,14 @@ public class conditionalsSpec extends ASTNode implements IconditionalsSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof conditionalsSpec)) return false;
-        if (! super.equals(o)) return false;
         conditionalsSpec other = (conditionalsSpec) o;
         if (_conditionalSpecs == null)
             if (other._conditionalSpecs != null) return false;
@@ -71,7 +77,7 @@ public class conditionalsSpec extends ASTNode implements IconditionalsSpec
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_conditionalSpecs == null ? 0 : _conditionalSpecs.hashCode());
         return hash;
     }

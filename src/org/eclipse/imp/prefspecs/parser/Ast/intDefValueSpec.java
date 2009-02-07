@@ -60,8 +60,14 @@ public class intDefValueSpec extends ASTNode implements IintDefValueSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof intDefValueSpec)) return false;
-        if (! super.equals(o)) return false;
         intDefValueSpec other = (intDefValueSpec) o;
         if (! _signedNumber.equals(other._signedNumber)) return false;
         return true;
@@ -69,7 +75,7 @@ public class intDefValueSpec extends ASTNode implements IintDefValueSpec
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_signedNumber.hashCode());
         return hash;
     }

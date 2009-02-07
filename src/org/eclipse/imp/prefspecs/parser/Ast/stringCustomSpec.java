@@ -68,8 +68,14 @@ public class stringCustomSpec extends ASTNode implements IstringCustomSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof stringCustomSpec)) return false;
-        if (! super.equals(o)) return false;
         stringCustomSpec other = (stringCustomSpec) o;
         if (_stringSpecialSpec == null)
             if (other._stringSpecialSpec != null) return false;
@@ -84,7 +90,7 @@ public class stringCustomSpec extends ASTNode implements IstringCustomSpec
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_stringSpecialSpec == null ? 0 : _stringSpecialSpec.hashCode());
         hash = hash * 31 + (_stringEmptySpec == null ? 0 : _stringEmptySpec.hashCode());
         return hash;

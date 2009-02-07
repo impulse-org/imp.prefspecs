@@ -53,7 +53,6 @@ public class topLevelItemList extends AbstractASTNodeList implements ItopLevelIt
     {
         if (o == this) return true;
         if (! (o instanceof topLevelItemList)) return false;
-        if (! super.equals(o)) return false;
         topLevelItemList other = (topLevelItemList) o;
         if (size() != other.size()) return false;
         for (int i = 0; i < size(); i++)
@@ -66,7 +65,7 @@ public class topLevelItemList extends AbstractASTNodeList implements ItopLevelIt
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         for (int i = 0; i < size(); i++)
             hash = hash * 31 + (gettopLevelItemAt(i).hashCode());
         return hash;

@@ -69,8 +69,14 @@ public class pagePath extends ASTNode implements IpagePath
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof pagePath)) return false;
-        if (! super.equals(o)) return false;
         pagePath other = (pagePath) o;
         if (_pagePath == null)
             if (other._pagePath != null) return false;
@@ -82,7 +88,7 @@ public class pagePath extends ASTNode implements IpagePath
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_pagePath == null ? 0 : _pagePath.hashCode());
         hash = hash * 31 + (_identifier.hashCode());
         return hash;

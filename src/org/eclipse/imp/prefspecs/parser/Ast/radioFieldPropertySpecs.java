@@ -66,8 +66,14 @@ public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPrope
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof radioFieldPropertySpecs)) return false;
-        if (! super.equals(o)) return false;
         radioFieldPropertySpecs other = (radioFieldPropertySpecs) o;
         if (! _generalSpecs.equals(other._generalSpecs)) return false;
         if (! _radioSpecificSpec.equals(other._radioSpecificSpec)) return false;
@@ -76,7 +82,7 @@ public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPrope
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_generalSpecs.hashCode());
         hash = hash * 31 + (_radioSpecificSpec.hashCode());
         return hash;

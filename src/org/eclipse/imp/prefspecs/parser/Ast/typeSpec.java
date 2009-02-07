@@ -62,8 +62,14 @@ public class typeSpec extends ASTNode implements ItypeSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
+        //
+        // The super call test is not required for now because an Ast node
+        // can only extend the root Ast, AstToken and AstList and none of
+        // these nodes contain additional children.
+        //
+        // if (! super.equals(o)) return false;
+        //
         if (! (o instanceof typeSpec)) return false;
-        if (! super.equals(o)) return false;
         typeSpec other = (typeSpec) o;
         if (! _identifier.equals(other._identifier)) return false;
         if (! _labelledStringValueList.equals(other._labelledStringValueList)) return false;
@@ -72,7 +78,7 @@ public class typeSpec extends ASTNode implements ItypeSpec
 
     public int hashCode()
     {
-        int hash = super.hashCode();
+        int hash = 7;
         hash = hash * 31 + (_identifier.hashCode());
         hash = hash * 31 + (_labelledStringValueList.hashCode());
         return hash;
