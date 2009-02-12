@@ -154,6 +154,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
 import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec0;
+import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec1;
 import org.eclipse.imp.prefspecs.parser.Ast.typeSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.valuesSpec;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
@@ -999,10 +1000,11 @@ public class PrefspecsCompiler
                 columnsSpec columnsSpec = customSpec.getcolumnsSpec();
                 LabelledValueDescriptor lvd;
 
-                if (tovSpec instanceof valuesSpec) {
-                    lvd= new LabelledValueDescriptor(((valuesSpec) tovSpec).getlabelledStringValueList());
-                } else {
+                if (tovSpec instanceof typeOrValuesSpec0) {
                     lvd= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
+                } else {
+                    typeOrValuesSpec1 tovs1= (typeOrValuesSpec1) tovSpec;
+                    lvd= new LabelledValueDescriptor(tovs1.getvaluesSpec().getlabelledStringValueList());
                 }
 
                 setVirtualProperties(vCombo, propSpecs.getgeneralSpecs(), comboField.getoptConditionalSpec());
@@ -1052,10 +1054,11 @@ public class PrefspecsCompiler
 
                 LabelledValueDescriptor lvd;
 
-                if (tovSpec instanceof valuesSpec) {
-                    lvd= new LabelledValueDescriptor(((valuesSpec) tovSpec).getlabelledStringValueList());
-                } else {
+                if (tovSpec instanceof typeOrValuesSpec0) {
                     lvd= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
+                } else {
+                    typeOrValuesSpec1 tovs1= (typeOrValuesSpec1) tovSpec;
+                    lvd= new LabelledValueDescriptor(tovs1.getvaluesSpec().getlabelledStringValueList());
                 }
 
                 setVirtualProperties(vRadio, propSpecs.getgeneralSpecs(), radioField.getoptConditionalSpec());
