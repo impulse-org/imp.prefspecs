@@ -193,7 +193,7 @@ public class PreferencesFactory implements IPreferencesFactory
             if (tab.getIsUsed()) {
                 String tabName= tab.getName();
                 String upperTab= Character.toUpperCase(tabName.charAt(0)) + tabName.substring(1);
-                String tabClass= pageName + upperTab + "Tab";
+                String tabClass= pageName.replaceAll("\\.", "") + upperTab + "Tab";
                 String tabVar= tabName + "Tab";
                 fileText.append("\t\t" + tabClass + " " + tabVar + " = new " + tabClass + "(prefService);\n");
                 fileText.append("\t\t" + tabVar + ".createTabContents(page, tabFolder);\n");
