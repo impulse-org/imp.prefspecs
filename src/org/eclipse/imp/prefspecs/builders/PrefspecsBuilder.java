@@ -93,9 +93,7 @@ public class PrefspecsBuilder extends BuilderBase {
      */
     protected boolean isNonRootSourceFile(IFile resource)
     {
-    	// TODO:  If your language has non-root source files (e.g., header files), then
-    	// re-implement this method to test for those
-        System.err.println("PrefspecsBuilder.isNonRootSourceFile(..) returning FALSE by default");
+        // Nothing to do - the prefspecs language does not define anything like "include" files.
         return false;
     }
 
@@ -104,10 +102,8 @@ public class PrefspecsBuilder extends BuilderBase {
      * them via calls to <code>fDependency.addDependency()</code>.
      */
     protected void collectDependencies(IFile file)
-    {   
-    	// TODO:  If your language has inter-file dependencies then re-implement
-    	// this method to collect those
-        System.err.println("PrefspecsBuilder.collectDependencies(..) doing nothing by default");
+    {
+        // Nothing to do - the prefspecs language does not support inter-file references.
         return;
     }
 
