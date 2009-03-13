@@ -74,14 +74,8 @@ public class fontFieldSpec extends ASTNode implements IfontFieldSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof fontFieldSpec)) return false;
+        if (! super.equals(o)) return false;
         fontFieldSpec other = (fontFieldSpec) o;
         if (! _identifier.equals(other._identifier)) return false;
         if (_fontFieldPropertySpecs == null)
@@ -97,7 +91,7 @@ public class fontFieldSpec extends ASTNode implements IfontFieldSpec
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_identifier.hashCode());
         hash = hash * 31 + (_fontFieldPropertySpecs == null ? 0 : _fontFieldPropertySpecs.hashCode());
         hash = hash * 31 + (_optConditionalSpec == null ? 0 : _optConditionalSpec.hashCode());

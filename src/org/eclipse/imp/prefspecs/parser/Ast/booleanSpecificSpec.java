@@ -68,14 +68,8 @@ public class booleanSpecificSpec extends ASTNode implements IbooleanSpecificSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof booleanSpecificSpec)) return false;
+        if (! super.equals(o)) return false;
         booleanSpecificSpec other = (booleanSpecificSpec) o;
         if (_booleanCustomSpec == null)
             if (other._booleanCustomSpec != null) return false;
@@ -90,7 +84,7 @@ public class booleanSpecificSpec extends ASTNode implements IbooleanSpecificSpec
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_booleanCustomSpec == null ? 0 : _booleanCustomSpec.hashCode());
         hash = hash * 31 + (_booleanDefValueSpec == null ? 0 : _booleanDefValueSpec.hashCode());
         return hash;

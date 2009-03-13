@@ -72,14 +72,8 @@ public class colorDefValueSpec extends ASTNode implements IcolorDefValueSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof colorDefValueSpec)) return false;
+        if (! super.equals(o)) return false;
         colorDefValueSpec other = (colorDefValueSpec) o;
         if (! _red.equals(other._red)) return false;
         if (! _green.equals(other._green)) return false;
@@ -89,7 +83,7 @@ public class colorDefValueSpec extends ASTNode implements IcolorDefValueSpec
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_red.hashCode());
         hash = hash * 31 + (_green.hashCode());
         hash = hash * 31 + (_blue.hashCode());

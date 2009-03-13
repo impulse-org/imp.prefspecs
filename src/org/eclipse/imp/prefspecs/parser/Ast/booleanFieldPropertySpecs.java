@@ -66,14 +66,8 @@ public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldP
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof booleanFieldPropertySpecs)) return false;
+        if (! super.equals(o)) return false;
         booleanFieldPropertySpecs other = (booleanFieldPropertySpecs) o;
         if (! _generalSpecs.equals(other._generalSpecs)) return false;
         if (! _booleanSpecificSpec.equals(other._booleanSpecificSpec)) return false;
@@ -82,7 +76,7 @@ public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldP
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_generalSpecs.hashCode());
         hash = hash * 31 + (_booleanSpecificSpec.hashCode());
         return hash;

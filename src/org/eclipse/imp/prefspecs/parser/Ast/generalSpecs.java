@@ -86,14 +86,8 @@ public class generalSpecs extends ASTNode implements IgeneralSpecs
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof generalSpecs)) return false;
+        if (! super.equals(o)) return false;
         generalSpecs other = (generalSpecs) o;
         if (_isEditableSpec == null)
             if (other._isEditableSpec != null) return false;
@@ -116,7 +110,7 @@ public class generalSpecs extends ASTNode implements IgeneralSpecs
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_isEditableSpec == null ? 0 : _isEditableSpec.hashCode());
         hash = hash * 31 + (_isRemovableSpec == null ? 0 : _isRemovableSpec.hashCode());
         hash = hash * 31 + (_optLabelSpec == null ? 0 : _optLabelSpec.hashCode());

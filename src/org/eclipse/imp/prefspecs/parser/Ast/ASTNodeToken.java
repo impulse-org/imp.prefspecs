@@ -38,12 +38,16 @@ public class ASTNodeToken extends ASTNode implements IASTNodeToken
         if (o == this) return true;
         if (! (o instanceof ASTNodeToken)) return false;
         ASTNodeToken other = (ASTNodeToken) o;
-        return toString().equals(other.toString());
+        return getIToken().getILexStream() == other.getIToken().getILexStream() &&
+               getIToken().getTokenIndex() == other.getIToken().getTokenIndex();
     }
 
     public int hashCode()
     {
-        return toString().hashCode();
+        int hash = 7;
+        if (getIToken().getILexStream() != null) hash = hash * 31 + getIToken().getILexStream().hashCode();
+        hash = hash * 31 + getIToken().getTokenIndex();
+        return hash;
     }
 
     public void accept(IAstVisitor v)

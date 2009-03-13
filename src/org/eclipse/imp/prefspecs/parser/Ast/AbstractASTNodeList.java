@@ -73,18 +73,6 @@ public abstract class AbstractASTNodeList extends ASTNode
         return (java.util.ArrayList) getArrayList().clone();
     }
 
-    public abstract boolean equals(Object o);
-
-    public int hashCode()
-    {
-        int hash = 7;
-        for (int i = 0; i < size(); i++)
-        {
-            ASTNode element = getElementAt(i);
-            hash = hash * 31 + (element == null ? 0 : element.hashCode());
-        }
-        return hash;
-    }
 }
 
 

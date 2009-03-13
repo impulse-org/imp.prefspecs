@@ -63,14 +63,8 @@ public class tabsSpec extends ASTNode implements ItabsSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof tabsSpec)) return false;
+        if (! super.equals(o)) return false;
         tabsSpec other = (tabsSpec) o;
         if (_tabSpecs == null)
             if (other._tabSpecs != null) return false;
@@ -81,7 +75,7 @@ public class tabsSpec extends ASTNode implements ItabsSpec
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_tabSpecs == null ? 0 : _tabSpecs.hashCode());
         return hash;
     }

@@ -66,14 +66,8 @@ public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPro
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof doubleFieldPropertySpecs)) return false;
+        if (! super.equals(o)) return false;
         doubleFieldPropertySpecs other = (doubleFieldPropertySpecs) o;
         if (! _generalSpecs.equals(other._generalSpecs)) return false;
         if (! _doubleSpecificSpec.equals(other._doubleSpecificSpec)) return false;
@@ -82,7 +76,7 @@ public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPro
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_generalSpecs.hashCode());
         hash = hash * 31 + (_doubleSpecificSpec.hashCode());
         return hash;

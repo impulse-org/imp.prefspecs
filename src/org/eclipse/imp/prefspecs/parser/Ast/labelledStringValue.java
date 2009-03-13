@@ -65,14 +65,8 @@ public class labelledStringValue extends ASTNode implements IlabelledStringValue
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof labelledStringValue)) return false;
+        if (! super.equals(o)) return false;
         labelledStringValue other = (labelledStringValue) o;
         if (! _identifier.equals(other._identifier)) return false;
         if (_optLabel == null)
@@ -84,7 +78,7 @@ public class labelledStringValue extends ASTNode implements IlabelledStringValue
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_identifier.hashCode());
         hash = hash * 31 + (_optLabel == null ? 0 : _optLabel.hashCode());
         return hash;

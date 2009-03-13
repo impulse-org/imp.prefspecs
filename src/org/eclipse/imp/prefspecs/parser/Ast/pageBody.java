@@ -75,14 +75,8 @@ public class pageBody extends ASTNode implements IpageBody
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        //
-        // The super call test is not required for now because an Ast node
-        // can only extend the root Ast, AstToken and AstList and none of
-        // these nodes contain additional children.
-        //
-        // if (! super.equals(o)) return false;
-        //
         if (! (o instanceof pageBody)) return false;
+        if (! super.equals(o)) return false;
         pageBody other = (pageBody) o;
         if (_tabsSpec == null)
             if (other._tabsSpec != null) return false;
@@ -95,7 +89,7 @@ public class pageBody extends ASTNode implements IpageBody
 
     public int hashCode()
     {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = hash * 31 + (_tabsSpec == null ? 0 : _tabsSpec.hashCode());
         hash = hash * 31 + (_fieldsSpec.hashCode());
         hash = hash * 31 + (_optionalSpecs.hashCode());
