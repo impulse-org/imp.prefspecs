@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteDoubleFieldInfo
 	extends ConcreteFieldInfo
 {
@@ -91,10 +93,10 @@ public class ConcreteDoubleFieldInfo
 	//
 	// For reporting on the contents of the field
 	//
-	public void dump(String prefix) {
-		super.dump(prefix);	
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "rangeLow = " + getRangeLow());
-		System.out.println(indent + "rangeHigh = " + getRangeHigh());
+		out.println(indent + "rangeLow = " + getRangeLow());
+		out.println(indent + "rangeHigh = " + getRangeHigh());
 	}
 }

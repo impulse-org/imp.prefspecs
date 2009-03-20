@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class VirtualStringFieldInfo extends VirtualFieldInfo {
 
 	/**
@@ -124,13 +126,11 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
-	
-    public void dump(String prefix) {
-		super.dump(prefix);
+    public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "hasSpecial  = " + hasSpecialValue);
-		System.out.println(indent + "special     = " + specialValue);
-		System.out.println(indent + "defaultValue    = " + defaultValue);
+		out.println(indent + "hasSpecial  = " + hasSpecialValue);
+		out.println(indent + "special     = " + specialValue);
+		out.println(indent + "defaultValue    = " + defaultValue);
 	}
-	
 }

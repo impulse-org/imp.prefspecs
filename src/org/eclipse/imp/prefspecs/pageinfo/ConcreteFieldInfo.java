@@ -13,6 +13,7 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
 import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 /**
  * Instances of this class contain the info for concrete (per-page) instances
@@ -240,25 +241,21 @@ public class ConcreteFieldInfo
 		conditionField = vbf;
 	}
 	
-
-	
 	
 	//
 	// For reporting on the contents of the field
 	//
-	
-	public void dump(String prefix) {
+	public void dump(String prefix, MessageConsoleStream out) {
 		String indent = prefix + "  ";
-		System.out.println(prefix + "Field '" + getName() + "'");
-		System.out.println(indent + "parent page = " + getParentTab().getName());
-		System.out.println(indent + "isEditable  = " + isEditable);
-		System.out.println(indent + "isRemovable = " + isRemovable);
-		System.out.println(indent + "hasSpecial = " + hasSpecialValue);
+		out.println(prefix + "Field '" + getName() + "'");
+		out.println(indent + "parent page = " + getParentTab().getName());
+		out.println(indent + "isEditable  = " + isEditable);
+		out.println(indent + "isRemovable = " + isRemovable);
+		out.println(indent + "hasSpecial = " + hasSpecialValue);
 		if (isConditional) {
-			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
+			out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
 		} else {
-			System.out.println(indent + "isConditional  = false");
+			out.println(indent + "isConditional  = false");
 		}
 	}
-	
 }

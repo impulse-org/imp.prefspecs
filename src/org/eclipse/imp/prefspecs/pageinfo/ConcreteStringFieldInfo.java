@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteStringFieldInfo
 	extends ConcreteFieldInfo
 {
@@ -123,22 +125,20 @@ public class ConcreteStringFieldInfo
 	//
 	// For reporting on the contents of the field
 	//
-	public void dump(String prefix) {
-		super.dump(prefix);	
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "default value = " + vStringFieldInfo.getDefaultValue());	
+		out.println(indent + "default value = " + vStringFieldInfo.getDefaultValue());	
 		if (getHasSpecialValue()) {
-			System.out.println(indent + "special = " + getSpecialValue());
+			out.println(indent + "special = " + getSpecialValue());
 		} else {
-			System.out.println(indent + "no special value defined");
+			out.println(indent + "no special value defined");
 		}
-		System.out.println(indent + "emptyValueAllowed = " + getEmptyValueAllowed());
+		out.println(indent + "emptyValueAllowed = " + getEmptyValueAllowed());
 		if (getEmptyValueAllowed()) {
-			System.out.println(indent + "empty value = " + getEmptyValue());
+			out.println(indent + "empty value = " + getEmptyValue());
 		} else {
-			System.out.println(indent + "no empty value defined");
+			out.println(indent + "no empty value defined");
 		}
 	}
-
-
 }

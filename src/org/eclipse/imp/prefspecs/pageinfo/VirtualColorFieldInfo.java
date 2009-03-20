@@ -13,6 +13,7 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
 import org.eclipse.imp.preferences.fields.ColorFieldEditor;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class VirtualColorFieldInfo extends VirtualFieldInfo {
 
@@ -43,9 +44,9 @@ public class VirtualColorFieldInfo extends VirtualFieldInfo {
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
-    public void dump(String prefix) {
-		super.dump(prefix);
+    public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-        System.out.println(indent + "defaultColor = " + defaultColor);
+        out.println(indent + "defaultColor = " + defaultColor);
     }
 }

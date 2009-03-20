@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class VirtualEnumFieldInfo extends VirtualFieldInfo {
     private static final int DEFAULT_NUM_COLS= 2;
@@ -64,13 +65,13 @@ public class VirtualEnumFieldInfo extends VirtualFieldInfo {
     /*
      * For reporting on the contents of the virtual field
      */
-    public void dump(String prefix) {
-        super.dump(prefix);
+    public void dump(String prefix, MessageConsoleStream out) {
+        super.dump(prefix, out);
         String indent = prefix + "  ";
         for(int i=0; i < valueList.size(); i++) {
-            System.out.println(indent + "slot[" + i + "] = " + valueList.get(i) + ((labelList != null && labelList.size() > 0) ? (": " + labelList.get(i)) : ""));
+            out.println(indent + "slot[" + i + "] = " + valueList.get(i) + ((labelList != null && labelList.size() > 0) ? (": " + labelList.get(i)) : ""));
         }
-        System.out.println(indent + "defaultValue    = " + defaultValue);
+        out.println(indent + "defaultValue    = " + defaultValue);
     }
 
     public void setNumColumns(int numCols) {

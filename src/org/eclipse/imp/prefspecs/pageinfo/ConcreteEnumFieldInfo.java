@@ -2,6 +2,8 @@ package org.eclipse.imp.prefspecs.pageinfo;
 
 import java.util.List;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteEnumFieldInfo extends ConcreteFieldInfo {
     /*
      * Local copy of the virtual field on which this concrete
@@ -54,10 +56,10 @@ public class ConcreteEnumFieldInfo extends ConcreteFieldInfo {
     //
     // For reporting on the contents of the field
     //
-    public void dump(String prefix) {
-        super.dump(prefix);
+    public void dump(String prefix, MessageConsoleStream out) {
+        super.dump(prefix, out);
         String indent= prefix + "  ";
-        System.out.println(indent + "default value = " + getDefaultValue());
+        out.println(indent + "default value = " + getDefaultValue());
     }
 
 }

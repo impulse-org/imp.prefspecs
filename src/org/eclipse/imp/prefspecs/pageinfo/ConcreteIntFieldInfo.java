@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteIntFieldInfo
 	extends ConcreteFieldInfo
 {
@@ -138,14 +140,12 @@ public class ConcreteIntFieldInfo
 	//
 	// For reporting on the contents of the field
 	//
-	public void dump(String prefix) {
-		super.dump(prefix);	
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "hasSpecialValue = " + getHasSpecialValue());
-		System.out.println(indent + "specialValue = " + getSpecialValue());
-		System.out.println(indent + "rangeLow = " + getRangeLow());
-		System.out.println(indent + "rangeHigh = " + getRangeHigh());
+		out.println(indent + "hasSpecialValue = " + getHasSpecialValue());
+		out.println(indent + "specialValue = " + getSpecialValue());
+		out.println(indent + "rangeLow = " + getRangeLow());
+		out.println(indent + "rangeHigh = " + getRangeHigh());
 	}
-
-
 }

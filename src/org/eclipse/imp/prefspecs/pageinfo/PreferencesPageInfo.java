@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 
 public class PreferencesPageInfo {
 
@@ -154,21 +156,21 @@ public class PreferencesPageInfo {
 
 	public static String INDENT = "";
 	
-	public void dump() {
+	public void dump(MessageConsoleStream out) {
 		String indent = "  ";
-		System.out.println("\n\t%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.out.println("PreferencesPageInfo:  '" + getPageName() + "'");
+		out.println("\n\t%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		out.println("PreferencesPageInfo:  '" + getPageName() + "'");
 		
-		System.out.println("Virtual fields:");
+		out.println("Virtual fields:");
 		for(VirtualFieldInfo vField: virtualFields) {
-			vField.dump(indent);
+			vField.dump(indent, out);
 		}
 
-		System.out.println("Tabs:");
+		out.println("Tabs:");
 		for(PreferencesTabInfo tab: tabs) {
-			tab.dump(indent);
+			tab.dump(indent, out);
 		}
-		System.out.println("\t%%%%\t%%%%\t%%%%\n");
+		out.println("\t%%%%\t%%%%\t%%%%\n");
 	}
 	
 }

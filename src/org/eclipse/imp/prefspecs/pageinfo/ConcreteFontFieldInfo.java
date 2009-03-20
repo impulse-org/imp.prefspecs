@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteFontFieldInfo extends ConcreteFieldInfo {
 	/*
 	 * Local copy of the virtual field on which this concrete
@@ -47,13 +49,11 @@ public class ConcreteFontFieldInfo extends ConcreteFieldInfo {
 	//
 	// For reporting on the contents of the field
 	//
-	public void dump(String prefix) {
-		super.dump(prefix);	
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "default name   = " + vFontFieldInfo.getDefaultName());	
-        System.out.println(indent + "default height = " + vFontFieldInfo.getDefaultHeight());   
-        System.out.println(indent + "default style  = " + vFontFieldInfo.getDefaultStyle());   
+		out.println(indent + "default name   = " + vFontFieldInfo.getDefaultName());	
+        out.println(indent + "default height = " + vFontFieldInfo.getDefaultHeight());   
+        out.println(indent + "default style  = " + vFontFieldInfo.getDefaultStyle());   
 	}
-
-
 }

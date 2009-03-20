@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteBooleanFieldInfo
 	extends ConcreteFieldInfo
 {
@@ -89,16 +91,14 @@ public class ConcreteBooleanFieldInfo
 	//
 	// For reporting on the contents of the field
 	//
-	public void dump(String prefix) {
-		super.dump(prefix);	
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "default value = " + getDefaultValue());
+		out.println(indent + "default value = " + getDefaultValue());
 		if (getHasSpecialValue()) {
-			System.out.println(indent + "special = " + getSpecialValue());
+			out.println(indent + "special = " + getSpecialValue());
 		} else {
-			System.out.println(indent + "no special value defined");
+			out.println(indent + "no special value defined");
 		}
 	}
-
-
 }

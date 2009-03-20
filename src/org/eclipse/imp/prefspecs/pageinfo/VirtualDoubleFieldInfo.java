@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class VirtualDoubleFieldInfo extends VirtualFieldInfo {
 	/**
 	 * The default value associated with this field
@@ -84,9 +86,9 @@ public class VirtualDoubleFieldInfo extends VirtualFieldInfo {
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
-	public void dump(String prefix) {
-		super.dump(prefix);
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		System.out.println(indent + "defaultVallue    = " + getDefaultValue());
+		out.println(indent + "defaultVallue    = " + getDefaultValue());
 	}
 }

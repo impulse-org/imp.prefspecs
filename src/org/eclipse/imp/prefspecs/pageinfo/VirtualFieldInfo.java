@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class VirtualFieldInfo
 {
@@ -256,18 +257,16 @@ public class VirtualFieldInfo
 	//
 	// For reporting on the contents of the field
 	//
-	
-	public void dump(String prefix) {
+	public void dump(String prefix, MessageConsoleStream out) {
 		String indent = prefix + "  ";
-		System.out.println(prefix + "Field '" + getName() + "'");
-		System.out.println(indent + "parent page = " + getParentPage().getPageName());
-		System.out.println(indent + "isEditable  = " + isEditable);
-		System.out.println(indent + "isRemovable = " + isRemovable);
+		out.println(prefix + "Field '" + getName() + "'");
+		out.println(indent + "parent page = " + getParentPage().getPageName());
+		out.println(indent + "isEditable  = " + isEditable);
+		out.println(indent + "isRemovable = " + isRemovable);
 		if (isConditional) {
-			System.out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
+			out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
 		} else {
-			System.out.println(indent + "isConditional  = false");
+			out.println(indent + "isConditional  = false");
 		}
 	}
-	
 }

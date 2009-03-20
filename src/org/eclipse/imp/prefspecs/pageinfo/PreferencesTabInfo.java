@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 
 public class PreferencesTabInfo
@@ -176,17 +177,17 @@ public class PreferencesTabInfo
 	// For reporting on the contents of the tab
 	//
 	
-	public void dump(String prefix) {
+	public void dump(String prefix, MessageConsoleStream out) {
 		String indent = prefix + "  ";
 		
-		System.out.println(prefix + "Tab '" + getName() + "'");
-		System.out.println(indent + "isUsed = " + getIsUsed());
-		System.out.println(indent + "isEditable = " + getIsEditable());
-		System.out.println(indent + "isRemovable = " + getIsRemovable());
-		System.out.println(indent + "Concrete fields:");
+		out.println(prefix + "Tab '" + getName() + "'");
+		out.println(indent + "isUsed = " + getIsUsed());
+		out.println(indent + "isEditable = " + getIsEditable());
+		out.println(indent + "isRemovable = " + getIsRemovable());
+		out.println(indent + "Concrete fields:");
 
 		for(ConcreteFieldInfo field: concreteFields) {
-			field.dump(indent + " ");	
+			field.dump(indent + " ", out);
 		}
 	}
 }

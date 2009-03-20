@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.pageinfo;
 
+import org.eclipse.ui.console.MessageConsoleStream;
+
 public class ConcreteColorFieldInfo extends ConcreteFieldInfo {
 	/*
 	 * Local copy of the virtual field on which this concrete
@@ -46,9 +48,9 @@ public class ConcreteColorFieldInfo extends ConcreteFieldInfo {
 	//
 	// For reporting on the contents of the field
 	//
-	public void dump(String prefix) {
-		super.dump(prefix);	
+	public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);	
 		String indent = prefix + "  ";
-		System.out.println(indent + "default name   = " + vColorFieldInfo.getDefaultColor());	
+		out.println(indent + "default name   = " + vColorFieldInfo.getDefaultColor());	
 	}
 }

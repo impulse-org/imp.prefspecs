@@ -13,6 +13,7 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class VirtualFontFieldInfo extends VirtualFieldInfo {
 
@@ -66,11 +67,11 @@ public class VirtualFontFieldInfo extends VirtualFieldInfo {
         this.defaultStyle= defaultStyle;
     }
 
-    public void dump(String prefix) {
-		super.dump(prefix);
+    public void dump(String prefix, MessageConsoleStream out) {
+		super.dump(prefix, out);
 		String indent = prefix + "  ";
-        System.out.println(indent + "defaultName   = " + defaultName);
-        System.out.println(indent + "defaultHeight = " + defaultHeight);
-        System.out.println(indent + "defaultStyle  = " + defaultStyle);
+        out.println(indent + "defaultName   = " + defaultName);
+        out.println(indent + "defaultHeight = " + defaultHeight);
+        out.println(indent + "defaultStyle  = " + defaultStyle);
     }
 }
