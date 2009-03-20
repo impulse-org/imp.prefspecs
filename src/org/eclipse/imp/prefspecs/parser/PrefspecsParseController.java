@@ -37,7 +37,7 @@ public class PrefspecsParseController extends SimpleLPGParseController implement
     private PrefspecsLexer lexer;
 
     public PrefspecsParseController() {
-        super(PrefspecsPlugin.kLanguageName);
+        super(PrefspecsPlugin.kLanguageID);
     }
 
     // SMS 5 May 2006:
