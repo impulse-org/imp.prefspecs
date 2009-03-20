@@ -7,13 +7,11 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,15 +22,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.preferences.PreferencesService;
-import org.eclipse.imp.preferences.PreferencesTab;
-import org.eclipse.imp.preferences.PreferencesUtilities;
-import org.eclipse.imp.preferences.TabbedPreferencesPage;
-import org.eclipse.imp.preferences.fields.BooleanFieldEditor;
-import org.eclipse.imp.preferences.fields.DirectoryListFieldEditor;
-import org.eclipse.imp.preferences.fields.FieldEditor;
-import org.eclipse.imp.preferences.fields.FileFieldEditor;
-import org.eclipse.imp.preferences.fields.IntegerFieldEditor;
-import org.eclipse.imp.preferences.fields.StringFieldEditor;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
@@ -45,7 +34,6 @@ import org.eclipse.imp.prefspecs.pageinfo.ConcreteFontFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.IPreferencesGeneratorData;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
@@ -57,45 +45,17 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualFontFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
-import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.console.MessageConsoleStream;
 
-public class PreferencesFactory implements IPreferencesFactory
-{
-	protected TabbedPreferencesPage prefsPage;	
-	protected PreferencesTab prefsTab;
-	protected IPreferencesService prefsService;
-	protected String tabLevel;
-	protected Composite parent;
-	protected PreferencesUtilities prefUtils;
-	protected IPreferencesGeneratorData generatorData;
-	
-	private final String createFieldsErrorPrefix =
-		"PreferencesFactory.createFields:  IllegalArgumentException:  ";
+public class PreferencesFactory {
+	private final MessageConsoleStream fConsoleStream;
 
-	
-	public PreferencesFactory(
-		TabbedPreferencesPage page,
-		PreferencesTab tab,
-		IPreferencesService service,
-		IPreferencesGeneratorData generatorData)
-	{
-		if (service == null) {	
-			throw new IllegalArgumentException("PreferencesFactory(): preferences service is null; not allowed");
-		}
-		// TODO:  Add checks for other inputs
-		this.prefsService = service;
-		this.prefsTab = tab;	
-		this.prefsPage = page;
-		this.generatorData = generatorData;
-		
-		prefUtils = new PreferencesUtilities(service);
-	}
-	
+    public PreferencesFactory(MessageConsoleStream consoleStream) {
+        this.fConsoleStream= consoleStream;
+    }
 
 
-	public static IFile generatePreferencesConstants(
+	public IFile generatePreferencesConstants(
 		List<PreferencesPageInfo> pageInfos,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
@@ -109,13 +69,11 @@ public class PreferencesFactory implements IPreferencesFactory
 	}
 	
 	
-	public static IFile generatePreferencesInitializers(
+	public IFile generatePreferencesInitializers(
 		List<PreferencesPageInfo> pageInfos,
 		String pluginPkgName, String pluginClassName, String constantsClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
-		System.out.println("PreferencesFactory.generatePreferencesInitializers():  generating (insofar as implemented)");
-		
 		// Generate file text
 		String fileText = generateInitializersPartBeforeFields(pluginPkgName, pluginClassName, packageName, className);
 		fileText = generateInitializersFields(pageInfos, constantsClassName, fileText);
@@ -126,7 +84,7 @@ public class PreferencesFactory implements IPreferencesFactory
 		
 	}
 
-	public static IFile generatePreferencesPage(
+	public IFile generatePreferencesPage(
 	        PreferencesPageInfo pageInfo,
             String pluginPkgName, String pluginClassName, String constantsClassName, String initializerClassName,
             ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
@@ -214,7 +172,7 @@ public class PreferencesFactory implements IPreferencesFactory
         fileText.append("}\n");
     }
 
-    public static IFile generateDefaultTab(
+    public IFile generateDefaultTab(
 		PreferencesPageInfo pageInfo,
 		String pluginPkgName, String pluginClassName, String constantsClassName, String initializerClassName,
 		ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
@@ -222,7 +180,6 @@ public class PreferencesFactory implements IPreferencesFactory
 	    if (pageInfo.getTabInfo(IPreferencesService.DEFAULT_LEVEL) == null) {
 	        return null;
 	    }
-//		System.out.println("PreferencesFactory.generateDefaultTab():  generating (insofar as implemented)");
 		
 		// Generate file text
 		String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, initializerClassName, IPreferencesService.DEFAULT_LEVEL);
@@ -234,7 +191,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	}
 	
 	
-	public static IFile generateConfigurationTab(
+	public IFile generateConfigurationTab(
 			PreferencesPageInfo pageInfo,
 			String pluginPkgName, String pluginClassName, String constantsClassName,
 			ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
@@ -242,7 +199,6 @@ public class PreferencesFactory implements IPreferencesFactory
         if (pageInfo.getTabInfo(IPreferencesService.CONFIGURATION_LEVEL) == null) {
             return null;
         }
-//		System.out.println("PreferencesFactory.generateConfigurationTab():  generating (insofar as implemented)");
 		
 		// Generate file text
 		String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.CONFIGURATION_LEVEL);
@@ -255,266 +211,45 @@ public class PreferencesFactory implements IPreferencesFactory
 	
 	
 	
-	public static IFile generateInstanceTab(
+	public IFile generateInstanceTab(
 			PreferencesPageInfo pageInfo,
 			String pluginPkgName, String pluginClassName, String constantsClassName,
 			ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
-		{
-	        if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL) == null) {
-	            return null;
-	        }
-//			System.out.println("PreferencesFactory.generateInstanceTab():  generating (insofar as implemented)");
+	{
+	    if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL) == null) {
+	        return null;
+	    }
 			
-			// Generate file text
-			String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.INSTANCE_LEVEL);
-			fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.INSTANCE_LEVEL);
-			fileText = generateTabAfterFields(fileText);
+	    // Generate file text
+	    String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.INSTANCE_LEVEL);
+	    fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.INSTANCE_LEVEL);
+	    fileText = generateTabAfterFields(fileText);
 			
-			IFile initializersFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
-			return initializersFile;
-		}
-		
-		
-		public static IFile generateProjectTab(
-				PreferencesPageInfo pageInfo,
-				String pluginPkgName, String pluginClassName, String constantsClassName,
-				ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
-		{
-            if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL) == null) {
-                return null;
-            }
-//			System.out.println("PreferencesFactory.generateProjectTab():  generating (insofar as implemented)");
+	    IFile initializersFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
+	    return initializersFile;
+	}
+
+
+	public IFile generateProjectTab(
+	        PreferencesPageInfo pageInfo,
+	        String pluginPkgName, String pluginClassName, String constantsClassName,
+	        ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
+	{
+	    if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL) == null) {
+	        return null;
+	    }
+
+	    // Generate file text
+	    String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.PROJECT_LEVEL);
+	    fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.PROJECT_LEVEL);
+	    fileText = generateTabAfterFields(fileText);
+	    fileText = regenerateEndOfProjectTab(pageInfo, fileText);
 			
-			// Generate file text
-			String fileText = generateTabBeforeFields(pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.PROJECT_LEVEL);
-			fileText = generateTabFields(pageInfo, constantsClassName, fileText, IPreferencesService.PROJECT_LEVEL);
-			fileText = generateTabAfterFields(fileText);
-			fileText = regenerateEndOfProjectTab(pageInfo, fileText);
-			
-			IFile initializersFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
-			return initializersFile;
-		}
-		
-	
-	
-	
-	public FieldEditor[] createFields(				//Composite parent, String tabName)
-			TabbedPreferencesPage page,
-			PreferencesTab tab,
-			String level,
-			Composite parent,
-			IPreferencesService prefsService)
-	{
-		// Check parameters
-		if (parent == null) {
-			throw new IllegalArgumentException(createFieldsErrorPrefix + "Composite 'parent' is null; not allowed");
-		}
-		if (level == null) {
-			throw new IllegalArgumentException(createFieldsErrorPrefix + "Tab name is null; not allowed");
-		}
-		if (!prefsService.isaPreferencesLevel(level)) {
-			throw new IllegalArgumentException(createFieldsErrorPrefix + "tab name is not valid");
-		}
-		
-		tabLevel = level;
-		this.parent = parent;	
-		
-		List<FieldEditor> result = new ArrayList();
-		FieldEditor[] resultArray = null;
-		BooleanFieldEditor boolField = null;
-//		if (level.equals(IPreferencesService.DEFAULT_LEVEL)) {
-//			resultArray = createFields(page, tab, level, parent, prefsService);
-//		} else if (level.equals(IPreferencesService.CONFIGURATION_LEVEL)) {
-//			resultArray = createFields(IPreferencesService.CONFIGURATION_LEVEL);
-//		} else if (level.equals(IPreferencesService.INSTANCE_LEVEL)) {
-//			resultArray = createFields(IPreferencesService.INSTANCE_LEVEL);
-//		} else if (level.equals(IPreferencesService.PROJECT_LEVEL)) {
-//			resultArray = createFields(IPreferencesService.PROJECT_LEVEL);
-//		}
-//		return resultArray;
-		
-		// For the final return
-		//FieldEditor[] resultArray = null;
-		// To accumulate incremental results
-		List<FieldEditor> resultList = new ArrayList();
-		
-		// Get info on the fields to construct
-		PreferencesPageInfo pageInfo = generatorData.getPageInfo();
-		//tabLevel = tab;
-		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(level);
-		Iterator fieldsIter = tabInfo.getConcreteFields();
-		
-		while (fieldsIter.hasNext()) {
-			FieldEditor field = null;
-			ConcreteFieldInfo fieldInfo = (ConcreteFieldInfo) fieldsIter.next();
-			if (fieldInfo instanceof ConcreteBooleanFieldInfo) {
-				field = createFieldEditor((ConcreteBooleanFieldInfo)fieldInfo); 
-			} else if (fieldInfo instanceof ConcreteDirListFieldInfo) {
-				field = createFieldEditor((ConcreteDirListFieldInfo)fieldInfo);
-			} else if (fieldInfo instanceof ConcreteFileFieldInfo) {
-				field = createFieldEditor((ConcreteFileFieldInfo)fieldInfo); 
-			} else if (fieldInfo instanceof ConcreteIntFieldInfo) {
-				field = createFieldEditor((ConcreteIntFieldInfo)fieldInfo); 
-			} else if (fieldInfo instanceof ConcreteStringFieldInfo) {
-				field = createFieldEditor((ConcreteStringFieldInfo)fieldInfo); 
-			} else {
-				System.err.println("PreferencesFieldFactory.createFields(" + tab + "):  got unrecognized field-info kind");
-			} 
-			
-			if (field != null) {
-				resultList.add(field);
-			}
-		}
-		
-		resultArray = new FieldEditor[resultList.size()];
-		for (int i = 0; i < resultList.size(); i++) {
-			resultArray[i] = resultList.get(i);
-		}
-		return resultArray;
-		
-	}
-
-	
-//	protected FieldEditor[] createFields(String tab)
-//	{
-//		// For the final return
-//		FieldEditor[] resultArray = null;
-//		// To accumulate incremental results
-//		List<FieldEditor> resultList = new ArrayList();
-//		
-//		// Get info on the fields to construct
-//		PreferencesPageInfo pageInfo = generatorData.getPageInfo();
-//		tabLevel = tab;
-//		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(tabLevel);
-//		Iterator fieldsIter = tabInfo.getConcreteFields();
-//		
-//		while (fieldsIter.hasNext()) {
-//			FieldEditor field = null;
-//			ConcreteFieldInfo fieldInfo = (ConcreteFieldInfo) fieldsIter.next();
-//			if (fieldInfo instanceof ConcreteBooleanFieldInfo) {
-//				field = createFieldEditor((ConcreteBooleanFieldInfo)fieldInfo); 
-//			} else {
-//				System.err.println("PreferencesFieldFactory.createFields(" + tab + "):  got unrecognized field-info kind");
-//			}
-//			
-//			if (field != null) {
-//				resultList.add(field);
-//			}
-//		}
-//		
-//		resultArray = new FieldEditor[resultList.size()];
-//		for (int i = 0; i < resultList.size(); i++) {
-//			resultArray[i] = resultList.get(i);
-//		}
-//		return resultArray;
-//	}
-//	
-	
-	// SMS 22 Jul 2007:  These forms are not really used at the moment ...
-		
-	protected FieldEditor createFieldEditor(ConcreteBooleanFieldInfo fieldInfo)				
-	{
-		BooleanFieldEditor boolField =
-			prefUtils.makeNewBooleanField(
-			   		prefsPage, prefsTab, prefsService,
-					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
-					fieldInfo.getToolTip(),
-					parent,
-					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
-					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
-					false, false,												// empty allowed (always false for boolean), empty (irrelevant)
-					fieldInfo.getIsRemovable());								// false for default tab but not necessarily any others
-		Link fieldDetailsLink = prefUtils.createDetailsLink(parent, boolField, boolField.getChangeControl().getParent(), "Details ...");
-		
-		return boolField;
+	    IFile initializersFile = createFileWithText(fileText, project, projectSourceLocation, packageName, className, mon);
+	    return initializersFile;
 	}
 
 
-	
-	protected FieldEditor createFieldEditor(ConcreteDirListFieldInfo fieldInfo)				
-	{
-		DirectoryListFieldEditor dirlistField =
-			prefUtils.makeNewDirectoryListField(
-			   		prefsPage, prefsTab, prefsService,
-					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
-					fieldInfo.getToolTip(),
-					parent,
-					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
-					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
-					fieldInfo.getEmptyValueAllowed(), fieldInfo.getEmptyValue(),													// empty allowed (always false for boolean), empty (irrelevant)
-					fieldInfo.getIsRemovable());								// false for default tab but not necessarily any others
-		Link fieldDetailsLink = prefUtils.createDetailsLink(parent, dirlistField, dirlistField.getTextControl().getParent(), "Details ...");
-		
-		return dirlistField;
-	}
-	
-	
-
-	protected FieldEditor createFieldEditor(ConcreteFileFieldInfo fieldInfo)				
-	{
-		FileFieldEditor fileField =
-			prefUtils.makeNewFileField(
-			   		prefsPage, prefsTab, prefsService,
-					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
-					fieldInfo.getToolTip(),
-					parent,
-					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
-					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
-					fieldInfo.getEmptyValueAllowed(), fieldInfo.getEmptyValue(),	// empty allowed (always false for boolean), empty (irrelevant)
-					fieldInfo.getIsRemovable());								// false for default tab but not necessarily any others
-		Link fieldDetailsLink = prefUtils.createDetailsLink(parent, fileField, fileField.getTextControl().getParent(), "Details ...");
-		
-		return fileField;
-	}
-
-
-	protected FieldEditor createFieldEditor(ConcreteIntFieldInfo fieldInfo)				
-	{
-		IntegerFieldEditor intField =
-			prefUtils.makeNewIntegerField(
-			   		prefsPage, prefsTab, prefsService,
-					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
-					fieldInfo.getToolTip(),
-					parent,
-					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
-					fieldInfo.getHasSpecialValue(), String.valueOf(fieldInfo.getSpecialValue()),
-					false, "0",								// empty allowed (always false for boolean, int, with empty irrelevant)
-					fieldInfo.getIsRemovable());								// false for default tab but not necessarily any others
-		Link fieldDetailsLink = prefUtils.createDetailsLink(parent, intField, intField.getTextControl().getParent(), "Details ...");
-		
-		return intField;
-	}
-	
-	protected FieldEditor createFieldEditor(ConcreteStringFieldInfo fieldInfo)				
-	{
-		StringFieldEditor stringField =
-			prefUtils.makeNewStringField(
-			   		prefsPage, prefsTab, prefsService,
-					tabLevel, fieldInfo.getName(), fieldInfo.getName(),			// tab level, key, text
-					fieldInfo.getToolTip(),
-					parent,
-					fieldInfo.getIsEditable(), fieldInfo.getIsEditable(),		// enabled, editable (treat as same)
-					fieldInfo.getHasSpecialValue(), fieldInfo.getSpecialValue(),
-					fieldInfo.getEmptyValueAllowed(), fieldInfo.getEmptyValue(),													// empty allowed (always false for boolean), empty (irrelevant)
-					fieldInfo.getIsRemovable());								// false for default tab but not necessarily any others
-		Link fieldDetailsLink = prefUtils.createDetailsLink(parent, stringField, stringField.getTextControl().getParent(), "Details ...");
-		
-		return stringField;
-	}
-	// etc. for other field types
-	
-		
-	// ???
-//	protected void addFieldToPage(FieldEditor field) {
-//		
-//	}
-	
-	
-	/*
-	 * Subroutines to generate parts of the preferences constants class
-	 */
-	
-	
 	protected static String generateConstantsPartBeforeFields(String packageName, String className)
 	{
 		if (className.endsWith(".java")) {
@@ -1423,7 +1158,7 @@ public class PreferencesFactory implements IPreferencesFactory
 	 */
 	
 	
-	protected static IFile createFileWithText(
+	protected IFile createFileWithText(
 			String fileText, ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
 		// Find or create the folder to contain the file		
@@ -1441,13 +1176,13 @@ public class PreferencesFactory implements IPreferencesFactory
 				if (!packageFolder.exists()) {
 					packageFolder.create(true, true, mon);
 					if (!packageFolder.exists()) {	
-						System.err.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
+						fConsoleStream.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
 								"\tpackage folder = " + packageFolder.getLocation().toString());
 						return null;
 					}
 				}
 			} catch (CoreException e) {
-				System.err.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
+				fConsoleStream.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
 						"\tpackage folder = " + packageFolder.getLocation().toString());
 				return null;
 			}
@@ -1459,13 +1194,13 @@ public class PreferencesFactory implements IPreferencesFactory
 //			if (!packageFolder.exists()) {
 //				packageFolder.create(true, true, mon);
 //				if (!packageFolder.exists()) {	
-//					System.err.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
+//					fConsoleStream.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
 //							"\tpackage folder = " + packageFolder.getLocation().toString());
 //					return null;
 //				}
 //			}
 //		} catch (CoreException e) {
-//			System.err.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
+//			fConsoleStream.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
 //					"\tpackage folder = " + packageFolder.getLocation().toString());
 //			return null;
 //		}
@@ -1483,7 +1218,7 @@ public class PreferencesFactory implements IPreferencesFactory
 			    file.create(new ByteArrayInputStream(fileText.getBytes()), true, mon);
 			}
 		} catch (CoreException e) {
-			System.err.println("PreferencesFactory.createFileWithText(): CoreException creating file; returning null");
+			fConsoleStream.println("PreferencesFactory.createFileWithText(): CoreException creating file; returning null");
 			return null;
 		}
 		
