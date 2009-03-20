@@ -29,7 +29,7 @@ import org.osgi.framework.BundleContext;
 public class PrefspecsPlugin extends PluginBase {
 	public static final String kPluginID = "org.eclipse.imp.prefspecs";
 
-	public static final String kLanguageName = "prefspecs";
+	public static final String kLanguageID = "prefspecs";
 
 	/**
 	 * The unique instance of this plugin class
@@ -61,7 +61,7 @@ public class PrefspecsPlugin extends PluginBase {
 
 	@Override
 	public String getLanguageID() {
-	    return kLanguageName;
+	    return kLanguageID;
 	}
 
 	// Definitions for image management
