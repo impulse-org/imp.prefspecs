@@ -156,7 +156,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
 import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec0;
 import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec1;
 import org.eclipse.imp.prefspecs.parser.Ast.typeSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.valuesSpec;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
@@ -177,6 +176,7 @@ import org.eclipse.pde.internal.core.ibundle.IBundleModel;
 import org.eclipse.pde.internal.core.plugin.ImpPluginElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class PrefspecsCompiler
 {
@@ -223,39 +223,33 @@ public class PrefspecsCompiler
 
     private Map<String,LabelledValueDescriptor> fTypeMap= new HashMap<String, LabelledValueDescriptor>();
 
+    private final MessageConsoleStream fConsoleStream;
 	
     public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
 
-
-    public PrefspecsCompiler() {
-        super();
+    public PrefspecsCompiler(String problem_marker_id, MessageConsoleStream messageConsoleStream) {
+        this.PROBLEM_MARKER_ID = problem_marker_id;
+        this.fConsoleStream= messageConsoleStream;
     }
-
-    public PrefspecsCompiler(String problem_marker_id) {
-    	PROBLEM_MARKER_ID = problem_marker_id;
-    }
-
 
     public List<PreferencesPageInfo> getPreferencesPageInfos(IFile specFile) {
     	computePreferencesPageInfo(specFile);
     	return fPages;
     }
 
-
-    protected void computePreferencesPageInfo(IFile specFile)
-    {
+    protected void computePreferencesPageInfo(IFile specFile) {
     	if (specFile == null) {
-		  System.err.println("PrefspecsCompiler.computePreferencesPageInfo(..):  returning null");
+		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..):  returning null");
 		}
 		IProject project= specFile.getProject();
 		if (project == null) {
-		  System.err.println("PrefspecsCompiler.computePreferencesPageInfo(..):  Project is null; returning null");
+		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..):  Project is null; returning null");
 		}
 		ISourceProject sourceProject = null;
 		try {
 			sourceProject = ModelFactory.open(project);
 		} catch (ModelException me){
-		  System.err.println("PrefspecsCompiler.computePreferencesPageInfo(..):  Model exception:\n" + me.getMessage() + "\nReturning null");
+		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..):  Model exception:\n" + me.getMessage() + "\nReturning null");
 		}
 		IParseController parseController= new PrefspecsParseController();
 		
@@ -273,7 +267,7 @@ public class PrefspecsCompiler
 		ASTNode currentAst= (ASTNode) parseController.getCurrentAst();
 		
 		if (currentAst == null) {
-				System.err.println("PrefspecsCompiler.computePreferencesPageInfo:  current AST is null (parse errors?); unable to compute page info.");
+				fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo:  current AST is null (parse errors?); unable to compute page info.");
 				return;
 		}
 		
@@ -288,7 +282,7 @@ public class PrefspecsCompiler
 
         @Override
         public void unimplementedVisitor(String s) {
-            // System.err.println("Don't know how to translate node type '" + s + "'.");
+            // fConsoleStream.println("Don't know how to translate node type '" + s + "'.");
         }
 
         @Override
@@ -328,7 +322,7 @@ public class PrefspecsCompiler
 
         @Override
         public void endVisit(pageSpec p) {
-        	fPageInfo.dump();
+        	fPageInfo.dump(PrefspecsCompiler.this.fConsoleStream);
         }
         
         
@@ -348,7 +342,7 @@ public class PrefspecsCompiler
         		try {
         			tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
         		} catch (IllegalArgumentException e) {
-        			System.err.println("PrefspecsCompiler.TranslatorVisitor.visit(defaultTabSpec:  \n" +
+        			fConsoleStream.println("PrefspecsCompiler.TranslatorVisitor.visit(defaultTabSpec:  \n" +
         					"\tattempt to set isRemovable to illegal value 'true'; substituting 'false'.");
         			tab.setIsRemovable(false);
         		}
@@ -1122,7 +1116,7 @@ public class PrefspecsCompiler
         	}
         	if (customFieldInfo == null) {
         		// What to do?  Seems that specification is erroneous
-        		System.err.println("PrefspecsCompiler.TranslatorVisitor.visit(customRule):\n    found no field info corresponding to field name = '" +
+        		fConsoleStream.println("PrefspecsCompiler.TranslatorVisitor.visit(customRule):\n    found no field info corresponding to field name = '" +
         				customFieldName + "';\n    continuing at your own risk");
         	}
         	
@@ -1157,7 +1151,7 @@ public class PrefspecsCompiler
         			if (genSpecs.getisRemovableSpec() != null)
         				customFieldInfo.setIsRemovable(genSpecs.getisRemovableSpec().getbooleanValue().toString().equals("true"));
         		} catch (IllegalArgumentException e) {
-        			System.err.println("PrefspecsCompiler.TranslatorVisitor.visit(generalSpecs:  \n" +
+        			fConsoleStream.println("PrefspecsCompiler.TranslatorVisitor.visit(generalSpecs:  \n" +
         					"\tattempt to set isRemovable to illegal value 'true'; substituting 'false'.");
         			customFieldInfo.setIsRemovable(false);
         		}
@@ -1336,10 +1330,10 @@ public class PrefspecsCompiler
             fileReader.read(buf, 0, len);
             return new String(buf);
         } catch(FileNotFoundException fnf) {
-            System.err.println(fnf.getMessage());
+            fConsoleStream.println(fnf.getMessage());
             return "";
         } catch(IOException io) {
-            System.err.println(io.getMessage());
+            fConsoleStream.println(io.getMessage());
             return "";
         }
     }
@@ -1469,7 +1463,7 @@ public class PrefspecsCompiler
 			}
 		}
 		if (genParamsFile == null) {
-			System.err.println("PrefspecsCompiler.getGenerationParameters:  no parameters file found located with specification file = " + file.getName());
+			fConsoleStream.println("PrefspecsCompiler.getGenerationParameters:  no parameters file found located with specification file = " + file.getName());
 			return;
 		}
 
@@ -1536,20 +1530,22 @@ public class PrefspecsCompiler
 		ISourceProject sourceProject = null;
     	try {
     		sourceProject = ModelFactory.open(fProject);
-    	} catch (ModelException me){
-            System.err.println("PrefspecsCompiler.generateCodeStubs(..):  Model exception:\n" + me.getMessage() + "\nReturning without parsing");
+    	} catch (ModelException me) {
+            fConsoleStream.println("PrefspecsCompiler.generateCodeStubs(..): Model exception:\n" + me.getMessage() + "\nReturning without parsing");
             return;
     	}
 
         subs.put("$PREFS_PACKAGE_NAME$", fPagePackageName);
-    	
+
+        PreferencesFactory prefFactory= new PreferencesFactory(fConsoleStream);
+
         String projectSourceLoc= ExtensionPointWizard.getProjectSourceLocation(fProject);
         String pluginPkgName= getPluginPackageName(fProject, null);
         String pluginClassName= getPluginClassName(fProject, null);
 
-        PreferencesFactory.generatePreferencesConstants(pageInfos, sourceProject, projectSourceLoc, fPagePackageName, constantsClassName, mon);
+        prefFactory.generatePreferencesConstants(pageInfos, sourceProject, projectSourceLoc, fPagePackageName, constantsClassName, mon);
 
-        PreferencesFactory.generatePreferencesInitializers(pageInfos,
+        prefFactory.generatePreferencesInitializers(pageInfos,
         		pluginPkgName, pluginClassName, constantsClassName,	
         		sourceProject, projectSourceLoc, fPagePackageName, fPageClassNameBase + "Initializer",  mon);
 
@@ -1560,29 +1556,29 @@ public class PrefspecsCompiler
 
             subs.put("$PREFS_CLASS_NAME$", javaPageName);
 
-            PreferencesFactory.generatePreferencesPage(pageInfo, pluginPkgName, pluginClassName,
+            prefFactory.generatePreferencesPage(pageInfo, pluginPkgName, pluginClassName,
                     constantsClassName, initializerClassName, sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "PreferencePage", mon);
 
             if (pageInfo.getTabInfo(IPreferencesService.DEFAULT_LEVEL).getIsUsed()) {
-                PreferencesFactory.generateDefaultTab(
+                prefFactory.generateDefaultTab(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName, initializerClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "DefaultTab",  mon);
             }
             if (pageInfo.getTabInfo(IPreferencesService.CONFIGURATION_LEVEL).getIsUsed()) {
-                PreferencesFactory.generateConfigurationTab(
+                prefFactory.generateConfigurationTab(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "ConfigurationTab",  mon);
             }
             if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL).getIsUsed()) {
-                PreferencesFactory.generateInstanceTab(
+                prefFactory.generateInstanceTab(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "InstanceTab",  mon);
             }
             if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL).getIsUsed()) {
-                PreferencesFactory.generateProjectTab(
+                prefFactory.generateProjectTab(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "ProjectTab",  mon);
@@ -1757,6 +1753,4 @@ public class PrefspecsCompiler
         final Status status= new Status(IStatus.ERROR, PrefspecsPlugin.kPluginID, 0, e.getMessage(), e);
         PrefspecsPlugin.getInstance().getLog().log(status);
     }
-	
 }	
-
