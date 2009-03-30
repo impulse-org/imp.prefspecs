@@ -4,8 +4,9 @@
    <extension
          point="org.eclipse.imp.runtime.languageDescription">
       <language
-            extensions="pfsp"
             description="Language for specifying preference fields and preference pages"
+            extensions="pfsp"
+            icon="icons/prefspecs_file.gif"
             language="prefspecs">
       </language>
    </extension>
@@ -81,9 +82,11 @@
             nameFilter="*"
             id="org.eclipse.imp.prefspecs.projectContextMenu">
          <action
-               label="Enable prefspecs Builder"
-               tooltip="Enable the prefspecs builder for this project"
+               label="Enable PrefSpecs Builder"
+               menubarPath="org.eclipse.imp.metatooling.projectContextMenu/group1"
+               tooltip="Enable the preferences specifcation builder for this project"
                class="org.eclipse.imp.prefspecs.actions.EnableNature"
+               icon="icons/builderEnable.gif"
                id="org.eclipse.imp.prefspecs.actions.enableNatureAction">
          </action>
       </objectContribution>
@@ -95,10 +98,6 @@
       <builder>
          <run
                class="org.eclipse.imp.prefspecs.builders.PrefspecsBuilder">
-            <parameter
-                  name="foo"
-                  value="bar">
-            </parameter>
          </run>
       </builder>
    </extension>
