@@ -262,7 +262,7 @@ public class PrefspecsCompiler
 		
 		parseController.initialize(specFile.getProjectRelativePath(), sourceProject, markerCreator);
 		
-		parseController.parse(getFileContents(specFile), false, new NullProgressMonitor());
+		parseController.parse(getFileContents(specFile), new NullProgressMonitor());
 		
 		ASTNode currentAst= (ASTNode) parseController.getCurrentAst();
 		
@@ -1339,15 +1339,7 @@ public class PrefspecsCompiler
     }
 
 
-    public PreferencesPageInfo compile(IFile file, IProgressMonitor mon) {
-       	performGeneration(file, mon);
-       	return null;
-    }
-    
-
-    
-	public boolean performGeneration(final IFile specFile, final IProgressMonitor mon)
-	{
+    public void compile(final IFile specFile, final IProgressMonitor mon) {
 	    this.fSpecFile = specFile;
 		IWorkspaceRunnable wsop= new IWorkspaceRunnable() {
 		    public void run(IProgressMonitor monitor) throws CoreException {
@@ -1425,7 +1417,6 @@ public class PrefspecsCompiler
 		} catch (CoreException e) {
 			ErrorHandler.reportError("PrefspecsCompiler.performGeneration:  CoreException:  ", e);
 		}
-		return true;	
 	}
 	
 	
