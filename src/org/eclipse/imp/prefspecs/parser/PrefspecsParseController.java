@@ -20,22 +20,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.imp.model.ISourceProject;
-import org.eclipse.imp.parser.ILexer;
 import org.eclipse.imp.parser.IMessageHandler;
 import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.parser.IParser;
-import org.eclipse.imp.parser.ISourcePositionLocator;
 import org.eclipse.imp.parser.MessageHandlerAdapter;
 import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.services.ILanguageSyntaxProperties;
 
-public class PrefspecsParseController extends SimpleLPGParseController implements IParseController
-{
-    private PrefspecsParser parser;
-    private PrefspecsLexer lexer;
-
+public class PrefspecsParseController extends SimpleLPGParseController implements IParseController {
     public PrefspecsParseController() {
         super(PrefspecsPlugin.kLanguageID);
     }
@@ -53,16 +46,11 @@ public class PrefspecsParseController extends SimpleLPGParseController implement
     	String fullFilePath = project.getRawProject().getLocation().toString() + "/" + filePath;
         createLexerAndParser(fullFilePath);
     }
-    
-    public IParser getParser() { return parser; }
-    public ILexer getLexer() { return lexer; }
-
-    public ISourcePositionLocator getNodeLocator() { return new PrefspecsASTNodeLocator(); }	//return new AstLocator(); }
 
     private void createLexerAndParser(String filePath) {
         try {
-            lexer = new PrefspecsLexer(filePath); // Create the lexer
-            parser = new PrefspecsParser(lexer.getLexStream() /*, project*/);  // Create the parser
+            fLexer = new PrefspecsLexer(filePath);
+            fParser = new PrefspecsParser(fLexer.getILexStream() /*, project*/);
         } catch (IOException e) {
             throw new Error(e);
         }
@@ -75,27 +63,21 @@ public class PrefspecsParseController extends SimpleLPGParseController implement
     /**
      * setFilePath() should be called before calling this method.
      */
-    public Object parse(String contents, boolean scanOnly, IProgressMonitor monitor) {
+    public Object parse(String contents, IProgressMonitor monitor) {
     	PMMonitor my_monitor = new PMMonitor(monitor);
     	char[] contentsArray = contents.toCharArray();
 
-    	// SMS 23 Jan 2007:  revised to match LPG
-        //lexer.initialize(contentsArray, fFilePath.toPortableString());
-		if (lexer == null) {
-			  lexer = new PrefspecsLexer();
-			}
-		lexer.reset(contentsArray, fFilePath.toPortableString());
-        
-    	// SMS 23 Jan 2007:  revised to match LPG
-        //parser.getParseStream().resetTokenStream();
-		if (parser == null) {
-			parser = new PrefspecsParser(lexer.getLexStream());
+		if (fLexer == null) {
+		    fLexer = new PrefspecsLexer();
 		}
-		parser.reset(lexer.getLexStream());
-		parser.getParseStream().setMessageHandler(new MessageHandlerAdapter(handler));
-		
-		
-		
+		fLexer.reset(contentsArray, fFilePath.toPortableString());
+        
+		if (fParser == null) {
+			fParser = new PrefspecsParser(fLexer.getILexStream());
+		}
+		fParser.reset(fLexer.getILexStream());
+		fParser.getIPrsStream().setMessageHandler(new MessageHandlerAdapter(handler));
+
         // SMS 5 May 2006:
         // Clear the problem markers on the file
         // It should be okay to do this here because ...
@@ -110,12 +92,12 @@ public class PrefspecsParseController extends SimpleLPGParseController implement
         	System.err.println("prefspecsParseController.parse:  caught CoreException while deleting problem markers; continuing to parse regardless");
         }
         
-        lexer.lexer(my_monitor, parser.getParseStream()); // Lex the stream to produce the token stream
+        fLexer.lexer(my_monitor, fParser.getIPrsStream()); // Lex the stream to produce the token stream
         if (my_monitor.isCancelled())
         	return fCurrentAst; // TODO currentAst might (probably will) be inconsistent wrt the lex stream now
 
-        fCurrentAst = parser.parser(my_monitor, 0);
-        parser.resolve((ASTNode) fCurrentAst);
+        fCurrentAst = fParser.parser(my_monitor, 0);
+        ((PrefspecsParser) fParser).resolve((ASTNode) fCurrentAst);
 
         cacheKeywordsOnce(); // better place/time to do this?
 
