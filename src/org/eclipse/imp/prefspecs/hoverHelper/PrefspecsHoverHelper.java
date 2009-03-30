@@ -30,7 +30,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
 {
     public String getHoverHelpAt(IParseController parseController, ISourceViewer srcViewer, int offset)
     {
-        IPrsStream ps= ((SimpleLPGParseController) parseController).getParser().getParseStream();
+        IPrsStream ps= ((SimpleLPGParseController) parseController).getParser().getIPrsStream();
         // SMS 16 Mar 2007:  index out of bounds occurs here sometimes,
         // probably when ast has errors (around point of error)
         IToken token= ps.getTokenAtCharacter(offset);
@@ -39,7 +39,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
         Object ast = parseController.getCurrentAst();
         if (ast == null) return null;
 
-        ISourcePositionLocator nodeLocator= parseController.getNodeLocator();
+        ISourcePositionLocator nodeLocator= parseController.getSourcePositionLocator();
         Object node = nodeLocator.findNode(ast, offset);
 
         
@@ -228,7 +228,7 @@ public class PrefspecsHoverHelper implements IHoverHelper
     }
 
     public static String getSubstring(IParseController parseController, int start, int end) {
-        return new String(((SimpleLPGParseController) parseController).getParser().getParseStream().getInputChars(), start, end-start+1);
+        return new String(((SimpleLPGParseController) parseController).getParser().getIPrsStream().getInputChars(), start, end-start+1);
     }
 
     public static String getSubstring(IParseController parseController, IToken token) {
@@ -262,6 +262,4 @@ public class PrefspecsHoverHelper implements IHoverHelper
    		}
    		return spec;
 	}
-    
-    
 }
