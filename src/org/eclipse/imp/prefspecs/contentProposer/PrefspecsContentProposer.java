@@ -14,15 +14,33 @@ package org.eclipse.imp.prefspecs.contentProposer;
 
 import java.util.ArrayList;
 
+import lpg.runtime.IPrsStream;
 import lpg.runtime.IToken;
-import lpg.runtime.PrsStream;
 
 import org.eclipse.imp.editor.SourceProposal;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParsersym;
-import org.eclipse.imp.prefspecs.parser.Ast.*;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.ItopLevelItem;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fieldSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optionalSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.pageBody;
+import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.prefSpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.topLevelItemList;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -30,7 +48,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 public class PrefspecsContentProposer implements IContentProposer
 {
     private IToken getToken(IParseController controller, int offset) {
-        PrsStream stream = ((SimpleLPGParseController) controller).getParser().getParseStream();
+        IPrsStream stream = ((SimpleLPGParseController) controller).getParser().getIPrsStream();
         PrefspecsParseController psPC= (PrefspecsParseController) controller;
         int index = stream.getTokenIndexAtCharacter(offset),
             token_index = (index < 0 ? -(index - 1) : index),
