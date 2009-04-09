@@ -88,7 +88,7 @@ public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer 
     public void setLanguage(String language) {
     }
 
-    public IRegion calculateDamageExtent(IRegion seed) {
+    public IRegion calculateDamageExtent(IRegion seed, IParseController ctlr) {
         return seed;
     }
 }
