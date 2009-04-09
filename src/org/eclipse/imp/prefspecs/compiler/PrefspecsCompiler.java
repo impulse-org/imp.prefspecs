@@ -228,7 +228,7 @@ public class PrefspecsCompiler
     public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
 
     public PrefspecsCompiler(String problem_marker_id, MessageConsoleStream messageConsoleStream) {
-        this.PROBLEM_MARKER_ID = problem_marker_id;
+        PROBLEM_MARKER_ID = problem_marker_id;
         this.fConsoleStream= messageConsoleStream;
     }
 
