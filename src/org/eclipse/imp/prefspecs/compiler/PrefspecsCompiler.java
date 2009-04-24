@@ -20,9 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import lpg.runtime.IAst;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -43,6 +47,7 @@ import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.model.ModelFactory;
 import org.eclipse.imp.model.ModelFactory.ModelException;
 import org.eclipse.imp.parser.IParseController;
+import org.eclipse.imp.parser.SymbolTable;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.compiler.codegen.PreferencesFactory;
@@ -50,6 +55,7 @@ import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirectoryFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFileFieldInfo;
@@ -63,6 +69,7 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualDirectoryFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
@@ -71,92 +78,7 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
-import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
-import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
-import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
-import org.eclipse.imp.prefspecs.parser.Ast.IbooleanValue;
-import org.eclipse.imp.prefspecs.parser.Ast.IfontStyle;
-import org.eclipse.imp.prefspecs.parser.Ast.IsignedNumber;
-import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
-import org.eclipse.imp.prefspecs.parser.Ast.ItypeOrValuesSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.colorDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.colorFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.colorFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.columnsSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.comboCustomSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.comboDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.comboFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.comboSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionType0;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs0;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs1;
-import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
-import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.dirlistFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.doubleDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.doubleFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.doubleFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.doubleRangeSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.doubleSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.fileFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.fontDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.fontFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.fontFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.fontStyle0;
-import org.eclipse.imp.prefspecs.parser.Ast.fontStyle1;
-import org.eclipse.imp.prefspecs.parser.Ast.fontStyle2;
-import org.eclipse.imp.prefspecs.parser.Ast.generalSpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intCustomSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intRangeSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intSpecialSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.intSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.labelledStringValue;
-import org.eclipse.imp.prefspecs.parser.Ast.labelledStringValueList;
-import org.eclipse.imp.prefspecs.parser.Ast.optConditionalSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.optDetailsSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.optLabelSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.optPackageSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.optToolTipSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.radioCustomSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.radioDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.radioFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.radioSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.sign1;
-import org.eclipse.imp.prefspecs.parser.Ast.signedNumber0;
-import org.eclipse.imp.prefspecs.parser.Ast.signedNumber1;
-import org.eclipse.imp.prefspecs.parser.Ast.stringCustomSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringDefValueSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec1;
-import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
-import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec1;
-import org.eclipse.imp.prefspecs.parser.Ast.typeSpec;
-import org.eclipse.imp.prefspecs.parser.PrefspecsParser.SymbolTable;
+import org.eclipse.imp.prefspecs.parser.Ast.*;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionPointEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
@@ -178,8 +100,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class PrefspecsCompiler
-{
+public class PrefspecsCompiler {
     private static class LabelledValueDescriptor {
         private final List<String> fValues= new ArrayList<String>();
         private final List<String> fLabels= new ArrayList<String>();
@@ -278,7 +199,7 @@ public class PrefspecsCompiler
     
     
     private final class TranslatorVisitor extends AbstractVisitor {
-    	SymbolTable innerScope;
+    	SymbolTable<IAst> innerScope;
 
         @Override
         public void unimplementedVisitor(String s) {
@@ -324,90 +245,83 @@ public class PrefspecsCompiler
         public void endVisit(pageSpec p) {
         	fPageInfo.dump(PrefspecsCompiler.this.fConsoleStream);
         }
-        
-        
+
+        private <T> T findSpec(generalSpecList specs, Class<T> type) {
+            for(int i=0; i < specs.size(); i++) {
+                IgeneralSpec spec= specs.getgeneralSpecAt(i);
+                if (type.isInstance(spec)) {
+                    return (T) spec;
+                }
+            }
+            return null;
+        }
+
+        private void checkGeneralSpecs(AbstractASTNodeList specs) {
+            Set<Class> specsSeen = new HashSet<Class>();
+            for(int i=0; i < specs.size(); i++) {
+                Object elt = specs.getElementAt(i);
+                if (specsSeen.contains(elt.getClass())) {
+                    createErrorMarker("Multiple property specifications of the same type for single entity.", specs);
+                }
+                specsSeen.add(elt.getClass());
+            }
+        }
+
+        private void handleTabPropertySpecs(PreferencesTabInfo tabInfo, generalSpecList propSpecs) {
+            checkGeneralSpecs(propSpecs);
+
+            isEditableSpec editableSpec = findSpec(propSpecs, isEditableSpec.class);
+            if (editableSpec != null) {
+                tabInfo.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+            }
+            isRemovableSpec removableSpec = findSpec(propSpecs, isRemovableSpec.class);
+            if (removableSpec != null) {
+                tabInfo.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
+            }
+        }
+
         @Override
         public boolean visit(defaultTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.DEFAULT_LEVEL);
-        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.DEFAULT_LEVEL);
+        	generalSpecList propSpecs = tabSpec.getgeneralSpecs();
+        	handleTabPropertySpecs(tabInfo, propSpecs);
 
-        	// RMF - really doesn't make sense for the user to edit or remove the default level
-        	// values; should probably disallow that here and create an error marker.
-        	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
-        	if (editableSpec != null) {
-        		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getisRemovableSpec();
+        	isRemovableSpec removableSpec = findSpec(propSpecs, isRemovableSpec.class);
+
         	if (removableSpec != null) {
-        		try {
-        			tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        		} catch (IllegalArgumentException e) {
-        			fConsoleStream.println("PrefspecsCompiler.TranslatorVisitor.visit(defaultTabSpec:  \n" +
-        					"\tattempt to set isRemovable to illegal value 'true'; substituting 'false'.");
-        			tab.setIsRemovable(false);
+                String removableValue= removableSpec.getbooleanValue().toString();
+                if (removableValue.equals("true")) {
+                    createErrorMarker("The default level cannot be made removable", removableSpec);
+                    tabInfo.setIsRemovable(false);
+                } else {
+                    tabInfo.setIsRemovable(removableValue.equals("true"));
         		}
         	}
-        	// Should always have an inout spec
-        	tab.setIsUsed(tabSpec.getinout().toString().equals("in"));
+        	tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
-        
-        
-        
+
         @Override
         public boolean visit(configurationTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.CONFIGURATION_LEVEL);
-        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
-
-        	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
-        	if (editableSpec != null) {
-        		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getisRemovableSpec();
-        	if (removableSpec != null) {
-            	tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	// Should always have an inout spec
-        	tab.setIsUsed(tabSpec.getinout().toString().equals("in"));
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.CONFIGURATION_LEVEL);
+        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
+            tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
-        
-  
-        
+
         @Override
         public boolean visit(instanceTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.INSTANCE_LEVEL);
-        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
-
-        	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
-        	if (editableSpec != null) {
-        		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getisRemovableSpec();
-        	if (removableSpec != null) {
-            	tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	// Should always have an inout spec
-        	tab.setIsUsed(tabSpec.getinout().toString().equals("in"));
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.INSTANCE_LEVEL);
+        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
+        	tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
-
 
         @Override
         public boolean visit(projectTabSpec tabSpec) {
-        	PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, IPreferencesService.PROJECT_LEVEL);
-        	generalSpecs propSpecs = tabSpec.getgeneralSpecs();
-        	
-        	isEditableSpec editableSpec = propSpecs.getisEditableSpec();
-        	if (editableSpec != null) {
-        		tab.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	isRemovableSpec removableSpec = propSpecs.getisRemovableSpec();
-        	if (removableSpec != null) {
-            	tab.setIsRemovable(removableSpec.getbooleanValue().toString().equals("true"));
-        	}
-        	// Should always have an inout spec
-        	tab.setIsUsed(tabSpec.getinout().toString().equals("in"));
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.PROJECT_LEVEL);
+        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
+        	tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
 
@@ -491,20 +405,21 @@ public class PrefspecsCompiler
 	        }
         }
 
-        private void setVirtualProperties(VirtualFieldInfo vField, generalSpecs generalSpecs, optConditionalSpec condSpec) {
-            isEditableSpec editableSpec = generalSpecs.getisEditableSpec();
+        private void setVirtualProperties(VirtualFieldInfo vField, AbstractASTNodeList generalSpecs, optConditionalSpec condSpec) {
+            checkGeneralSpecs(generalSpecs);
+            isEditableSpec editableSpec = findSpec(generalSpecs, isEditableSpec.class);
             if (editableSpec != null) {
                 vField.setIsEditable(getValueOf(editableSpec.getbooleanValue()));
             }
-            isRemovableSpec removableSpec = generalSpecs.getisRemovableSpec();
+            isRemovableSpec removableSpec = findSpec(generalSpecs, isRemovableSpec.class);
             if (removableSpec != null) {
                 vField.setIsRemovable(getValueOf(removableSpec.getbooleanValue()));
             }
-            optLabelSpec labelSpec = generalSpecs.getoptLabelSpec();
+            optLabelSpec labelSpec = findSpec(generalSpecs, optLabelSpec.class);
             if (labelSpec != null) {
                 vField.setLabel(unquoteString(labelSpec.getSTRING_LITERAL()));
             }
-            optToolTipSpec toolTipSpec = generalSpecs.getoptToolTipSpec();
+            optToolTipSpec toolTipSpec = findSpec(generalSpecs, optToolTipSpec.class);
             if (toolTipSpec != null) {
                 vField.setToolTipText(unquoteString(toolTipSpec.getSTRING_LITERAL()));
             }
@@ -533,15 +448,26 @@ public class PrefspecsCompiler
             }
         }
 
+        private <T> T findSpec(AbstractASTNodeList specs, Class<T> type) {
+            for(int i=0; i < specs.size(); i++) {
+                Object elt= specs.getElementAt(i);
+                if (type.isInstance(elt)) {
+                    return (T) elt;
+                }
+            }
+            return null;
+        }
+
         @Override
         public boolean visit(booleanFieldSpec boolField) {
         	VirtualBooleanFieldInfo vBool = new VirtualBooleanFieldInfo(fPageInfo, boolField.getidentifier().toString());
         	booleanFieldPropertySpecs propSpecs = boolField.getbooleanFieldPropertySpecs();
 
         	if (propSpecs != null) {
-            	setVirtualProperties(vBool, propSpecs.getgeneralSpecs(), boolField.getoptConditionalSpec());
+            	booleanSpecificSpecList booleanSpecificSpecs= propSpecs.getbooleanSpecificSpecs();
+                setVirtualProperties(vBool, booleanSpecificSpecs, boolField.getoptConditionalSpec());
 
-                booleanSpecialSpec specialSpec = propSpecs.getbooleanSpecificSpec().getbooleanCustomSpec();
+                booleanSpecialSpec specialSpec = findSpec(booleanSpecificSpecs, booleanSpecialSpec.class);
             	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
             	if (specialSpec != null) {
             		vBool.setHasSpecialValue(true);
@@ -550,7 +476,7 @@ public class PrefspecsCompiler
             		vBool.setHasSpecialValue(false);
             	}
 
-            	booleanDefValueSpec defValueSpec = propSpecs.getbooleanSpecificSpec().getbooleanDefValueSpec();
+            	booleanDefValueSpec defValueSpec = findSpec(booleanSpecificSpecs, booleanDefValueSpec.class);
             	if (defValueSpec != null) {
             		vBool.setDefaultValue(getValueOf(defValueSpec.getbooleanValue()));
             	}
@@ -585,9 +511,10 @@ public class PrefspecsCompiler
         	dirlistFieldPropertySpecs propSpecs = dirListField.getdirlistFieldPropertySpecs();
 
         	if (propSpecs != null) {
-                setVirtualProperties(vDirList, propSpecs.getgeneralSpecs(), dirListField.getoptConditionalSpec());
+                stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
+                setVirtualProperties(vDirList, stringSpecificSpecs, dirListField.getoptConditionalSpec());
 
-            	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+            	stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
             	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
             	if (specialSpec != null) {
             		vDirList.setHasSpecialValue(true);
@@ -596,12 +523,12 @@ public class PrefspecsCompiler
             		vDirList.setHasSpecialValue(false);
             	}
 
-            	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+            	stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
             	if (defValueSpec != null) {
             		vDirList.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
             	}
 
-            	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+            	IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
             	if (emptyValueSpec instanceof stringEmptySpec0) {
             		vDirList.setEmptyValueAllowed(false);
             		vDirList.setEmptyValue(null);
@@ -644,7 +571,73 @@ public class PrefspecsCompiler
         	}
         	return false;
         }
-  
+
+
+        @Override
+        public boolean visit(directoryFieldSpec directoryField) {
+            VirtualDirectoryFieldInfo vDir = new VirtualDirectoryFieldInfo(fPageInfo, directoryField.getidentifier().toString());
+            directoryFieldPropertySpecs propSpecs = directoryField.getdirectoryFieldPropertySpecs();
+            
+            if (propSpecs != null) {
+                stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
+                setVirtualProperties(vDir, stringSpecificSpecs, directoryField.getoptConditionalSpec());
+            
+                stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
+                // hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+                if (specialSpec != null) {
+                    vDir.setHasSpecialValue(true);
+                    vDir.setSpecialValue(getValueOf(specialSpec.getstringValue()));
+                } else {
+                    vDir.setHasSpecialValue(false);
+                }
+
+                stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
+                if (defValueSpec != null) {
+                    vDir.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
+                }
+            
+                IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
+                if (emptyValueSpec instanceof stringEmptySpec0) {
+                    vDir.setEmptyValueAllowed(false);
+                    vDir.setEmptyValue(null);
+                } else if (emptyValueSpec instanceof stringEmptySpec1) {
+                    stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+                    vDir.setEmptyValueAllowed(true);
+                    vDir.setEmptyValue(getValueOf(ses1.getstringValue()));
+                }
+            }
+            
+            // Create an instance of a concrete field for each tab on the page
+            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+            while (tabs.hasNext()) {
+                PreferencesTabInfo tab = tabs.next();
+                if (!tab.getIsUsed())
+                    continue;
+                ConcreteDirectoryFieldInfo cFile = new ConcreteDirectoryFieldInfo(vDir, tab);
+                
+                // Set the attributes of the concrete field:
+                // if set in the virtual field, use that value;
+                // else if set for the tab, use that value;
+                // else rely on the default for the field type
+                setConcreteProperties(vDir, tab, cFile);
+                if (vDir.getHasSpecialValue()) {
+                    cFile.setHasSpecialValue(true);
+                    cFile.setSpecialValue(vDir.getSpecialValue());
+                } else {
+                    cFile.setHasSpecialValue(false);
+                }
+                if (vDir.hasEmptyValueSpec()) {
+                    if (!vDir.getEmptyValueAllowed()) {
+                        cFile.setEmptyValueAllowed(false);
+                        cFile.setEmptyValue(null);
+                    } else {
+                        cFile.setEmptyValueAllowed(true);
+                        cFile.setEmptyValue(vDir.getEmptyValue());
+                    }
+                }
+            }
+            return false;
+        }
         
         @Override
         public boolean visit(fileFieldSpec fileField) {
@@ -652,9 +645,10 @@ public class PrefspecsCompiler
         	fileFieldPropertySpecs propSpecs = fileField.getfileFieldPropertySpecs();
         	
         	if (propSpecs != null) {
-            	setVirtualProperties(vFile, propSpecs.getgeneralSpecs(), fileField.getoptConditionalSpec());
-        	
-            	stringSpecialSpec specialSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringSpecialSpec();
+            	stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
+                setVirtualProperties(vFile, stringSpecificSpecs, fileField.getoptConditionalSpec());
+
+            	stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
             	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
             	if (specialSpec != null) {
             		vFile.setHasSpecialValue(true);
@@ -663,12 +657,12 @@ public class PrefspecsCompiler
             		vFile.setHasSpecialValue(false);
             	}
 
-            	stringDefValueSpec defValueSpec = propSpecs.getstringSpecificSpec().getstringDefValueSpec();
+            	stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
             	if (defValueSpec != null) {
             		vFile.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
             	}
         	
-            	IstringEmptySpec emptyValueSpec = propSpecs.getstringSpecificSpec().getstringCustomSpec().getstringEmptySpec();
+            	IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
             	if (emptyValueSpec instanceof stringEmptySpec0) {
             		vFile.setEmptyValueAllowed(false);
             		vFile.setEmptyValue(null);
@@ -718,15 +712,10 @@ public class PrefspecsCompiler
 
         	if (propSpecs != null) {
             	// Create a virtual field
-        	    setVirtualProperties(vInt, propSpecs.getgeneralSpecs(), intField.getoptConditionalSpec());
+                intSpecificSpecList intSpecificSpecs = propSpecs.getintSpecificSpecs();
+        	    setVirtualProperties(vInt, intSpecificSpecs, intField.getoptConditionalSpec());
 
-            	intSpecificSpec specificSpec = propSpecs.getintSpecificSpec();
-            	intCustomSpec customSpec = specificSpec.getintCustomSpec();
-            	intSpecialSpec specialSpec = customSpec.getintSpecialSpec();
-            	intRangeSpec rangeSpec = customSpec.getintRangeSpec();
-            	intDefValueSpec defValueSpec = specificSpec.getintDefValueSpec();
-        	
-            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
+            	intSpecialSpec specialSpec = findSpec(intSpecificSpecs, intSpecialSpec.class);
             	if (specialSpec != null) {
             		vInt.setHasSpecialValue(true);
             		vInt.setSpecialValue(getValueOf(specialSpec.getsignedNumber()));
@@ -734,10 +723,12 @@ public class PrefspecsCompiler
             		vInt.setHasSpecialValue(false);
             	}
 
+            	intDefValueSpec defValueSpec = findSpec(intSpecificSpecs, intDefValueSpec.class);
             	if (defValueSpec != null) {
             		vInt.setDefaultValue(getValueOf(defValueSpec.getsignedNumber()));
             	}
 
+                intRangeSpec rangeSpec = findSpec(intSpecificSpecs, intRangeSpec.class);
             	if (rangeSpec != null) {
             		int lowValue = getValueOf(rangeSpec.getlow());
             		int hiValue = getValueOf(rangeSpec.gethigh());
@@ -783,11 +774,11 @@ public class PrefspecsCompiler
 
             if (propSpecs != null) {
                 // Create a virtual field
-                setVirtualProperties(vDouble, propSpecs.getgeneralSpecs(), doubleField.getoptConditionalSpec());
+                doubleSpecificSpecList doubleSpecificSpecs= propSpecs.getdoubleSpecificSpecs();
+                setVirtualProperties(vDouble, doubleSpecificSpecs, doubleField.getoptConditionalSpec());
 
-                doubleSpecificSpec specificSpec = propSpecs.getdoubleSpecificSpec();
-                doubleRangeSpec rangeSpec = (doubleRangeSpec) specificSpec.getdoubleCustomSpec();
-                doubleDefValueSpec defValueSpec = specificSpec.getdoubleDefValueSpec();
+                doubleRangeSpec rangeSpec = findSpec(doubleSpecificSpecs, doubleRangeSpec.class);
+                doubleDefValueSpec defValueSpec = findSpec(doubleSpecificSpecs, doubleDefValueSpec.class);
 
                 if (defValueSpec != null) {
                     vDouble.setDefaultValue(Double.parseDouble(defValueSpec.getDECIMAL().toString()));
@@ -830,13 +821,11 @@ public class PrefspecsCompiler
         	stringFieldPropertySpecs propSpecs = stringField.getstringFieldPropertySpecs();
 
         	if (propSpecs != null) {
-            	setVirtualProperties(vString, propSpecs.getgeneralSpecs(), stringField.getoptConditionalSpec());
+                stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
+            	setVirtualProperties(vString, stringSpecificSpecs, stringField.getoptConditionalSpec());
 
-            	stringSpecificSpec stringSpecificSpec= propSpecs.getstringSpecificSpec();
-                final stringCustomSpec customSpec= stringSpecificSpec.getstringCustomSpec();
-                stringSpecialSpec specialSpec = customSpec.getstringSpecialSpec();
+                stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
 
-                // hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
             	if (specialSpec != null) {
             		vString.setHasSpecialValue(true);
                 	vString.setSpecialValue(getValueOf(specialSpec.getstringValue()));
@@ -845,12 +834,12 @@ public class PrefspecsCompiler
             		//vString.setSpecialValue(null);
             	}
 
-            	stringDefValueSpec defValueSpec = stringSpecificSpec.getstringDefValueSpec();
+            	stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
             	if (defValueSpec != null) {
             		vString.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
             	}
-        	
-            	IstringEmptySpec emptyValueSpec = customSpec.getstringEmptySpec();
+
+            	IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
             	if (emptyValueSpec instanceof stringEmptySpec0) {
             		vString.setEmptyValueAllowed(false);
             		vString.setEmptyValue(null);
@@ -859,7 +848,7 @@ public class PrefspecsCompiler
             		vString.setEmptyValueAllowed(true);
             		vString.setEmptyValue(getValueOf(ses1.getstringValue()));
             	}
-            	stringValidatorSpec validatorSpec= stringSpecificSpec.getstringValidatorSpec();
+            	stringValidatorSpec validatorSpec= findSpec(stringSpecificSpecs, stringValidatorSpec.class);
             	if (validatorSpec != null) {
             	    String validatorQualClass= unquoteString(validatorSpec.getqualClassName().getSTRING_LITERAL().toString());
                     vString.setValidatorQualClass(validatorQualClass);
@@ -909,9 +898,10 @@ public class PrefspecsCompiler
             colorFieldPropertySpecs propSpecs = colorField.getcolorFieldPropertySpecs();
 
             if (propSpecs != null) {
-                setVirtualProperties(vColor, propSpecs.getgeneralSpecs(), colorField.getoptConditionalSpec());
+                colorSpecificSpecList colorSpecificSpecs= propSpecs.getcolorSpecificSpecs();
+                setVirtualProperties(vColor, colorSpecificSpecs, colorField.getoptConditionalSpec());
 
-                colorDefValueSpec defValueSpec = propSpecs.getcolorSpecificSpec();
+                colorDefValueSpec defValueSpec = findSpec(colorSpecificSpecs, colorDefValueSpec.class);
 
                 if (defValueSpec != null) {
                     int r= Integer.parseInt(defValueSpec.getred().toString());
@@ -944,9 +934,10 @@ public class PrefspecsCompiler
             fontFieldPropertySpecs propSpecs = fontField.getfontFieldPropertySpecs();
 
             if (propSpecs != null) {
-                setVirtualProperties(vFont, propSpecs.getgeneralSpecs(), fontField.getoptConditionalSpec());
+                fontSpecificSpecList fontSpecificSpecs= propSpecs.getfontSpecificSpecs();
+                setVirtualProperties(vFont, fontSpecificSpecs, fontField.getoptConditionalSpec());
 
-                fontDefValueSpec defValueSpec = propSpecs.getfontSpecificSpec();
+                fontDefValueSpec defValueSpec = findSpec(fontSpecificSpecs, fontDefValueSpec.class);
 
                 if (defValueSpec != null) {
                     vFont.setDefaultName(getValueOf(defValueSpec.getname()));
@@ -987,11 +978,10 @@ public class PrefspecsCompiler
             comboFieldPropertySpecs propSpecs = comboField.getcomboFieldPropertySpecs();
 
             if (propSpecs != null) {
-                comboSpecificSpec comboSpecificSpec= propSpecs.getcomboSpecificSpec();
-                comboDefValueSpec defValueSpec = comboSpecificSpec.getcomboDefValueSpec();
-                comboCustomSpec customSpec = comboSpecificSpec.getcomboCustomSpec();
-                ItypeOrValuesSpec tovSpec = customSpec.gettypeOrValuesSpec();
-                columnsSpec columnsSpec = customSpec.getcolumnsSpec();
+                comboSpecificSpecList comboSpecificSpecs= propSpecs.getcomboSpecificSpecs();
+                comboDefValueSpec defValueSpec = findSpec(comboSpecificSpecs, comboDefValueSpec.class);
+                ItypeOrValuesSpec tovSpec = findSpec(comboSpecificSpecs, ItypeOrValuesSpec.class);
+                columnsSpec columnsSpec = findSpec(comboSpecificSpecs, columnsSpec.class);
                 LabelledValueDescriptor lvd;
 
                 if (tovSpec instanceof typeOrValuesSpec0) {
@@ -1001,10 +991,10 @@ public class PrefspecsCompiler
                     lvd= new LabelledValueDescriptor(tovs1.getvaluesSpec().getlabelledStringValueList());
                 }
 
-                setVirtualProperties(vCombo, propSpecs.getgeneralSpecs(), comboField.getoptConditionalSpec());
+                setVirtualProperties(vCombo, comboSpecificSpecs, comboField.getoptConditionalSpec());
 
                 if (defValueSpec != null) {
-                    vCombo.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
+                    vCombo.setDefaultValue(defValueSpec.getidentifier().getIDENTIFIER().toString());
                 }
 
                 List<String> valuesList= lvd.getValues();
@@ -1040,11 +1030,10 @@ public class PrefspecsCompiler
             radioFieldPropertySpecs propSpecs = radioField.getradioFieldPropertySpecs();
 
             if (propSpecs != null) {
-                radioSpecificSpec radioSpecificSpec= propSpecs.getradioSpecificSpec();
-                radioDefValueSpec defValueSpec = radioSpecificSpec.getradioDefValueSpec();
-                radioCustomSpec customSpec = radioSpecificSpec.getradioCustomSpec();
-                ItypeOrValuesSpec tovSpec = customSpec.gettypeOrValuesSpec();
-                columnsSpec columnsSpec = customSpec.getcolumnsSpec();
+                radioSpecificSpecList radioSpecificSpecs= propSpecs.getradioSpecificSpecs();
+                radioDefValueSpec defValueSpec = findSpec(radioSpecificSpecs, radioDefValueSpec.class);
+                ItypeOrValuesSpec tovSpec = findSpec(radioSpecificSpecs, ItypeOrValuesSpec.class);
+                columnsSpec columnsSpec = findSpec(radioSpecificSpecs, columnsSpec.class);
 
                 LabelledValueDescriptor lvd;
 
@@ -1055,7 +1044,7 @@ public class PrefspecsCompiler
                     lvd= new LabelledValueDescriptor(tovs1.getvaluesSpec().getlabelledStringValueList());
                 }
 
-                setVirtualProperties(vRadio, propSpecs.getgeneralSpecs(), radioField.getoptConditionalSpec());
+                setVirtualProperties(vRadio, radioSpecificSpecs, radioField.getoptConditionalSpec());
 
                 if (defValueSpec != null) {
                     vRadio.setDefaultValue(defValueSpec.getidentifier().getIDENTIFIER().toString());
@@ -1140,21 +1129,24 @@ public class PrefspecsCompiler
         
         
         @Override
-        public void endVisit(generalSpecs genSpecs)
+        public void endVisit(generalSpecList genSpecs)
         {
-        	// Process general spec as part of a custom rule,
-        	// if processing a custom rule
+        	// Process general spec as part of a custom rule, if processing a custom rule
         	if (customTabName != null) {
-        		if (genSpecs.getisEditableSpec() != null)
-	        		customFieldInfo.setIsEditable(genSpecs.getisEditableSpec().getbooleanValue().toString().equals("true"));
-        		try {
-        			if (genSpecs.getisRemovableSpec() != null)
-        				customFieldInfo.setIsRemovable(genSpecs.getisRemovableSpec().getbooleanValue().toString().equals("true"));
-        		} catch (IllegalArgumentException e) {
-        			fConsoleStream.println("PrefspecsCompiler.TranslatorVisitor.visit(generalSpecs:  \n" +
-        					"\tattempt to set isRemovable to illegal value 'true'; substituting 'false'.");
-        			customFieldInfo.setIsRemovable(false);
-        		}
+        		isEditableSpec editableSpec= findSpec(genSpecs, isEditableSpec.class);
+                if (editableSpec != null)
+	        		customFieldInfo.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
+
+                isRemovableSpec removableSpec= findSpec(genSpecs, isRemovableSpec.class);
+                if (removableSpec != null) {
+                    String removableValue= removableSpec.getbooleanValue().toString();
+                    if (removableValue.equals("true")) {
+                        createErrorMarker("Illegal removable specification.", removableSpec);
+                        customFieldInfo.setIsRemovable(false);
+                    } else {
+                        customFieldInfo.setIsRemovable(false);
+                    }
+                }
         	}
         }
         
