@@ -39,8 +39,9 @@
     -- bytes -- byte array
     COLOR
     COMBO
-    DOUBLE
+    DIRECTORY
     DIRLIST
+    DOUBLE
     FILE
     FONT
     INT
@@ -184,6 +185,12 @@
     Keyword ::= d e t a i l s
         /.$BeginAction
             $setResult($_DETAILS);
+          $EndAction
+        ./
+
+    Keyword ::= d i r e c t o r y
+        /.$BeginAction
+            $setResult($_DIRECTORY);
           $EndAction
         ./
 

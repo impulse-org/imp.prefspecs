@@ -18,7 +18,7 @@ import lpg.runtime.*;
 public class PrefspecsKWLexer extends PrefspecsKWLexerprs
 {
     private char[] inputChars;
-    private final int keywordKind[] = new int[47 + 1];
+    private final int keywordKind[] = new int[48 + 1];
 
     public int[] getKeywordKinds() { return keywordKind; }
 
@@ -187,241 +187,248 @@ public class PrefspecsKWLexer extends PrefspecsKWLexerprs
       
     
         //
-        // Rule 14:  Keyword ::= d i r l i s t
+        // Rule 14:  Keyword ::= d i r e c t o r y
         //
         
-        keywordKind[14] = (PrefspecsParsersym.TK_DIRLIST);
+        keywordKind[14] = (PrefspecsParsersym.TK_DIRECTORY);
       
     
         //
-        // Rule 15:  Keyword ::= d o u b l e
+        // Rule 15:  Keyword ::= d i r l i s t
         //
         
-        keywordKind[15] = (PrefspecsParsersym.TK_DOUBLE);
+        keywordKind[15] = (PrefspecsParsersym.TK_DIRLIST);
       
     
         //
-        // Rule 16:  Keyword ::= e m p t y a l l o w e d
+        // Rule 16:  Keyword ::= d o u b l e
         //
         
-        keywordKind[16] = (PrefspecsParsersym.TK_EMPTYALLOWED);
+        keywordKind[16] = (PrefspecsParsersym.TK_DOUBLE);
       
     
         //
-        // Rule 17:  Keyword ::= f a l s e
+        // Rule 17:  Keyword ::= e m p t y a l l o w e d
         //
         
-        keywordKind[17] = (PrefspecsParsersym.TK_FALSE);
+        keywordKind[17] = (PrefspecsParsersym.TK_EMPTYALLOWED);
       
     
         //
-        // Rule 18:  Keyword ::= f i e l d s
+        // Rule 18:  Keyword ::= f a l s e
         //
         
-        keywordKind[18] = (PrefspecsParsersym.TK_FIELDS);
+        keywordKind[18] = (PrefspecsParsersym.TK_FALSE);
       
     
         //
-        // Rule 19:  Keyword ::= f i l e
+        // Rule 19:  Keyword ::= f i e l d s
         //
         
-        keywordKind[19] = (PrefspecsParsersym.TK_FILE);
+        keywordKind[19] = (PrefspecsParsersym.TK_FIELDS);
       
     
         //
-        // Rule 20:  Keyword ::= f o n t
+        // Rule 20:  Keyword ::= f i l e
         //
         
-        keywordKind[20] = (PrefspecsParsersym.TK_FONT);
+        keywordKind[20] = (PrefspecsParsersym.TK_FILE);
       
     
         //
-        // Rule 21:  Keyword ::= h a s s p e c i a l
+        // Rule 21:  Keyword ::= f o n t
         //
         
-        keywordKind[21] = (PrefspecsParsersym.TK_HASSPECIAL);
+        keywordKind[21] = (PrefspecsParsersym.TK_FONT);
       
     
         //
-        // Rule 22:  Keyword ::= i f
+        // Rule 22:  Keyword ::= h a s s p e c i a l
         //
         
-        keywordKind[22] = (PrefspecsParsersym.TK_IF);
+        keywordKind[22] = (PrefspecsParsersym.TK_HASSPECIAL);
       
     
         //
-        // Rule 23:  Keyword ::= i n s t a n c e
+        // Rule 23:  Keyword ::= i f
         //
         
-        keywordKind[23] = (PrefspecsParsersym.TK_INSTANCE);
+        keywordKind[23] = (PrefspecsParsersym.TK_IF);
       
     
         //
-        // Rule 24:  Keyword ::= i n
+        // Rule 24:  Keyword ::= i n s t a n c e
         //
         
-        keywordKind[24] = (PrefspecsParsersym.TK_IN);
+        keywordKind[24] = (PrefspecsParsersym.TK_INSTANCE);
       
     
         //
-        // Rule 25:  Keyword ::= i n t
+        // Rule 25:  Keyword ::= i n
         //
         
-        keywordKind[25] = (PrefspecsParsersym.TK_INT);
+        keywordKind[25] = (PrefspecsParsersym.TK_IN);
       
     
         //
-        // Rule 26:  Keyword ::= i s e d i t a b l e
+        // Rule 26:  Keyword ::= i n t
         //
         
-        keywordKind[26] = (PrefspecsParsersym.TK_ISEDITABLE);
+        keywordKind[26] = (PrefspecsParsersym.TK_INT);
       
     
         //
-        // Rule 27:  Keyword ::= i s r e m o v a b l e
+        // Rule 27:  Keyword ::= i s e d i t a b l e
         //
         
-        keywordKind[27] = (PrefspecsParsersym.TK_ISREMOVABLE);
+        keywordKind[27] = (PrefspecsParsersym.TK_ISEDITABLE);
       
     
         //
-        // Rule 28:  Keyword ::= i t a l i c
+        // Rule 28:  Keyword ::= i s r e m o v a b l e
         //
         
-        keywordKind[28] = (PrefspecsParsersym.TK_ITALIC);
+        keywordKind[28] = (PrefspecsParsersym.TK_ISREMOVABLE);
       
     
         //
-        // Rule 29:  Keyword ::= l a b e l
+        // Rule 29:  Keyword ::= i t a l i c
         //
         
-        keywordKind[29] = (PrefspecsParsersym.TK_LABEL);
+        keywordKind[29] = (PrefspecsParsersym.TK_ITALIC);
       
     
         //
-        // Rule 30:  Keyword ::= n o r m a l
+        // Rule 30:  Keyword ::= l a b e l
         //
         
-        keywordKind[30] = (PrefspecsParsersym.TK_NORMAL);
+        keywordKind[30] = (PrefspecsParsersym.TK_LABEL);
       
     
         //
-        // Rule 31:  Keyword ::= o n
+        // Rule 31:  Keyword ::= n o r m a l
         //
         
-        keywordKind[31] = (PrefspecsParsersym.TK_ON);
+        keywordKind[31] = (PrefspecsParsersym.TK_NORMAL);
       
     
         //
-        // Rule 32:  Keyword ::= o f f
+        // Rule 32:  Keyword ::= o n
         //
         
-        keywordKind[32] = (PrefspecsParsersym.TK_OFF);
+        keywordKind[32] = (PrefspecsParsersym.TK_ON);
       
     
         //
-        // Rule 33:  Keyword ::= o u t
+        // Rule 33:  Keyword ::= o f f
         //
         
-        keywordKind[33] = (PrefspecsParsersym.TK_OUT);
+        keywordKind[33] = (PrefspecsParsersym.TK_OFF);
       
     
         //
-        // Rule 34:  Keyword ::= p a c k a g e
+        // Rule 34:  Keyword ::= o u t
         //
         
-        keywordKind[34] = (PrefspecsParsersym.TK_PACKAGE);
+        keywordKind[34] = (PrefspecsParsersym.TK_OUT);
       
     
         //
-        // Rule 35:  Keyword ::= p a g e
+        // Rule 35:  Keyword ::= p a c k a g e
         //
         
-        keywordKind[35] = (PrefspecsParsersym.TK_PAGE);
+        keywordKind[35] = (PrefspecsParsersym.TK_PACKAGE);
       
     
         //
-        // Rule 36:  Keyword ::= p r o j e c t
+        // Rule 36:  Keyword ::= p a g e
         //
         
-        keywordKind[36] = (PrefspecsParsersym.TK_PROJECT);
+        keywordKind[36] = (PrefspecsParsersym.TK_PAGE);
       
     
         //
-        // Rule 37:  Keyword ::= r a d i o
+        // Rule 37:  Keyword ::= p r o j e c t
         //
         
-        keywordKind[37] = (PrefspecsParsersym.TK_RADIO);
+        keywordKind[37] = (PrefspecsParsersym.TK_PROJECT);
       
     
         //
-        // Rule 38:  Keyword ::= r a n g e
+        // Rule 38:  Keyword ::= r a d i o
         //
         
-        keywordKind[38] = (PrefspecsParsersym.TK_RANGE);
+        keywordKind[38] = (PrefspecsParsersym.TK_RADIO);
       
     
         //
-        // Rule 39:  Keyword ::= s t r i n g
+        // Rule 39:  Keyword ::= r a n g e
         //
         
-        keywordKind[39] = (PrefspecsParsersym.TK_STRING);
+        keywordKind[39] = (PrefspecsParsersym.TK_RANGE);
       
     
         //
-        // Rule 40:  Keyword ::= t a b s
+        // Rule 40:  Keyword ::= s t r i n g
         //
         
-        keywordKind[40] = (PrefspecsParsersym.TK_TABS);
+        keywordKind[40] = (PrefspecsParsersym.TK_STRING);
       
     
         //
-        // Rule 41:  Keyword ::= t o o l t i p
+        // Rule 41:  Keyword ::= t a b s
         //
         
-        keywordKind[41] = (PrefspecsParsersym.TK_TOOLTIP);
+        keywordKind[41] = (PrefspecsParsersym.TK_TABS);
       
     
         //
-        // Rule 42:  Keyword ::= t r u e
+        // Rule 42:  Keyword ::= t o o l t i p
         //
         
-        keywordKind[42] = (PrefspecsParsersym.TK_TRUE);
+        keywordKind[42] = (PrefspecsParsersym.TK_TOOLTIP);
       
     
         //
-        // Rule 43:  Keyword ::= t y p e
+        // Rule 43:  Keyword ::= t r u e
         //
         
-        keywordKind[43] = (PrefspecsParsersym.TK_TYPE);
+        keywordKind[43] = (PrefspecsParsersym.TK_TRUE);
       
     
         //
-        // Rule 44:  Keyword ::= u n l e s s
+        // Rule 44:  Keyword ::= t y p e
         //
         
-        keywordKind[44] = (PrefspecsParsersym.TK_UNLESS);
+        keywordKind[44] = (PrefspecsParsersym.TK_TYPE);
       
     
         //
-        // Rule 45:  Keyword ::= v a l u e s
+        // Rule 45:  Keyword ::= u n l e s s
         //
         
-        keywordKind[45] = (PrefspecsParsersym.TK_VALUES);
+        keywordKind[45] = (PrefspecsParsersym.TK_UNLESS);
       
     
         //
-        // Rule 46:  Keyword ::= v a l i d a t o r
+        // Rule 46:  Keyword ::= v a l u e s
         //
         
-        keywordKind[46] = (PrefspecsParsersym.TK_VALIDATOR);
+        keywordKind[46] = (PrefspecsParsersym.TK_VALUES);
       
     
         //
-        // Rule 47:  Keyword ::= w i t h
+        // Rule 47:  Keyword ::= v a l i d a t o r
         //
         
-        keywordKind[47] = (PrefspecsParsersym.TK_WITH);
+        keywordKind[47] = (PrefspecsParsersym.TK_VALIDATOR);
+      
+    
+        //
+        // Rule 48:  Keyword ::= w i t h
+        //
+        
+        keywordKind[48] = (PrefspecsParsersym.TK_WITH);
       
     
         for (int i = 0; i < keywordKind.length; i++)

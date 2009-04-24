@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser;
 import org.eclipse.imp.prefspecs.parser.Ast.*;
 import lpg.runtime.*;
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -207,21 +208,9 @@ public class PrefspecsParser implements RuleAction, IParser
     // commented out)
     //
 
-    public class SymbolTable extends Hashtable {
-        SymbolTable parent;
-        SymbolTable(SymbolTable parent) { this.parent = parent; }
-        public IAst findDeclaration(String name) {
-            IAst decl = (IAst) get(name);
-            return (decl != null
-                          ? decl
-                          : parent != null ? parent.findDeclaration(name) : null);
-        }
-        public SymbolTable getParent() { return parent; }
-    }
-
-    Stack symbolTableStack = null;
-    SymbolTable topLevelSymbolTable = null;
-    public SymbolTable getTopLevelSymbolTable() { return topLevelSymbolTable; }
+    Stack<SymbolTable<IAst>> symbolTableStack = null;
+    SymbolTable<IAst> topLevelSymbolTable = null;
+    public SymbolTable<IAst> getTopLevelSymbolTable() { return topLevelSymbolTable; }
 
     //
     // TODO: In the future, the user will be able to identify scope structures
@@ -232,7 +221,7 @@ public class PrefspecsParser implements RuleAction, IParser
     // that is defined in IScope. Thus, the implementation of this funftion will
     // be simpler as it would only need to search for an instance of IScope.
     //
-    public SymbolTable getEnclosingSymbolTable(IAst n) {
+    public SymbolTable<IAst> getEnclosingSymbolTable(IAst n) {
 //            for ( ; n != null; n = n.getParent())
     //                if (n instanceof block)
     //                     return ((block) n).getSymbolTable();
@@ -246,8 +235,8 @@ public class PrefspecsParser implements RuleAction, IParser
         booleanFields = new ArrayList<String>();
         fieldTypes = new HashMap<String,String>();
         if (root != null) {
-            // symbolTableStack = new Stack();
-            // topLevelSymbolTable = new SymbolTable(null);
+            // symbolTableStack = new Stack<SymbolTable<IAst>>();
+            // topLevelSymbolTable = new SymbolTable<IAst>(null);
             // symbolTableStack.push(topLevelSymbolTable);
             root.accept(new SymbolTableVisitor());
         }
@@ -330,7 +319,7 @@ public class PrefspecsParser implements RuleAction, IParser
         public boolean visit(booleanFieldSpec n) {
             String id = n.getidentifier().toString();
             if (fieldNames.contains(id)) {
-                    emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
+                emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
             }
             fieldNames.add(id);
             booleanFields.add(id);
@@ -344,7 +333,7 @@ public class PrefspecsParser implements RuleAction, IParser
         public boolean visit(comboFieldSpec n) {
             String id = n.getidentifier().toString();
             if (fieldNames.contains(id)) {
-                    emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
+                emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
             }
             fieldNames.add(id);
             fieldTypes.put(id, COMBO_TYPE);
@@ -440,27 +429,16 @@ public class PrefspecsParser implements RuleAction, IParser
                 if (typeCustomSpecs != null) {
                         //if ((fieldType.equals(BOOLEAN_TYPE) && !(typeCustomSpecs instanceof booleanCustomSpec)) ||
                         if ((fieldType.equals(BOOLEAN_TYPE) && !(typeCustomSpecs instanceof booleanSpecialSpec)) ||
-                            (fieldType.equals(COMBO_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
-                            (fieldType.equals(DIRLIST_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
-                            (fieldType.equals(FILE_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
-                            (fieldType.equals(INT_TYPE) && !(typeCustomSpecs instanceof intCustomSpec)) ||
+                            (fieldType.equals(COMBO_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
+                            (fieldType.equals(DIRLIST_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
+                            (fieldType.equals(FILE_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
+                            (fieldType.equals(INT_TYPE) && !(typeCustomSpecs instanceof IintCustomSpec)) ||
                             //(fieldType.equals(RADIO_TYPE) && !(typeCustomSpecs instanceof radioCustomSpec)) ||
-                            (fieldType.equals(STRING_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)))
+                            (fieldType.equals(STRING_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)))
                         {
-                            //emitError(n.getidentifier().getIToken(), ""); //"Field type not consistent with property specification");
-                            
                             String propertyMsg = "Property specification not consistent with field type";
-                            //if (typeCustomSpecs instanceof booleanCustomSpec) {
-                            //    emitError((booleanCustomSpec)typeCustomSpecs, propertyMsg);
-                            if (typeCustomSpecs instanceof booleanSpecialSpec) {
-                                emitError((booleanSpecialSpec)typeCustomSpecs, propertyMsg);
-                            } else if (typeCustomSpecs instanceof intCustomSpec) {
-                                emitError((intCustomSpec)typeCustomSpecs, propertyMsg);
-                            //} else if (typeCustomSpecs instanceof radioCustomSpec) {
-                            //    emitError((radioCustomSpec)typeCustomSpecs, propertyMsg);
-                            } else if (typeCustomSpecs instanceof stringCustomSpec) {
-                                emitError((stringCustomSpec)typeCustomSpecs, propertyMsg);
-                            }
+
+                            emitError((ASTNode) typeCustomSpecs, propertyMsg);
                             //int startOffset = n.getidentifier().getIToken().getStartOffset();
                             //int endOffset = n.getRIGHTBRACE().getIToken().getEndOffset();
                             //emitError(startOffset, endOffset, "Property specification not consistent with field type");
@@ -532,7 +510,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 1:  prefSpecs ::= optPackageSpec optDetailsSpec topLevelItems
             //
             case 1: {
-               //#line 54 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 55 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new prefSpecs(getLeftIToken(), getRightIToken(),
                                   (optPackageSpec)getRhsSym(1),
@@ -545,7 +523,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 2:  optPackageSpec ::= $Empty
             //
             case 2: {
-               //#line 56 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 57 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -553,7 +531,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 3:  optPackageSpec ::= PACKAGE$ packageName ;$
             //
             case 3: {
-               //#line 56 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 57 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new optPackageSpec(getLeftIToken(), getRightIToken(),
                                        (IpackageName)getRhsSym(2))
@@ -569,7 +547,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 5:  packageName ::= packageName .$ identifier
             //
             case 5: {
-               //#line 59 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 60 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new packageName(getLeftIToken(), getRightIToken(),
                                     (IpackageName)getRhsSym(1),
@@ -581,7 +559,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 6:  optDetailsSpec ::= $Empty
             //
             case 6: {
-               //#line 61 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 62 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -589,7 +567,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 7:  optDetailsSpec ::= DETAILS$ onOff ;$
             //
             case 7: {
-               //#line 61 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 62 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new optDetailsSpec(getLeftIToken(), getRightIToken(),
                                        (IonOff)getRhsSym(2))
@@ -600,7 +578,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 8:  onOff ::= ON
             //
             case 8: {
-               //#line 63 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 64 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new onOff0(getRhsIToken(1))
                 );
@@ -610,7 +588,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 9:  onOff ::= OFF
             //
             case 9: {
-               //#line 63 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 64 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new onOff1(getRhsIToken(1))
                 );
@@ -620,7 +598,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 10:  topLevelItems ::= topLevelItem
             //
             case 10: {
-               //#line 65 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 66 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new topLevelItemList((ItopLevelItem)getRhsSym(1), true /* left recursive */)
                 );
@@ -630,7 +608,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 11:  topLevelItems ::= topLevelItems topLevelItem
             //
             case 11: {
-               //#line 65 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 66 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 ((topLevelItemList)getRhsSym(1)).add((ItopLevelItem)getRhsSym(2));
                 break;
             }
@@ -648,7 +626,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 14:  typeSpec ::= CHOICETYPE$ identifier {$ labelledStringValueList }$
             //
             case 14: {
-               //#line 71 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 72 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new typeSpec(getLeftIToken(), getRightIToken(),
                                  (identifier)getRhsSym(2),
@@ -660,7 +638,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 15:  pageSpec ::= PAGE$ pageName {$ pageBody }$
             //
             case 15: {
-               //#line 73 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 74 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new pageSpec(getLeftIToken(), getRightIToken(),
                                  (pageName)getRhsSym(2),
@@ -672,7 +650,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 16:  pageName ::= pagePath identifier$name
             //
             case 16: {
-               //#line 75 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 76 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new pageName(getLeftIToken(), getRightIToken(),
                                  (pagePath)getRhsSym(1),
@@ -684,7 +662,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 17:  pagePath ::= $Empty
             //
             case 17: {
-               //#line 77 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 78 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -692,7 +670,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 18:  pagePath ::= pagePath identifier .$
             //
             case 18: {
-               //#line 78 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 79 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new pagePath(getLeftIToken(), getRightIToken(),
                                  (pagePath)getRhsSym(1),
@@ -704,7 +682,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 19:  pageBody ::= $Empty
             //
             case 19: {
-               //#line 80 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 81 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -712,7 +690,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 20:  pageBody ::= tabsSpec fieldsSpec optionalSpecs
             //
             case 20: {
-               //#line 81 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 82 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new pageBody(getLeftIToken(), getRightIToken(),
                                  (tabsSpec)getRhsSym(1),
@@ -725,7 +703,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 21:  optionalSpecs ::= customSpecOption conditionalsSpecOption
             //
             case 21: {
-               //#line 83 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 84 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new optionalSpecs(getLeftIToken(), getRightIToken(),
                                       (customSpec)getRhsSym(1),
@@ -737,7 +715,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 22:  customSpecOption ::= $Empty
             //
             case 22: {
-               //#line 85 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 86 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -750,7 +728,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 24:  conditionalsSpecOption ::= $Empty
             //
             case 24: {
-               //#line 88 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 89 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -763,7 +741,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 26:  tabsSpec ::= $Empty
             //
             case 26: {
-               //#line 94 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 94 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -771,84 +749,60 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 27:  tabsSpec ::= TABS$ {$ tabSpecs }$
             //
             case 27: {
-               //#line 94 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 94 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new tabsSpec(getLeftIToken(), getRightIToken(),
-                                 (tabSpecs)getRhsSym(3))
+                                 (tabSpecList)getRhsSym(3))
                 );
                 break;
             }
             //
-            // Rule 28:  tab ::= DEFAULT
+            // Rule 28:  tabSpecs ::= $Empty
             //
             case 28: {
-               //#line 96 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 96 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new tab0(getRhsIToken(1))
+                    new tabSpecList(getLeftIToken(), getRightIToken(), true /* left recursive */)
                 );
                 break;
             }
             //
-            // Rule 29:  tab ::= CONFIGURATION
+            // Rule 29:  tabSpecs ::= tabSpecs tabSpec
             //
             case 29: {
-               //#line 96 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new tab1(getRhsIToken(1))
-                );
+               //#line 96 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((tabSpecList)getRhsSym(1)).add((ItabSpec)getRhsSym(2));
                 break;
             }
             //
-            // Rule 30:  tab ::= INSTANCE
+            // Rule 30:  tabSpec ::= defaultTabSpec
             //
-            case 30: {
-               //#line 96 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new tab2(getRhsIToken(1))
-                );
+            case 30:
                 break;
-            }
             //
-            // Rule 31:  tab ::= PROJECT
+            // Rule 31:  tabSpec ::= configurationTabSpec
             //
-            case 31: {
-               //#line 96 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new tab3(getRhsIToken(1))
-                );
+            case 31:
                 break;
-            }
             //
-            // Rule 32:  tabSpecs ::= $Empty
+            // Rule 32:  tabSpec ::= instanceTabSpec
             //
-            case 32: {
-               //#line 98 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
+            case 32:
                 break;
-            }
             //
-            // Rule 33:  tabSpecs ::= defaultTabSpec configurationTabSpec instanceTabSpec projectTabSpec
+            // Rule 33:  tabSpec ::= projectTabSpec
             //
-            case 33: {
-               //#line 99 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new tabSpecs(getLeftIToken(), getRightIToken(),
-                                 (defaultTabSpec)getRhsSym(1),
-                                 (configurationTabSpec)getRhsSym(2),
-                                 (instanceTabSpec)getRhsSym(3),
-                                 (projectTabSpec)getRhsSym(4))
-                );
+            case 33:
                 break;
-            }
             //
             // Rule 34:  defaultTabSpec ::= DEFAULT$ inout {$ generalSpecs }$
             //
             case 34: {
-               //#line 101 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 99 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new defaultTabSpec(getLeftIToken(), getRightIToken(),
                                        (Iinout)getRhsSym(2),
-                                       (generalSpecs)getRhsSym(4))
+                                       (generalSpecList)getRhsSym(4))
                 );
                 break;
             }
@@ -856,11 +810,11 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 35:  configurationTabSpec ::= CONFIGURATION$ inout {$ generalSpecs }$
             //
             case 35: {
-               //#line 103 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 101 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new configurationTabSpec(getLeftIToken(), getRightIToken(),
                                              (Iinout)getRhsSym(2),
-                                             (generalSpecs)getRhsSym(4))
+                                             (generalSpecList)getRhsSym(4))
                 );
                 break;
             }
@@ -868,11 +822,11 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 36:  instanceTabSpec ::= INSTANCE$ inout {$ generalSpecs }$
             //
             case 36: {
-               //#line 105 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 103 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new instanceTabSpec(getLeftIToken(), getRightIToken(),
                                         (Iinout)getRhsSym(2),
-                                        (generalSpecs)getRhsSym(4))
+                                        (generalSpecList)getRhsSym(4))
                 );
                 break;
             }
@@ -880,11 +834,11 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 37:  projectTabSpec ::= PROJECT$ inout {$ generalSpecs }$
             //
             case 37: {
-               //#line 107 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 105 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new projectTabSpec(getLeftIToken(), getRightIToken(),
                                        (Iinout)getRhsSym(2),
-                                       (generalSpecs)getRhsSym(4))
+                                       (generalSpecList)getRhsSym(4))
                 );
                 break;
             }
@@ -892,7 +846,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 38:  inout ::= IN
             //
             case 38: {
-               //#line 111 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 109 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new inout0(getRhsIToken(1))
                 );
@@ -902,7 +856,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 39:  inout ::= OUT
             //
             case 39: {
-               //#line 111 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 109 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new inout1(getRhsIToken(1))
                 );
@@ -912,7 +866,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 40:  fieldsSpec ::= FIELDS$ {$ fieldSpecs }$
             //
             case 40: {
-               //#line 116 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 114 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fieldsSpec(getLeftIToken(), getRightIToken(),
                                    (IfieldSpecs)getRhsSym(3))
@@ -923,7 +877,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 41:  fieldSpecs ::= $Empty
             //
             case 41: {
-               //#line 118 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 116 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
@@ -936,7 +890,7 @@ public class PrefspecsParser implements RuleAction, IParser
             // Rule 43:  fieldSpecs ::= fieldSpecs fieldSpec
             //
             case 43: {
-               //#line 120 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 118 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fieldSpecs(getLeftIToken(), getRightIToken(),
                                    (IfieldSpecs)getRhsSym(1),
@@ -960,45 +914,50 @@ public class PrefspecsParser implements RuleAction, IParser
             case 46:
                 break;
             //
-            // Rule 47:  fieldSpec ::= dirListFieldSpec
+            // Rule 47:  fieldSpec ::= directoryFieldSpec
             //
             case 47:
                 break;
             //
-            // Rule 48:  fieldSpec ::= doubleFieldSpec
+            // Rule 48:  fieldSpec ::= dirListFieldSpec
             //
             case 48:
                 break;
             //
-            // Rule 49:  fieldSpec ::= fileFieldSpec
+            // Rule 49:  fieldSpec ::= doubleFieldSpec
             //
             case 49:
                 break;
             //
-            // Rule 50:  fieldSpec ::= fontFieldSpec
+            // Rule 50:  fieldSpec ::= fileFieldSpec
             //
             case 50:
                 break;
             //
-            // Rule 51:  fieldSpec ::= intFieldSpec
+            // Rule 51:  fieldSpec ::= fontFieldSpec
             //
             case 51:
                 break;
             //
-            // Rule 52:  fieldSpec ::= radioFieldSpec
+            // Rule 52:  fieldSpec ::= intFieldSpec
             //
             case 52:
                 break;
             //
-            // Rule 53:  fieldSpec ::= stringFieldSpec
+            // Rule 53:  fieldSpec ::= radioFieldSpec
             //
             case 53:
                 break;
             //
-            // Rule 54:  booleanFieldSpec ::= BOOLEAN$ identifier booleanFieldPropertySpecs optConditionalSpec
+            // Rule 54:  fieldSpec ::= stringFieldSpec
             //
-            case 54: {
-               //#line 134 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 54:
+                break;
+            //
+            // Rule 55:  booleanFieldSpec ::= BOOLEAN$ identifier booleanFieldPropertySpecs optConditionalSpec
+            //
+            case 55: {
+               //#line 133 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new booleanFieldSpec(getLeftIToken(), getRightIToken(),
                                          (identifier)getRhsSym(2),
@@ -1008,10 +967,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 55:  colorFieldSpec ::= COLOR$ identifier colorFieldPropertySpecs optConditionalSpec
+            // Rule 56:  colorFieldSpec ::= COLOR$ identifier colorFieldPropertySpecs optConditionalSpec
             //
-            case 55: {
-               //#line 136 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 56: {
+               //#line 134 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new colorFieldSpec(getLeftIToken(), getRightIToken(),
                                        (identifier)getRhsSym(2),
@@ -1021,10 +980,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 56:  comboFieldSpec ::= COMBO$ identifier comboFieldPropertySpecs optConditionalSpec
+            // Rule 57:  comboFieldSpec ::= COMBO$ identifier comboFieldPropertySpecs optConditionalSpec
             //
-            case 56: {
-               //#line 138 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 57: {
+               //#line 135 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new comboFieldSpec(getLeftIToken(), getRightIToken(),
                                        (identifier)getRhsSym(2),
@@ -1034,10 +993,23 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 57:  dirListFieldSpec ::= DIRLIST$ identifier dirlistFieldPropertySpecs optConditionalSpec
+            // Rule 58:  directoryFieldSpec ::= DIRECTORY$ identifier directoryFieldPropertySpecs optConditionalSpec
             //
-            case 57: {
-               //#line 140 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 58: {
+               //#line 136 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new directoryFieldSpec(getLeftIToken(), getRightIToken(),
+                                           (identifier)getRhsSym(2),
+                                           (directoryFieldPropertySpecs)getRhsSym(3),
+                                           (optConditionalSpec)getRhsSym(4))
+                );
+                break;
+            }
+            //
+            // Rule 59:  dirListFieldSpec ::= DIRLIST$ identifier dirlistFieldPropertySpecs optConditionalSpec
+            //
+            case 59: {
+               //#line 137 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new dirListFieldSpec(getLeftIToken(), getRightIToken(),
                                          (identifier)getRhsSym(2),
@@ -1047,10 +1019,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 58:  doubleFieldSpec ::= DOUBLE$ identifier doubleFieldPropertySpecs optConditionalSpec
+            // Rule 60:  doubleFieldSpec ::= DOUBLE$ identifier doubleFieldPropertySpecs optConditionalSpec
             //
-            case 58: {
-               //#line 142 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 60: {
+               //#line 138 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new doubleFieldSpec(getLeftIToken(), getRightIToken(),
                                         (identifier)getRhsSym(2),
@@ -1060,10 +1032,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 59:  fileFieldSpec ::= FILE$ identifier fileFieldPropertySpecs optConditionalSpec
+            // Rule 61:  fileFieldSpec ::= FILE$ identifier fileFieldPropertySpecs optConditionalSpec
             //
-            case 59: {
-               //#line 144 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 61: {
+               //#line 139 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fileFieldSpec(getLeftIToken(), getRightIToken(),
                                       (identifier)getRhsSym(2),
@@ -1073,10 +1045,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 60:  fontFieldSpec ::= FONT$ identifier fontFieldPropertySpecs optConditionalSpec
+            // Rule 62:  fontFieldSpec ::= FONT$ identifier fontFieldPropertySpecs optConditionalSpec
             //
-            case 60: {
-               //#line 146 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 62: {
+               //#line 140 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fontFieldSpec(getLeftIToken(), getRightIToken(),
                                       (identifier)getRhsSym(2),
@@ -1086,10 +1058,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 61:  intFieldSpec ::= INT$ identifier intFieldPropertySpecs optConditionalSpec
+            // Rule 63:  intFieldSpec ::= INT$ identifier intFieldPropertySpecs optConditionalSpec
             //
-            case 61: {
-               //#line 148 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 63: {
+               //#line 141 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new intFieldSpec(getLeftIToken(), getRightIToken(),
                                      (identifier)getRhsSym(2),
@@ -1099,10 +1071,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 62:  radioFieldSpec ::= RADIO$ identifier radioFieldPropertySpecs optConditionalSpec
+            // Rule 64:  radioFieldSpec ::= RADIO$ identifier radioFieldPropertySpecs optConditionalSpec
             //
-            case 62: {
-               //#line 150 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 64: {
+               //#line 142 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new radioFieldSpec(getLeftIToken(), getRightIToken(),
                                        (identifier)getRhsSym(2),
@@ -1112,10 +1084,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 63:  stringFieldSpec ::= STRING$ identifier stringFieldPropertySpecs optConditionalSpec
+            // Rule 65:  stringFieldSpec ::= STRING$ identifier stringFieldPropertySpecs optConditionalSpec
             //
-            case 63: {
-               //#line 152 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 65: {
+               //#line 143 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringFieldSpec(getLeftIToken(), getRightIToken(),
                                         (identifier)getRhsSym(2),
@@ -1125,428 +1097,257 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 64:  booleanFieldPropertySpecs ::= $Empty
-            //
-            case 64: {
-               //#line 155 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 65:  booleanFieldPropertySpecs ::= {$ generalSpecs booleanSpecificSpec }$
-            //
-            case 65: {
-               //#line 155 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new booleanFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                  (generalSpecs)getRhsSym(2),
-                                                  (booleanSpecificSpec)getRhsSym(3))
-                );
-                break;
-            }
-            //
-            // Rule 66:  colorFieldPropertySpecs ::= $Empty
+            // Rule 66:  booleanFieldPropertySpecs ::= $Empty
             //
             case 66: {
-               //#line 157 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 146 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 67:  colorFieldPropertySpecs ::= {$ generalSpecs colorSpecificSpec }$
+            // Rule 67:  booleanFieldPropertySpecs ::= {$ booleanSpecificSpecs }$
             //
             case 67: {
-               //#line 157 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 146 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new colorFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                (generalSpecs)getRhsSym(2),
-                                                (colorDefValueSpec)getRhsSym(3))
+                    new booleanFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                  (booleanSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 68:  comboFieldPropertySpecs ::= $Empty
+            // Rule 68:  colorFieldPropertySpecs ::= $Empty
             //
             case 68: {
-               //#line 159 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 147 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 69:  comboFieldPropertySpecs ::= {$ generalSpecs comboSpecificSpec }$
+            // Rule 69:  colorFieldPropertySpecs ::= {$ colorSpecificSpecs }$
             //
             case 69: {
-               //#line 159 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 147 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new comboFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                (generalSpecs)getRhsSym(2),
-                                                (comboSpecificSpec)getRhsSym(3))
+                    new colorFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                (colorSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 70:  dirlistFieldPropertySpecs ::= $Empty
+            // Rule 70:  comboFieldPropertySpecs ::= $Empty
             //
             case 70: {
-               //#line 161 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 148 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 71:  dirlistFieldPropertySpecs ::= {$ generalSpecs stringSpecificSpec }$
+            // Rule 71:  comboFieldPropertySpecs ::= {$ comboSpecificSpecs }$
             //
             case 71: {
-               //#line 161 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 148 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new dirlistFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                  (generalSpecs)getRhsSym(2),
-                                                  (stringSpecificSpec)getRhsSym(3))
+                    new comboFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                (comboSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 72:  doubleFieldPropertySpecs ::= $Empty
+            // Rule 72:  directoryFieldPropertySpecs ::= $Empty
             //
             case 72: {
-               //#line 163 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 149 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 73:  doubleFieldPropertySpecs ::= {$ generalSpecs doubleSpecificSpec }$
+            // Rule 73:  directoryFieldPropertySpecs ::= {$ stringSpecificSpecs }$
             //
             case 73: {
-               //#line 163 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 149 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new doubleFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                 (generalSpecs)getRhsSym(2),
-                                                 (doubleSpecificSpec)getRhsSym(3))
+                    new directoryFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                    (stringSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 74:  fileFieldPropertySpecs ::= $Empty
+            // Rule 74:  dirlistFieldPropertySpecs ::= $Empty
             //
             case 74: {
-               //#line 165 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 150 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 75:  fileFieldPropertySpecs ::= {$ generalSpecs stringSpecificSpec }$
+            // Rule 75:  dirlistFieldPropertySpecs ::= {$ stringSpecificSpecs }$
             //
             case 75: {
-               //#line 165 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 150 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new fileFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                               (generalSpecs)getRhsSym(2),
-                                               (stringSpecificSpec)getRhsSym(3))
+                    new dirlistFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                  (stringSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 76:  fontFieldPropertySpecs ::= $Empty
+            // Rule 76:  doubleFieldPropertySpecs ::= $Empty
             //
             case 76: {
-               //#line 167 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 151 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 77:  fontFieldPropertySpecs ::= {$ generalSpecs fontSpecificSpec }$
+            // Rule 77:  doubleFieldPropertySpecs ::= {$ doubleSpecificSpecs }$
             //
             case 77: {
-               //#line 167 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 151 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new fontFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                               (generalSpecs)getRhsSym(2),
-                                               (fontDefValueSpec)getRhsSym(3))
+                    new doubleFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                 (doubleSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 78:  intFieldPropertySpecs ::= $Empty
+            // Rule 78:  fileFieldPropertySpecs ::= $Empty
             //
             case 78: {
-               //#line 169 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 152 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 79:  intFieldPropertySpecs ::= {$ generalSpecs intSpecificSpec }$
+            // Rule 79:  fileFieldPropertySpecs ::= {$ stringSpecificSpecs }$
             //
             case 79: {
-               //#line 169 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 152 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new intFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                              (generalSpecs)getRhsSym(2),
-                                              (intSpecificSpec)getRhsSym(3))
+                    new fileFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                               (stringSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 80:  radioFieldPropertySpecs ::= $Empty
+            // Rule 80:  fontFieldPropertySpecs ::= $Empty
             //
             case 80: {
-               //#line 171 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 153 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 81:  radioFieldPropertySpecs ::= {$ generalSpecs radioSpecificSpec }$
+            // Rule 81:  fontFieldPropertySpecs ::= {$ fontSpecificSpecs }$
             //
             case 81: {
-               //#line 171 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 153 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new radioFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                (generalSpecs)getRhsSym(2),
-                                                (radioSpecificSpec)getRhsSym(3))
+                    new fontFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                               (fontSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 82:  stringFieldPropertySpecs ::= $Empty
+            // Rule 82:  intFieldPropertySpecs ::= $Empty
             //
             case 82: {
-               //#line 173 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 154 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 83:  stringFieldPropertySpecs ::= {$ generalSpecs stringSpecificSpec }$
+            // Rule 83:  intFieldPropertySpecs ::= {$ intSpecificSpecs }$
             //
             case 83: {
-               //#line 173 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 154 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new stringFieldPropertySpecs(getLeftIToken(), getRightIToken(),
-                                                 (generalSpecs)getRhsSym(2),
-                                                 (stringSpecificSpec)getRhsSym(3))
+                    new intFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                              (intSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 84:  optConditionalSpec ::= $Empty
+            // Rule 84:  radioFieldPropertySpecs ::= $Empty
             //
             case 84: {
-               //#line 176 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 155 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 85:  optConditionalSpec ::= conditionType identifier
+            // Rule 85:  radioFieldPropertySpecs ::= {$ radioSpecificSpecs }$
             //
             case 85: {
-               //#line 176 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 155 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new optConditionalSpec(getLeftIToken(), getRightIToken(),
-                                           (IconditionType)getRhsSym(1),
-                                           (identifier)getRhsSym(2))
+                    new radioFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                (radioSpecificSpecList)getRhsSym(2))
                 );
                 break;
             }
             //
-            // Rule 86:  conditionType ::= IF
+            // Rule 86:  stringFieldPropertySpecs ::= $Empty
             //
             case 86: {
-               //#line 178 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionType0(getRhsIToken(1))
-                );
-                break;
-            }
-            //
-            // Rule 87:  conditionType ::= UNLESS
-            //
-            case 87: {
-               //#line 178 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionType1(getRhsIToken(1))
-                );
-                break;
-            }
-            //
-            // Rule 88:  customSpec ::= CUSTOM$ {$ customRules }$
-            //
-            case 88: {
-               //#line 182 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new customSpec(getLeftIToken(), getRightIToken(),
-                                   (IcustomRules)getRhsSym(3))
-                );
-                break;
-            }
-            //
-            // Rule 89:  customRules ::= $Empty
-            //
-            case 89: {
-               //#line 184 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 156 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(null);
                 break;
             }
             //
-            // Rule 90:  customRules ::= customRule
+            // Rule 87:  stringFieldPropertySpecs ::= {$ stringSpecificSpecs }$
+            //
+            case 87: {
+               //#line 156 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new stringFieldPropertySpecs(getLeftIToken(), getRightIToken(),
+                                                 (stringSpecificSpecList)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 88:  generalSpecs ::= $Empty
+            //
+            case 88: {
+               //#line 159 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new generalSpecList(getLeftIToken(), getRightIToken(), true /* left recursive */)
+                );
+                break;
+            }
+            //
+            // Rule 89:  generalSpecs ::= generalSpecs generalSpec
+            //
+            case 89: {
+               //#line 159 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((generalSpecList)getRhsSym(1)).add((IgeneralSpec)getRhsSym(2));
+                break;
+            }
+            //
+            // Rule 90:  generalSpec ::= isEditableSpec
             //
             case 90:
                 break;
             //
-            // Rule 91:  customRules ::= customRules customRule
+            // Rule 91:  generalSpec ::= isRemovableSpec
             //
-            case 91: {
-               //#line 186 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new customRules(getLeftIToken(), getRightIToken(),
-                                    (IcustomRules)getRhsSym(1),
-                                    (customRule)getRhsSym(2))
-                );
+            case 91:
                 break;
-            }
             //
-            // Rule 92:  customRule ::= tab identifier {$ newPropertySpecs }$
+            // Rule 92:  generalSpec ::= optLabelSpec
             //
-            case 92: {
-               //#line 188 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new customRule(getLeftIToken(), getRightIToken(),
-                                   (Itab)getRhsSym(1),
-                                   (identifier)getRhsSym(2),
-                                   (InewPropertySpecs)getRhsSym(4))
-                );
+            case 92:
                 break;
-            }
             //
-            // Rule 93:  newPropertySpecs ::= generalSpecs
+            // Rule 93:  generalSpec ::= optToolTipSpec
             //
             case 93:
                 break;
             //
-            // Rule 94:  newPropertySpecs ::= generalSpecs typeCustomSpecs
+            // Rule 94:  isEditableSpec ::= ISEDITABLE$ booleanValue ;$
             //
             case 94: {
-               //#line 191 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new newPropertySpecs(getLeftIToken(), getRightIToken(),
-                                         (generalSpecs)getRhsSym(1),
-                                         (ItypeCustomSpecs)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 95:  typeCustomSpecs ::= booleanCustomSpec
-            //
-            case 95:
-                break;
-            //
-            // Rule 96:  typeCustomSpecs ::= intCustomSpec
-            //
-            case 96:
-                break;
-            //
-            // Rule 97:  typeCustomSpecs ::= radioCustomSpec
-            //
-            case 97:
-                break;
-            //
-            // Rule 98:  typeCustomSpecs ::= stringCustomSpec
-            //
-            case 98:
-                break;
-            //
-            // Rule 99:  conditionalsSpec ::= CONDITIONALS$ {$ conditionalSpecs }$
-            //
-            case 99: {
-               //#line 201 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionalsSpec(getLeftIToken(), getRightIToken(),
-                                         (IconditionalSpecs)getRhsSym(3))
-                );
-                break;
-            }
-            //
-            // Rule 100:  conditionalSpecs ::= $Empty
-            //
-            case 100: {
-               //#line 203 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 101:  conditionalSpecs ::= conditionalSpec ;
-            //
-            case 101: {
-               //#line 204 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionalSpecs0(getLeftIToken(), getRightIToken(),
-                                          (IconditionalSpec)getRhsSym(1),
-                                          new ASTNodeToken(getRhsIToken(2)))
-                );
-                break;
-            }
-            //
-            // Rule 102:  conditionalSpecs ::= conditionalSpecs conditionalSpec ;
-            //
-            case 102: {
-               //#line 205 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionalSpecs1(getLeftIToken(), getRightIToken(),
-                                          (IconditionalSpecs)getRhsSym(1),
-                                          (IconditionalSpec)getRhsSym(2),
-                                          new ASTNodeToken(getRhsIToken(3)))
-                );
-                break;
-            }
-            //
-            // Rule 103:  conditionalSpec ::= identifier WITH identifier
-            //
-            case 103: {
-               //#line 207 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionalSpec0(getLeftIToken(), getRightIToken(),
-                                         (identifier)getRhsSym(1),
-                                         new ASTNodeToken(getRhsIToken(2)),
-                                         (identifier)getRhsSym(3))
-                );
-                break;
-            }
-            //
-            // Rule 104:  conditionalSpec ::= identifier AGAINST identifier
-            //
-            case 104: {
-               //#line 208 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new conditionalSpec1(getLeftIToken(), getRightIToken(),
-                                         (identifier)getRhsSym(1),
-                                         new ASTNodeToken(getRhsIToken(2)),
-                                         (identifier)getRhsSym(3))
-                );
-                break;
-            }
-            //
-            // Rule 105:  generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec optToolTipSpec
-            //
-            case 105: {
-               //#line 213 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new generalSpecs(getLeftIToken(), getRightIToken(),
-                                     (isEditableSpec)getRhsSym(1),
-                                     (isRemovableSpec)getRhsSym(2),
-                                     (optLabelSpec)getRhsSym(3),
-                                     (optToolTipSpec)getRhsSym(4))
-                );
-                break;
-            }
-            //
-            // Rule 106:  isEditableSpec ::= $Empty
-            //
-            case 106: {
-               //#line 215 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 107:  isEditableSpec ::= ISEDITABLE$ booleanValue ;$
-            //
-            case 107: {
-               //#line 215 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 162 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new isEditableSpec(getLeftIToken(), getRightIToken(),
                                        (IbooleanValue)getRhsSym(2))
@@ -1554,18 +1355,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 108:  isRemovableSpec ::= $Empty
+            // Rule 95:  isRemovableSpec ::= ISREMOVABLE$ booleanValue ;$
             //
-            case 108: {
-               //#line 216 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 109:  isRemovableSpec ::= ISREMOVABLE$ booleanValue ;$
-            //
-            case 109: {
-               //#line 216 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 95: {
+               //#line 163 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new isRemovableSpec(getLeftIToken(), getRightIToken(),
                                         (IbooleanValue)getRhsSym(2))
@@ -1573,18 +1366,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 110:  optLabelSpec ::= $Empty
+            // Rule 96:  optLabelSpec ::= LABEL$ STRING_LITERAL ;$
             //
-            case 110: {
-               //#line 217 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 111:  optLabelSpec ::= LABEL$ STRING_LITERAL ;$
-            //
-            case 111: {
-               //#line 217 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 96: {
+               //#line 164 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new optLabelSpec(getLeftIToken(), getRightIToken(),
                                      new ASTNodeToken(getRhsIToken(2)))
@@ -1592,18 +1377,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 112:  optToolTipSpec ::= $Empty
+            // Rule 97:  optToolTipSpec ::= TOOLTIP$ STRING_LITERAL ;$
             //
-            case 112: {
-               //#line 218 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 113:  optToolTipSpec ::= TOOLTIP$ STRING_LITERAL ;$
-            //
-            case 113: {
-               //#line 218 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 97: {
+               //#line 165 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new optToolTipSpec(getLeftIToken(), getRightIToken(),
                                        new ASTNodeToken(getRhsIToken(2)))
@@ -1611,35 +1388,43 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 114:  booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
+            // Rule 98:  booleanSpecificSpecs ::= booleanSpecificSpec
             //
-            case 114: {
-               //#line 221 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 98: {
+               //#line 168 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new booleanSpecificSpec(getLeftIToken(), getRightIToken(),
-                                            (booleanSpecialSpec)getRhsSym(1),
-                                            (booleanDefValueSpec)getRhsSym(2))
+                    new booleanSpecificSpecList((IbooleanSpecificSpec)getRhsSym(1), true /* left recursive */)
                 );
                 break;
             }
             //
-            // Rule 115:  booleanCustomSpec ::= booleanSpecialSpec
+            // Rule 99:  booleanSpecificSpecs ::= booleanSpecificSpecs booleanSpecificSpec
             //
-            case 115:
-                break;
-            //
-            // Rule 116:  booleanSpecialSpec ::= $Empty
-            //
-            case 116: {
-               //#line 223 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
+            case 99: {
+               //#line 168 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((booleanSpecificSpecList)getRhsSym(1)).add((IbooleanSpecificSpec)getRhsSym(2));
                 break;
             }
             //
-            // Rule 117:  booleanSpecialSpec ::= HASSPECIAL$ booleanValue ;$
+            // Rule 100:  booleanSpecificSpec ::= booleanSpecialSpec
             //
-            case 117: {
-               //#line 223 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 100:
+                break;
+            //
+            // Rule 101:  booleanSpecificSpec ::= booleanDefValueSpec
+            //
+            case 101:
+                break;
+            //
+            // Rule 102:  booleanSpecificSpec ::= generalSpec
+            //
+            case 102:
+                break;
+            //
+            // Rule 103:  booleanSpecialSpec ::= HASSPECIAL$ booleanValue ;$
+            //
+            case 103: {
+               //#line 170 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new booleanSpecialSpec(getLeftIToken(), getRightIToken(),
                                            (IbooleanValue)getRhsSym(2))
@@ -1647,18 +1432,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 118:  booleanDefValueSpec ::= $Empty
+            // Rule 104:  booleanDefValueSpec ::= DEFVALUE$ booleanValue ;$
             //
-            case 118: {
-               //#line 224 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 119:  booleanDefValueSpec ::= DEFVALUE$ booleanValue ;$
-            //
-            case 119: {
-               //#line 224 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 104: {
+               //#line 171 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new booleanDefValueSpec(getLeftIToken(), getRightIToken(),
                                             (IbooleanValue)getRhsSym(2))
@@ -1666,204 +1443,38 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 120:  comboSpecificSpec ::= comboCustomSpec comboDefValueSpec
+            // Rule 105:  colorSpecificSpecs ::= colorSpecificSpec
             //
-            case 120: {
-               //#line 227 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 105: {
+               //#line 174 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new comboSpecificSpec(getLeftIToken(), getRightIToken(),
-                                          (comboCustomSpec)getRhsSym(1),
-                                          (comboDefValueSpec)getRhsSym(2))
+                    new colorSpecificSpecList((IcolorSpecificSpec)getRhsSym(1), true /* left recursive */)
                 );
                 break;
             }
             //
-            // Rule 121:  comboCustomSpec ::= columnsSpec typeOrValuesSpec
+            // Rule 106:  colorSpecificSpecs ::= colorSpecificSpecs colorSpecificSpec
             //
-            case 121: {
-               //#line 228 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new comboCustomSpec(getLeftIToken(), getRightIToken(),
-                                        (columnsSpec)getRhsSym(1),
-                                        (ItypeOrValuesSpec)getRhsSym(2))
-                );
+            case 106: {
+               //#line 174 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((colorSpecificSpecList)getRhsSym(1)).add((IcolorSpecificSpec)getRhsSym(2));
                 break;
             }
             //
-            // Rule 122:  comboDefValueSpec ::= $Empty
+            // Rule 107:  colorSpecificSpec ::= colorDefValueSpec
             //
-            case 122: {
-               //#line 229 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 123:  comboDefValueSpec ::= DEFVALUE$ stringValue ;$
-            //
-            case 123: {
-               //#line 229 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new comboDefValueSpec(getLeftIToken(), getRightIToken(),
-                                          (stringValue)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 124:  radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
-            //
-            case 124: {
-               //#line 231 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new radioSpecificSpec(getLeftIToken(), getRightIToken(),
-                                          (radioCustomSpec)getRhsSym(1),
-                                          (radioDefValueSpec)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 125:  radioCustomSpec ::= columnsSpec typeOrValuesSpec
-            //
-            case 125: {
-               //#line 232 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new radioCustomSpec(getLeftIToken(), getRightIToken(),
-                                        (columnsSpec)getRhsSym(1),
-                                        (ItypeOrValuesSpec)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 126:  radioDefValueSpec ::= $Empty
-            //
-            case 126: {
-               //#line 233 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 127:  radioDefValueSpec ::= DEFVALUE$ identifier ;$
-            //
-            case 127: {
-               //#line 233 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new radioDefValueSpec(getLeftIToken(), getRightIToken(),
-                                          (identifier)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 128:  typeOrValuesSpec ::= TYPE$ identifier ;$
-            //
-            case 128: {
-               //#line 235 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new typeOrValuesSpec0(getLeftIToken(), getRightIToken(),
-                                          (identifier)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 129:  typeOrValuesSpec ::= valuesSpec ;$
-            //
-            case 129: {
-               //#line 235 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new typeOrValuesSpec1(getLeftIToken(), getRightIToken(),
-                                          (valuesSpec)getRhsSym(1))
-                );
-                break;
-            }
-            //
-            // Rule 130:  valuesSpec ::= VALUES$ {$ labelledStringValueList }$
-            //
-            case 130: {
-               //#line 236 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new valuesSpec(getLeftIToken(), getRightIToken(),
-                                   (labelledStringValueList)getRhsSym(3))
-                );
-                break;
-            }
-            //
-            // Rule 131:  columnsSpec ::= $Empty
-            //
-            case 131: {
-               //#line 237 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 132:  columnsSpec ::= COLUMNS$ INTEGER ;$
-            //
-            case 132: {
-               //#line 237 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new columnsSpec(getLeftIToken(), getRightIToken(),
-                                    new ASTNodeToken(getRhsIToken(2)))
-                );
-                break;
-            }
-            //
-            // Rule 133:  labelledStringValueList ::= labelledStringValue
-            //
-            case 133: {
-               //#line 239 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new labelledStringValueList((labelledStringValue)getRhsSym(1), true /* left recursive */)
-                );
-                break;
-            }
-            //
-            // Rule 134:  labelledStringValueList ::= labelledStringValueList ,$ labelledStringValue
-            //
-            case 134: {
-               //#line 240 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                ((labelledStringValueList)getRhsSym(1)).add((labelledStringValue)getRhsSym(3));
-                break;
-            }
-            //
-            // Rule 135:  labelledStringValue ::= identifier optLabel
-            //
-            case 135: {
-               //#line 241 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new labelledStringValue(getLeftIToken(), getRightIToken(),
-                                            (identifier)getRhsSym(1),
-                                            (stringValue)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 136:  optLabel ::= $Empty
-            //
-            case 136: {
-               //#line 242 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 137:  optLabel ::= stringValue
-            //
-            case 137:
+            case 107:
                 break;
             //
-            // Rule 138:  colorSpecificSpec ::= colorDefValueSpec
+            // Rule 108:  colorSpecificSpec ::= generalSpec
             //
-            case 138:
+            case 108:
                 break;
             //
-            // Rule 139:  colorDefValueSpec ::= $Empty
+            // Rule 109:  colorDefValueSpec ::= DEFVALUE$ INTEGER$red ,$ INTEGER$green ,$ INTEGER$blue ;$
             //
-            case 139: {
-               //#line 246 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 140:  colorDefValueSpec ::= DEFVALUE$ INTEGER$red ,$ INTEGER$green ,$ INTEGER$blue ;$
-            //
-            case 140: {
-               //#line 246 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 109: {
+               //#line 176 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new colorDefValueSpec(getLeftIToken(), getRightIToken(),
                                           new ASTNodeToken(getRhsIToken(2)),
@@ -1873,23 +1484,138 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 141:  fontSpecificSpec ::= fontDefValueSpec
+            // Rule 110:  comboSpecificSpecs ::= comboSpecificSpec
             //
-            case 141:
-                break;
-            //
-            // Rule 142:  fontDefValueSpec ::= $Empty
-            //
-            case 142: {
-               //#line 251 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
+            case 110: {
+               //#line 179 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new comboSpecificSpecList((IcomboSpecificSpec)getRhsSym(1), true /* left recursive */)
+                );
                 break;
             }
             //
-            // Rule 143:  fontDefValueSpec ::= DEFVALUE$ stringValue$name INTEGER$height fontStyle$style ;$
+            // Rule 111:  comboSpecificSpecs ::= comboSpecificSpecs comboSpecificSpec
             //
-            case 143: {
-               //#line 251 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 111: {
+               //#line 179 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((comboSpecificSpecList)getRhsSym(1)).add((IcomboSpecificSpec)getRhsSym(2));
+                break;
+            }
+            //
+            // Rule 112:  comboSpecificSpec ::= columnsSpec
+            //
+            case 112:
+                break;
+            //
+            // Rule 113:  comboSpecificSpec ::= typeOrValuesSpec
+            //
+            case 113:
+                break;
+            //
+            // Rule 114:  comboSpecificSpec ::= comboDefValueSpec
+            //
+            case 114:
+                break;
+            //
+            // Rule 115:  comboSpecificSpec ::= generalSpec
+            //
+            case 115:
+                break;
+            //
+            // Rule 116:  comboDefValueSpec ::= DEFVALUE$ identifier ;$
+            //
+            case 116: {
+               //#line 181 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new comboDefValueSpec(getLeftIToken(), getRightIToken(),
+                                          (identifier)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 117:  doubleSpecificSpecs ::= doubleSpecificSpec
+            //
+            case 117: {
+               //#line 184 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new doubleSpecificSpecList((IdoubleSpecificSpec)getRhsSym(1), true /* left recursive */)
+                );
+                break;
+            }
+            //
+            // Rule 118:  doubleSpecificSpecs ::= doubleSpecificSpecs doubleSpecificSpec
+            //
+            case 118: {
+               //#line 184 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((doubleSpecificSpecList)getRhsSym(1)).add((IdoubleSpecificSpec)getRhsSym(2));
+                break;
+            }
+            //
+            // Rule 119:  doubleSpecificSpec ::= doubleRangeSpec
+            //
+            case 119:
+                break;
+            //
+            // Rule 120:  doubleSpecificSpec ::= doubleDefValueSpec
+            //
+            case 120:
+                break;
+            //
+            // Rule 121:  doubleRangeSpec ::= RANGE$ DECIMAL$low DOTS$ DECIMAL$high ;$
+            //
+            case 121: {
+               //#line 186 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new doubleRangeSpec(getLeftIToken(), getRightIToken(),
+                                        new ASTNodeToken(getRhsIToken(2)),
+                                        new ASTNodeToken(getRhsIToken(4)))
+                );
+                break;
+            }
+            //
+            // Rule 122:  doubleDefValueSpec ::= DEFVALUE$ DECIMAL ;$
+            //
+            case 122: {
+               //#line 187 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new doubleDefValueSpec(getLeftIToken(), getRightIToken(),
+                                           new ASTNodeToken(getRhsIToken(2)))
+                );
+                break;
+            }
+            //
+            // Rule 123:  fontSpecificSpecs ::= fontSpecificSpec
+            //
+            case 123: {
+               //#line 190 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new fontSpecificSpecList((IfontSpecificSpec)getRhsSym(1), true /* left recursive */)
+                );
+                break;
+            }
+            //
+            // Rule 124:  fontSpecificSpecs ::= fontSpecificSpecs fontSpecificSpec
+            //
+            case 124: {
+               //#line 190 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((fontSpecificSpecList)getRhsSym(1)).add((IfontSpecificSpec)getRhsSym(2));
+                break;
+            }
+            //
+            // Rule 125:  fontSpecificSpec ::= fontDefValueSpec
+            //
+            case 125:
+                break;
+            //
+            // Rule 126:  fontSpecificSpec ::= generalSpec
+            //
+            case 126:
+                break;
+            //
+            // Rule 127:  fontDefValueSpec ::= DEFVALUE$ stringValue$name INTEGER$height fontStyle$style ;$
+            //
+            case 127: {
+               //#line 193 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fontDefValueSpec(getLeftIToken(), getRightIToken(),
                                          (stringValue)getRhsSym(2),
@@ -1899,72 +1625,78 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 144:  fontStyle ::= NORMAL
+            // Rule 128:  fontStyle ::= NORMAL
             //
-            case 144: {
-               //#line 252 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 128: {
+               //#line 194 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fontStyle0(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 145:  fontStyle ::= BOLD
+            // Rule 129:  fontStyle ::= BOLD
             //
-            case 145: {
-               //#line 252 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 129: {
+               //#line 194 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fontStyle1(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 146:  fontStyle ::= ITALIC
+            // Rule 130:  fontStyle ::= ITALIC
             //
-            case 146: {
-               //#line 252 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 130: {
+               //#line 194 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new fontStyle2(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 147:  intSpecificSpec ::= intCustomSpec intDefValueSpec
+            // Rule 131:  intSpecificSpecs ::= intSpecificSpec
             //
-            case 147: {
-               //#line 255 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 131: {
+               //#line 197 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new intSpecificSpec(getLeftIToken(), getRightIToken(),
-                                        (intCustomSpec)getRhsSym(1),
-                                        (intDefValueSpec)getRhsSym(2))
+                    new intSpecificSpecList((IintSpecificSpec)getRhsSym(1), true /* left recursive */)
                 );
                 break;
             }
             //
-            // Rule 148:  intCustomSpec ::= intRangeSpec intSpecialSpec
+            // Rule 132:  intSpecificSpecs ::= intSpecificSpecs intSpecificSpec
             //
-            case 148: {
-               //#line 256 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new intCustomSpec(getLeftIToken(), getRightIToken(),
-                                      (intRangeSpec)getRhsSym(1),
-                                      (intSpecialSpec)getRhsSym(2))
-                );
+            case 132: {
+               //#line 197 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((intSpecificSpecList)getRhsSym(1)).add((IintSpecificSpec)getRhsSym(2));
                 break;
             }
             //
-            // Rule 149:  intRangeSpec ::= $Empty
+            // Rule 133:  intSpecificSpec ::= intRangeSpec
             //
-            case 149: {
-               //#line 257 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
+            case 133:
                 break;
-            }
             //
-            // Rule 150:  intRangeSpec ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ;$
+            // Rule 134:  intSpecificSpec ::= intSpecialSpec
             //
-            case 150: {
-               //#line 257 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 134:
+                break;
+            //
+            // Rule 135:  intSpecificSpec ::= intDefValueSpec
+            //
+            case 135:
+                break;
+            //
+            // Rule 136:  intSpecificSpec ::= generalSpec
+            //
+            case 136:
+                break;
+            //
+            // Rule 137:  intRangeSpec ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ;$
+            //
+            case 137: {
+               //#line 199 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new intRangeSpec(getLeftIToken(), getRightIToken(),
                                      (IsignedNumber)getRhsSym(2),
@@ -1973,18 +1705,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 151:  intSpecialSpec ::= $Empty
+            // Rule 138:  intSpecialSpec ::= HASSPECIAL$ signedNumber ;$
             //
-            case 151: {
-               //#line 258 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 152:  intSpecialSpec ::= HASSPECIAL$ signedNumber ;$
-            //
-            case 152: {
-               //#line 258 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 138: {
+               //#line 200 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new intSpecialSpec(getLeftIToken(), getRightIToken(),
                                        (IsignedNumber)getRhsSym(2))
@@ -1992,18 +1716,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 153:  intDefValueSpec ::= $Empty
+            // Rule 139:  intDefValueSpec ::= DEFVALUE$ signedNumber ;$
             //
-            case 153: {
-               //#line 259 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 154:  intDefValueSpec ::= DEFVALUE$ signedNumber ;$
-            //
-            case 154: {
-               //#line 259 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 139: {
+               //#line 201 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new intDefValueSpec(getLeftIToken(), getRightIToken(),
                                         (IsignedNumber)getRhsSym(2))
@@ -2011,99 +1727,184 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 155:  doubleSpecificSpec ::= doubleCustomSpec doubleDefValueSpec
+            // Rule 140:  radioSpecificSpecs ::= radioSpecificSpec
+            //
+            case 140: {
+               //#line 204 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new radioSpecificSpecList((IradioSpecificSpec)getRhsSym(1), true /* left recursive */)
+                );
+                break;
+            }
+            //
+            // Rule 141:  radioSpecificSpecs ::= radioSpecificSpecs radioSpecificSpec
+            //
+            case 141: {
+               //#line 204 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((radioSpecificSpecList)getRhsSym(1)).add((IradioSpecificSpec)getRhsSym(2));
+                break;
+            }
+            //
+            // Rule 142:  radioSpecificSpec ::= radioDefValueSpec
+            //
+            case 142:
+                break;
+            //
+            // Rule 143:  radioSpecificSpec ::= columnsSpec
+            //
+            case 143:
+                break;
+            //
+            // Rule 144:  radioSpecificSpec ::= typeOrValuesSpec
+            //
+            case 144:
+                break;
+            //
+            // Rule 145:  radioDefValueSpec ::= DEFVALUE$ identifier ;$
+            //
+            case 145: {
+               //#line 206 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new radioDefValueSpec(getLeftIToken(), getRightIToken(),
+                                          (identifier)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 146:  typeOrValuesSpec ::= TYPE$ identifier ;$
+            //
+            case 146: {
+               //#line 208 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new typeOrValuesSpec0(getLeftIToken(), getRightIToken(),
+                                          (identifier)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 147:  typeOrValuesSpec ::= valuesSpec ;$
+            //
+            case 147: {
+               //#line 208 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new typeOrValuesSpec1(getLeftIToken(), getRightIToken(),
+                                          (valuesSpec)getRhsSym(1))
+                );
+                break;
+            }
+            //
+            // Rule 148:  valuesSpec ::= VALUES$ {$ labelledStringValueList }$
+            //
+            case 148: {
+               //#line 209 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new valuesSpec(getLeftIToken(), getRightIToken(),
+                                   (labelledStringValueList)getRhsSym(3))
+                );
+                break;
+            }
+            //
+            // Rule 149:  columnsSpec ::= COLUMNS$ INTEGER ;$
+            //
+            case 149: {
+               //#line 210 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new columnsSpec(getLeftIToken(), getRightIToken(),
+                                    new ASTNodeToken(getRhsIToken(2)))
+                );
+                break;
+            }
+            //
+            // Rule 150:  labelledStringValueList ::= labelledStringValue
+            //
+            case 150: {
+               //#line 212 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new labelledStringValueList((labelledStringValue)getRhsSym(1), true /* left recursive */)
+                );
+                break;
+            }
+            //
+            // Rule 151:  labelledStringValueList ::= labelledStringValueList ,$ labelledStringValue
+            //
+            case 151: {
+               //#line 213 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((labelledStringValueList)getRhsSym(1)).add((labelledStringValue)getRhsSym(3));
+                break;
+            }
+            //
+            // Rule 152:  labelledStringValue ::= identifier optLabel
+            //
+            case 152: {
+               //#line 214 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new labelledStringValue(getLeftIToken(), getRightIToken(),
+                                            (identifier)getRhsSym(1),
+                                            (stringValue)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 153:  optLabel ::= $Empty
+            //
+            case 153: {
+               //#line 215 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(null);
+                break;
+            }
+            //
+            // Rule 154:  optLabel ::= stringValue
+            //
+            case 154:
+                break;
+            //
+            // Rule 155:  stringSpecificSpecs ::= stringSpecificSpec
             //
             case 155: {
-               //#line 261 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 218 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
-                    new doubleSpecificSpec(getLeftIToken(), getRightIToken(),
-                                           (doubleRangeSpec)getRhsSym(1),
-                                           (doubleDefValueSpec)getRhsSym(2))
+                    new stringSpecificSpecList((IstringSpecificSpec)getRhsSym(1), true /* left recursive */)
                 );
                 break;
             }
             //
-            // Rule 156:  doubleCustomSpec ::= doubleRangeSpec
+            // Rule 156:  stringSpecificSpecs ::= stringSpecificSpecs stringSpecificSpec
             //
-            case 156:
-                break;
-            //
-            // Rule 157:  doubleRangeSpec ::= $Empty
-            //
-            case 157: {
-               //#line 263 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
+            case 156: {
+               //#line 218 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                ((stringSpecificSpecList)getRhsSym(1)).add((IstringSpecificSpec)getRhsSym(2));
                 break;
             }
             //
-            // Rule 158:  doubleRangeSpec ::= RANGE$ DECIMAL$low DOTS$ DECIMAL$high ;$
+            // Rule 157:  stringSpecificSpec ::= stringDefValueSpec
             //
-            case 158: {
-               //#line 263 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new doubleRangeSpec(getLeftIToken(), getRightIToken(),
-                                        new ASTNodeToken(getRhsIToken(2)),
-                                        new ASTNodeToken(getRhsIToken(4)))
-                );
+            case 157:
                 break;
-            }
             //
-            // Rule 159:  doubleDefValueSpec ::= $Empty
+            // Rule 158:  stringSpecificSpec ::= stringValidatorSpec
             //
-            case 159: {
-               //#line 264 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
+            case 158:
                 break;
-            }
             //
-            // Rule 160:  doubleDefValueSpec ::= DEFVALUE$ DECIMAL ;$
+            // Rule 159:  stringSpecificSpec ::= stringSpecialSpec
             //
-            case 160: {
-               //#line 264 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new doubleDefValueSpec(getLeftIToken(), getRightIToken(),
-                                           new ASTNodeToken(getRhsIToken(2)))
-                );
+            case 159:
                 break;
-            }
             //
-            // Rule 161:  stringSpecificSpec ::= stringCustomSpec stringDefValueSpec stringValidatorSpec
+            // Rule 160:  stringSpecificSpec ::= stringEmptySpec
             //
-            case 161: {
-               //#line 266 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new stringSpecificSpec(getLeftIToken(), getRightIToken(),
-                                           (stringCustomSpec)getRhsSym(1),
-                                           (stringDefValueSpec)getRhsSym(2),
-                                           (stringValidatorSpec)getRhsSym(3))
-                );
+            case 160:
                 break;
-            }
             //
-            // Rule 162:  stringCustomSpec ::= stringSpecialSpec stringEmptySpec
+            // Rule 161:  stringSpecificSpec ::= generalSpec
+            //
+            case 161:
+                break;
+            //
+            // Rule 162:  stringSpecialSpec ::= HASSPECIAL$ stringValue ;$
             //
             case 162: {
-               //#line 267 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(
-                    new stringCustomSpec(getLeftIToken(), getRightIToken(),
-                                         (stringSpecialSpec)getRhsSym(1),
-                                         (IstringEmptySpec)getRhsSym(2))
-                );
-                break;
-            }
-            //
-            // Rule 163:  stringSpecialSpec ::= $Empty
-            //
-            case 163: {
-               //#line 268 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 164:  stringSpecialSpec ::= HASSPECIAL$ stringValue ;$
-            //
-            case 164: {
-               //#line 268 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+               //#line 220 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringSpecialSpec(getLeftIToken(), getRightIToken(),
                                           (stringValue)getRhsSym(2))
@@ -2111,18 +1912,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 165:  stringEmptySpec ::= $Empty
+            // Rule 163:  stringEmptySpec ::= EMPTYALLOWED$ FALSE ;$
             //
-            case 165: {
-               //#line 269 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 166:  stringEmptySpec ::= EMPTYALLOWED$ FALSE ;$
-            //
-            case 166: {
-               //#line 270 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 163: {
+               //#line 221 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringEmptySpec0(getLeftIToken(), getRightIToken(),
                                          new ASTNodeToken(getRhsIToken(2)))
@@ -2130,10 +1923,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 167:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
+            // Rule 164:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
             //
-            case 167: {
-               //#line 271 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 164: {
+               //#line 222 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringEmptySpec1(getLeftIToken(), getRightIToken(),
                                          new ASTNodeToken(getRhsIToken(2)),
@@ -2142,18 +1935,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 168:  stringDefValueSpec ::= $Empty
+            // Rule 165:  stringDefValueSpec ::= DEFVALUE$ stringValue ;$
             //
-            case 168: {
-               //#line 272 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 169:  stringDefValueSpec ::= DEFVALUE$ stringValue ;$
-            //
-            case 169: {
-               //#line 272 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 165: {
+               //#line 223 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringDefValueSpec(getLeftIToken(), getRightIToken(),
                                            (stringValue)getRhsSym(2))
@@ -2161,18 +1946,10 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 170:  stringValidatorSpec ::= $Empty
+            // Rule 166:  stringValidatorSpec ::= VALIDATOR$ stringValue$qualClassName ;$
             //
-            case 170: {
-               //#line 273 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
-                setResult(null);
-                break;
-            }
-            //
-            // Rule 171:  stringValidatorSpec ::= VALIDATOR$ stringValue$qualClassName ;$
-            //
-            case 171: {
-               //#line 273 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 166: {
+               //#line 224 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringValidatorSpec(getLeftIToken(), getRightIToken(),
                                             (stringValue)getRhsSym(2))
@@ -2180,60 +1957,100 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 172:  identifier ::= IDENTIFIER
+            // Rule 167:  optConditionalSpec ::= $Empty
             //
-            case 172: {
-               //#line 277 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 167: {
+               //#line 227 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(null);
+                break;
+            }
+            //
+            // Rule 168:  optConditionalSpec ::= conditionType identifier
+            //
+            case 168: {
+               //#line 227 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new optConditionalSpec(getLeftIToken(), getRightIToken(),
+                                           (IconditionType)getRhsSym(1),
+                                           (identifier)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 169:  conditionType ::= IF
+            //
+            case 169: {
+               //#line 229 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionType0(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 170:  conditionType ::= UNLESS
+            //
+            case 170: {
+               //#line 229 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionType1(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 171:  identifier ::= IDENTIFIER
+            //
+            case 171: {
+               //#line 233 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new identifier(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 173:  booleanValue ::= TRUE
+            // Rule 172:  booleanValue ::= TRUE
             //
-            case 173: {
-               //#line 279 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 172: {
+               //#line 235 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new booleanValue0(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 174:  booleanValue ::= FALSE
+            // Rule 173:  booleanValue ::= FALSE
             //
-            case 174: {
-               //#line 279 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 173: {
+               //#line 235 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new booleanValue1(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 175:  stringValue ::= STRING_LITERAL
+            // Rule 174:  stringValue ::= STRING_LITERAL
             //
-            case 175: {
-               //#line 281 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 174: {
+               //#line 237 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new stringValue(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 176:  signedNumber ::= INTEGER
+            // Rule 175:  signedNumber ::= INTEGER
             //
-            case 176: {
-               //#line 283 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 175: {
+               //#line 239 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new signedNumber0(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 177:  signedNumber ::= sign INTEGER
+            // Rule 176:  signedNumber ::= sign INTEGER
             //
-            case 177: {
-               //#line 283 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 176: {
+               //#line 239 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new signedNumber1(getLeftIToken(), getRightIToken(),
                                       (Isign)getRhsSym(1),
@@ -2242,22 +2059,238 @@ public class PrefspecsParser implements RuleAction, IParser
                 break;
             }
             //
-            // Rule 178:  sign ::= PLUS
+            // Rule 177:  sign ::= PLUS
             //
-            case 178: {
-               //#line 285 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 177: {
+               //#line 241 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new sign0(getRhsIToken(1))
                 );
                 break;
             }
             //
-            // Rule 179:  sign ::= MINUS
+            // Rule 178:  sign ::= MINUS
             //
-            case 179: {
-               //#line 285 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3-release/lpg.generator/templates/java/btParserTemplateF.gi"
+            case 178: {
+               //#line 241 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
                 setResult(
                     new sign1(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 179:  customSpec ::= CUSTOM$ {$ customRules }$
+            //
+            case 179: {
+               //#line 245 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new customSpec(getLeftIToken(), getRightIToken(),
+                                   (IcustomRules)getRhsSym(3))
+                );
+                break;
+            }
+            //
+            // Rule 180:  customRules ::= $Empty
+            //
+            case 180: {
+               //#line 247 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(null);
+                break;
+            }
+            //
+            // Rule 181:  customRules ::= customRule
+            //
+            case 181:
+                break;
+            //
+            // Rule 182:  customRules ::= customRules customRule
+            //
+            case 182: {
+               //#line 249 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new customRules(getLeftIToken(), getRightIToken(),
+                                    (IcustomRules)getRhsSym(1),
+                                    (customRule)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 183:  tab ::= DEFAULT
+            //
+            case 183: {
+               //#line 251 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new tab0(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 184:  tab ::= CONFIGURATION
+            //
+            case 184: {
+               //#line 251 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new tab1(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 185:  tab ::= INSTANCE
+            //
+            case 185: {
+               //#line 251 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new tab2(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 186:  tab ::= PROJECT
+            //
+            case 186: {
+               //#line 251 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new tab3(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 187:  customRule ::= tab identifier {$ newPropertySpecs }$
+            //
+            case 187: {
+               //#line 253 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new customRule(getLeftIToken(), getRightIToken(),
+                                   (Itab)getRhsSym(1),
+                                   (identifier)getRhsSym(2),
+                                   (InewPropertySpecs)getRhsSym(4))
+                );
+                break;
+            }
+            //
+            // Rule 188:  newPropertySpecs ::= generalSpecs
+            //
+            case 188:
+                break;
+            //
+            // Rule 189:  newPropertySpecs ::= generalSpecs typeCustomSpecs
+            //
+            case 189: {
+               //#line 256 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new newPropertySpecs(getLeftIToken(), getRightIToken(),
+                                         (generalSpecList)getRhsSym(1),
+                                         (ItypeCustomSpecs)getRhsSym(2))
+                );
+                break;
+            }
+            //
+            // Rule 190:  typeCustomSpecs ::= booleanCustomSpec
+            //
+            case 190: {
+               //#line 258 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new typeCustomSpecs0(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 191:  typeCustomSpecs ::= intCustomSpec
+            //
+            case 191: {
+               //#line 259 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new typeCustomSpecs1(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 192:  typeCustomSpecs ::= radioCustomSpec
+            //
+            case 192: {
+               //#line 260 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new typeCustomSpecs2(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 193:  typeCustomSpecs ::= stringCustomSpec
+            //
+            case 193: {
+               //#line 261 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new typeCustomSpecs3(getRhsIToken(1))
+                );
+                break;
+            }
+            //
+            // Rule 194:  conditionalsSpec ::= CONDITIONALS$ {$ conditionalSpecs }$
+            //
+            case 194: {
+               //#line 266 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionalsSpec(getLeftIToken(), getRightIToken(),
+                                         (IconditionalSpecs)getRhsSym(3))
+                );
+                break;
+            }
+            //
+            // Rule 195:  conditionalSpecs ::= $Empty
+            //
+            case 195: {
+               //#line 268 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(null);
+                break;
+            }
+            //
+            // Rule 196:  conditionalSpecs ::= conditionalSpec ;
+            //
+            case 196: {
+               //#line 269 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionalSpecs0(getLeftIToken(), getRightIToken(),
+                                          (IconditionalSpec)getRhsSym(1),
+                                          new ASTNodeToken(getRhsIToken(2)))
+                );
+                break;
+            }
+            //
+            // Rule 197:  conditionalSpecs ::= conditionalSpecs conditionalSpec ;
+            //
+            case 197: {
+               //#line 270 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionalSpecs1(getLeftIToken(), getRightIToken(),
+                                          (IconditionalSpecs)getRhsSym(1),
+                                          (IconditionalSpec)getRhsSym(2),
+                                          new ASTNodeToken(getRhsIToken(3)))
+                );
+                break;
+            }
+            //
+            // Rule 198:  conditionalSpec ::= identifier WITH identifier
+            //
+            case 198: {
+               //#line 272 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionalSpec0(getLeftIToken(), getRightIToken(),
+                                         (identifier)getRhsSym(1),
+                                         new ASTNodeToken(getRhsIToken(2)),
+                                         (identifier)getRhsSym(3))
+                );
+                break;
+            }
+            //
+            // Rule 199:  conditionalSpec ::= identifier AGAINST identifier
+            //
+            case 199: {
+               //#line 273 "/Users/rmfuhrer/eclipse/workspaces/imp-3.3/lpg.generator/templates/java/btParserTemplateF.gi"
+                setResult(
+                    new conditionalSpec1(getLeftIToken(), getRightIToken(),
+                                         (identifier)getRhsSym(1),
+                                         new ASTNodeToken(getRhsIToken(2)),
+                                         (identifier)getRhsSym(3))
                 );
                 break;
             }

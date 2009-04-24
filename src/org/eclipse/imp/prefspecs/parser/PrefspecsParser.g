@@ -5,6 +5,7 @@
 
 %Globals
     /.import org.eclipse.imp.parser.IParser;
+    import org.eclipse.imp.parser.SymbolTable;
     import java.util.Hashtable;
     import java.util.Stack;
     import java.util.List;
@@ -87,16 +88,13 @@
 
     conditionalsSpecOption ::= %empty
                              | conditionalsSpec
-               
-               
+
     -- Rules for the "tabs" section
                     
     tabsSpec ::=  %empty | TABS$ '{'$ tabSpecs '}'$
     
-    tab ::= DEFAULT | CONFIGURATION | INSTANCE | PROJECT
-    
-    tabSpecs ::= %empty
-               | defaultTabSpec configurationTabSpec instanceTabSpec projectTabSpec
+    tabSpecs$$tabSpec ::= %empty | tabSpecs tabSpec
+    tabSpec ::= defaultTabSpec | configurationTabSpec | instanceTabSpec | projectTabSpec
 
     defaultTabSpec       ::= DEFAULT$       inout '{'$ generalSpecs '}'$
 
@@ -122,6 +120,7 @@
     fieldSpec ::= booleanFieldSpec
                 | colorFieldSpec
                 | comboFieldSpec
+                | directoryFieldSpec
                 | dirListFieldSpec
                 | doubleFieldSpec
                 | fileFieldSpec
@@ -131,51 +130,115 @@
                 | stringFieldSpec
 
 
-    booleanFieldSpec ::= BOOLEAN$ identifier booleanFieldPropertySpecs optConditionalSpec
-
-    colorFieldSpec   ::= COLOR$   identifier colorFieldPropertySpecs   optConditionalSpec
-
-    comboFieldSpec   ::= COMBO$   identifier comboFieldPropertySpecs   optConditionalSpec
-
-    dirListFieldSpec ::= DIRLIST$ identifier dirlistFieldPropertySpecs optConditionalSpec
-
-    doubleFieldSpec  ::= DOUBLE$  identifier doubleFieldPropertySpecs  optConditionalSpec
-
-    fileFieldSpec    ::= FILE$    identifier fileFieldPropertySpecs    optConditionalSpec
-
-    fontFieldSpec    ::= FONT$    identifier fontFieldPropertySpecs    optConditionalSpec
-
-    intFieldSpec     ::= INT$     identifier intFieldPropertySpecs     optConditionalSpec
-
-    radioFieldSpec   ::= RADIO$   identifier radioFieldPropertySpecs   optConditionalSpec
-
-    stringFieldSpec  ::= STRING$  identifier stringFieldPropertySpecs  optConditionalSpec
+    booleanFieldSpec   ::= BOOLEAN$   identifier booleanFieldPropertySpecs   optConditionalSpec
+    colorFieldSpec     ::= COLOR$     identifier colorFieldPropertySpecs     optConditionalSpec
+    comboFieldSpec     ::= COMBO$     identifier comboFieldPropertySpecs     optConditionalSpec
+    directoryFieldSpec ::= DIRECTORY$ identifier directoryFieldPropertySpecs optConditionalSpec
+    dirListFieldSpec   ::= DIRLIST$   identifier dirlistFieldPropertySpecs   optConditionalSpec
+    doubleFieldSpec    ::= DOUBLE$    identifier doubleFieldPropertySpecs    optConditionalSpec
+    fileFieldSpec      ::= FILE$      identifier fileFieldPropertySpecs      optConditionalSpec
+    fontFieldSpec      ::= FONT$      identifier fontFieldPropertySpecs      optConditionalSpec
+    intFieldSpec       ::= INT$       identifier intFieldPropertySpecs       optConditionalSpec
+    radioFieldSpec     ::= RADIO$     identifier radioFieldPropertySpecs     optConditionalSpec
+    stringFieldSpec    ::= STRING$    identifier stringFieldPropertySpecs    optConditionalSpec
 
 
-    booleanFieldPropertySpecs ::= %empty | '{'$ generalSpecs booleanSpecificSpec '}'$
+    booleanFieldPropertySpecs   ::= %empty | '{'$ booleanSpecificSpecs '}'$
+    colorFieldPropertySpecs     ::= %empty | '{'$ colorSpecificSpecs   '}'$
+    comboFieldPropertySpecs     ::= %empty | '{'$ comboSpecificSpecs   '}'$
+    directoryFieldPropertySpecs ::= %empty | '{'$ stringSpecificSpecs  '}'$
+    dirlistFieldPropertySpecs   ::= %empty | '{'$ stringSpecificSpecs  '}'$
+    doubleFieldPropertySpecs    ::= %empty | '{'$ doubleSpecificSpecs  '}'$
+    fileFieldPropertySpecs      ::= %empty | '{'$ stringSpecificSpecs  '}'$
+    fontFieldPropertySpecs      ::= %empty | '{'$ fontSpecificSpecs    '}'$
+    intFieldPropertySpecs       ::= %empty | '{'$ intSpecificSpecs     '}'$
+    radioFieldPropertySpecs     ::= %empty | '{'$ radioSpecificSpecs   '}'$
+    stringFieldPropertySpecs    ::= %empty | '{'$ stringSpecificSpecs  '}'$
 
-    colorFieldPropertySpecs   ::= %empty | '{'$ generalSpecs colorSpecificSpec   '}'$
+    -- Rules for specifications used in various parts
+    generalSpecs$$generalSpec ::= %empty | generalSpecs generalSpec
+    generalSpec ::= isEditableSpec | isRemovableSpec | optLabelSpec | optToolTipSpec
 
-    comboFieldPropertySpecs   ::= %empty | '{'$ generalSpecs comboSpecificSpec   '}'$
+    isEditableSpec  ::= ISEDITABLE$ booleanValue ';'$
+    isRemovableSpec ::= ISREMOVABLE$ booleanValue ';'$
+    optLabelSpec    ::= LABEL$ STRING_LITERAL ';'$
+    optToolTipSpec  ::= TOOLTIP$ STRING_LITERAL ';'$
 
-    dirlistFieldPropertySpecs ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
 
-    doubleFieldPropertySpecs  ::= %empty | '{'$ generalSpecs doubleSpecificSpec  '}'$
+    booleanSpecificSpecs$$booleanSpecificSpec ::= booleanSpecificSpec | booleanSpecificSpecs booleanSpecificSpec
+    booleanSpecificSpec ::= booleanSpecialSpec | booleanDefValueSpec | generalSpec
+    booleanSpecialSpec  ::= HASSPECIAL$ booleanValue ';'$
+    booleanDefValueSpec ::= DEFVALUE$ booleanValue ';'$
 
-    fileFieldPropertySpecs    ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
 
-    fontFieldPropertySpecs    ::= %empty | '{'$ generalSpecs fontSpecificSpec    '}'$
+    colorSpecificSpecs$$colorSpecificSpec ::= colorSpecificSpec | colorSpecificSpecs colorSpecificSpec
+    colorSpecificSpec ::= colorDefValueSpec | generalSpec
+    colorDefValueSpec ::= DEFVALUE$ INTEGER$red ','$ INTEGER$green ','$ INTEGER$blue ';'$
 
-    intFieldPropertySpecs     ::= %empty | '{'$ generalSpecs intSpecificSpec     '}'$
 
-    radioFieldPropertySpecs   ::= %empty | '{'$ generalSpecs radioSpecificSpec   '}'$
+    comboSpecificSpecs$$comboSpecificSpec ::= comboSpecificSpec | comboSpecificSpecs comboSpecificSpec
+    comboSpecificSpec ::= columnsSpec | typeOrValuesSpec | comboDefValueSpec | generalSpec
+    comboDefValueSpec ::= DEFVALUE$ identifier ';'$
 
-    stringFieldPropertySpecs  ::= %empty | '{'$ generalSpecs stringSpecificSpec  '}'$
+
+    doubleSpecificSpecs$$doubleSpecificSpec ::= doubleSpecificSpec | doubleSpecificSpecs doubleSpecificSpec
+    doubleSpecificSpec ::= doubleRangeSpec | doubleDefValueSpec
+    doubleRangeSpec    ::= RANGE$ DECIMAL$low DOTS$ DECIMAL$high ';'$
+    doubleDefValueSpec ::= DEFVALUE$ DECIMAL ';'$
+
+
+    fontSpecificSpecs$$fontSpecificSpec ::= fontSpecificSpec | fontSpecificSpecs fontSpecificSpec
+    fontSpecificSpec ::= fontDefValueSpec | generalSpec
+    -- The following represents the information needed to construct a FontData object
+    fontDefValueSpec ::= DEFVALUE$ stringValue$name INTEGER$height fontStyle$style ';'$
+    fontStyle        ::= NORMAL | BOLD | ITALIC
+
+
+    intSpecificSpecs$$intSpecificSpec ::= intSpecificSpec | intSpecificSpecs intSpecificSpec
+    intSpecificSpec ::= intRangeSpec | intSpecialSpec | intDefValueSpec | generalSpec
+    intRangeSpec    ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ';'$
+    intSpecialSpec  ::= HASSPECIAL$ signedNumber ';'$
+    intDefValueSpec ::= DEFVALUE$ signedNumber ';'$
+
+
+    radioSpecificSpecs$$radioSpecificSpec ::= radioSpecificSpec | radioSpecificSpecs radioSpecificSpec
+    radioSpecificSpec ::= radioDefValueSpec | columnsSpec | typeOrValuesSpec
+    radioDefValueSpec ::= DEFVALUE$ identifier ';'$
+
+    typeOrValuesSpec  ::= TYPE$ identifier ';'$ | valuesSpec ';'$
+    valuesSpec        ::= VALUES$ '{'$ labelledStringValueList '}'$
+    columnsSpec       ::= COLUMNS$ INTEGER ';'$
+
+    labelledStringValueList$$labelledStringValue ::=
+        labelledStringValue | labelledStringValueList ','$ labelledStringValue
+    labelledStringValue ::= identifier optLabel
+    optLabel            ::= %empty | stringValue
+
+
+    stringSpecificSpecs$$stringSpecificSpec ::= stringSpecificSpec | stringSpecificSpecs stringSpecificSpec
+    stringSpecificSpec  ::= stringDefValueSpec | stringValidatorSpec | stringSpecialSpec | stringEmptySpec | generalSpec
+    stringSpecialSpec   ::= HASSPECIAL$ stringValue ';'$
+    stringEmptySpec     ::= EMPTYALLOWED$ FALSE ';'$
+                          | EMPTYALLOWED$ TRUE stringValue ';'$
+    stringDefValueSpec  ::= DEFVALUE$ stringValue ';'$
+    stringValidatorSpec ::= VALIDATOR$ stringValue$qualClassName ';'$
 
 
     optConditionalSpec ::= %empty | conditionType identifier
 
     conditionType ::= IF | UNLESS
+
+    -- Rules for values and identifiers
+
+    identifier   ::= IDENTIFIER
+
+    booleanValue ::= TRUE | FALSE
+
+    stringValue  ::= STRING_LITERAL
+
+    signedNumber ::= INTEGER | sign INTEGER
+
+    sign ::= PLUS | MINUS
 
     -- Rules for the "custom" section
      
@@ -185,6 +248,8 @@
                        |  customRule
                        |  customRules customRule
 
+    tab ::= DEFAULT | CONFIGURATION | INSTANCE | PROJECT
+    
     customRule ::= tab identifier '{'$ newPropertySpecs '}'$
 
     newPropertySpecs ::= generalSpecs 
@@ -206,83 +271,6 @@
 
     conditionalSpec ::= identifier WITH identifier
                       | identifier AGAINST identifier
-
-
-    -- Rules for specifications used in various parts
-
-    generalSpecs ::= isEditableSpec isRemovableSpec optLabelSpec optToolTipSpec
-
-    isEditableSpec  ::= %empty | ISEDITABLE$ booleanValue ';'$
-    isRemovableSpec ::= %empty | ISREMOVABLE$ booleanValue ';'$
-    optLabelSpec    ::= %empty | LABEL$ STRING_LITERAL ';'$
-    optToolTipSpec  ::= %empty | TOOLTIP$ STRING_LITERAL ';'$
-
-
-    booleanSpecificSpec ::= booleanCustomSpec booleanDefValueSpec
-    booleanCustomSpec   ::= booleanSpecialSpec
-    booleanSpecialSpec  ::= %empty | HASSPECIAL$ booleanValue ';'$
-    booleanDefValueSpec ::= %empty | DEFVALUE$ booleanValue ';'$
-
-
-    comboSpecificSpec ::= comboCustomSpec comboDefValueSpec
-    comboCustomSpec   ::= columnsSpec typeOrValuesSpec
-    comboDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
-
-    radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
-    radioCustomSpec   ::= columnsSpec typeOrValuesSpec
-    radioDefValueSpec ::= %empty | DEFVALUE$ identifier ';'$
-
-    typeOrValuesSpec  ::= TYPE$ identifier ';'$ | valuesSpec ';'$
-    valuesSpec        ::= VALUES$ '{'$ labelledStringValueList '}'$
-    columnsSpec       ::= %empty | COLUMNS$ INTEGER ';'$
-
-    labelledStringValueList$$labelledStringValue ::=
-        labelledStringValue | labelledStringValueList ','$ labelledStringValue
-    labelledStringValue ::= identifier optLabel
-    optLabel            ::= %empty | stringValue
-
-
-    colorSpecificSpec ::= colorDefValueSpec
-    colorDefValueSpec ::= %empty | DEFVALUE$ INTEGER$red ','$ INTEGER$green ','$ INTEGER$blue ';'$
-
-
-    fontSpecificSpec ::= fontDefValueSpec
-    -- The following represents the information needed to construct a FontData object
-    fontDefValueSpec ::= %empty | DEFVALUE$ stringValue$name INTEGER$height fontStyle$style ';'$
-    fontStyle        ::= NORMAL | BOLD | ITALIC
-
-
-    intSpecificSpec ::= intCustomSpec intDefValueSpec
-    intCustomSpec   ::= intRangeSpec intSpecialSpec
-    intRangeSpec    ::= %empty | RANGE$ signedNumber$low DOTS$ signedNumber$high ';'$
-    intSpecialSpec  ::= %empty | HASSPECIAL$ signedNumber ';'$
-    intDefValueSpec ::= %empty | DEFVALUE$ signedNumber ';'$
-
-    doubleSpecificSpec ::= doubleCustomSpec doubleDefValueSpec
-    doubleCustomSpec   ::= doubleRangeSpec
-    doubleRangeSpec    ::= %empty | RANGE$ DECIMAL$low DOTS$ DECIMAL$high ';'$
-    doubleDefValueSpec ::= %empty | DEFVALUE$ DECIMAL ';'$
-
-    stringSpecificSpec ::= stringCustomSpec stringDefValueSpec stringValidatorSpec
-    stringCustomSpec   ::= stringSpecialSpec stringEmptySpec
-    stringSpecialSpec  ::= %empty | HASSPECIAL$ stringValue ';'$
-    stringEmptySpec    ::= %empty
-                         | EMPTYALLOWED$ FALSE ';'$
-                         | EMPTYALLOWED$ TRUE stringValue ';'$
-    stringDefValueSpec ::= %empty | DEFVALUE$ stringValue ';'$
-    stringValidatorSpec ::= %empty | VALIDATOR$ stringValue$qualClassName ';'$
-
-    -- Rules for values and identifiers
-
-    identifier   ::= IDENTIFIER
-
-    booleanValue ::= TRUE | FALSE
-
-    stringValue  ::= STRING_LITERAL
-
-    signedNumber ::= INTEGER | sign INTEGER
-
-    sign ::= PLUS | MINUS
 %End
 
 %Headers
@@ -315,21 +303,9 @@
         // commented out)
         //
 
-        public class SymbolTable extends Hashtable {
-            SymbolTable parent;
-            SymbolTable(SymbolTable parent) { this.parent = parent; }
-            public IAst findDeclaration(String name) {
-                IAst decl = (IAst) get(name);
-                return (decl != null
-                              ? decl
-                              : parent != null ? parent.findDeclaration(name) : null);
-            }
-            public SymbolTable getParent() { return parent; }
-        }
-
-        Stack symbolTableStack = null;
-        SymbolTable topLevelSymbolTable = null;
-        public SymbolTable getTopLevelSymbolTable() { return topLevelSymbolTable; }
+        Stack<SymbolTable<IAst>> symbolTableStack = null;
+        SymbolTable<IAst> topLevelSymbolTable = null;
+        public SymbolTable<IAst> getTopLevelSymbolTable() { return topLevelSymbolTable; }
 
         //
         // TODO: In the future, the user will be able to identify scope structures
@@ -340,7 +316,7 @@
         // that is defined in IScope. Thus, the implementation of this funftion will
         // be simpler as it would only need to search for an instance of IScope.
         //
-        public SymbolTable getEnclosingSymbolTable(IAst n) {
+        public SymbolTable<IAst> getEnclosingSymbolTable(IAst n) {
 //            for ( ; n != null; n = n.getParent())
         //                if (n instanceof block)
         //                     return ((block) n).getSymbolTable();
@@ -354,8 +330,8 @@
             booleanFields = new ArrayList<String>();
             fieldTypes = new HashMap<String,String>();
             if (root != null) {
-                // symbolTableStack = new Stack();
-                // topLevelSymbolTable = new SymbolTable(null);
+                // symbolTableStack = new Stack<SymbolTable<IAst>>();
+                // topLevelSymbolTable = new SymbolTable<IAst>(null);
                 // symbolTableStack.push(topLevelSymbolTable);
                 root.accept(new SymbolTableVisitor());
             }
@@ -438,7 +414,7 @@
             public boolean visit(booleanFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
-                        emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
+                    emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
                 }
                 fieldNames.add(id);
                 booleanFields.add(id);
@@ -452,7 +428,7 @@
             public boolean visit(comboFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
-                        emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
+                    emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
                 }
                 fieldNames.add(id);
                 fieldTypes.put(id, COMBO_TYPE);
@@ -548,27 +524,16 @@
                     if (typeCustomSpecs != null) {
                             //if ((fieldType.equals(BOOLEAN_TYPE) && !(typeCustomSpecs instanceof booleanCustomSpec)) ||
                             if ((fieldType.equals(BOOLEAN_TYPE) && !(typeCustomSpecs instanceof booleanSpecialSpec)) ||
-                                (fieldType.equals(COMBO_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
-                                (fieldType.equals(DIRLIST_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
-                                (fieldType.equals(FILE_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)) ||
-                                (fieldType.equals(INT_TYPE) && !(typeCustomSpecs instanceof intCustomSpec)) ||
+                                (fieldType.equals(COMBO_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
+                                (fieldType.equals(DIRLIST_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
+                                (fieldType.equals(FILE_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
+                                (fieldType.equals(INT_TYPE) && !(typeCustomSpecs instanceof IintCustomSpec)) ||
                                 //(fieldType.equals(RADIO_TYPE) && !(typeCustomSpecs instanceof radioCustomSpec)) ||
-                                (fieldType.equals(STRING_TYPE) && !(typeCustomSpecs instanceof stringCustomSpec)))
+                                (fieldType.equals(STRING_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)))
                             {
-                                //emitError(n.getidentifier().getIToken(), ""); //"Field type not consistent with property specification");
-                                
                                 String propertyMsg = "Property specification not consistent with field type";
-                                //if (typeCustomSpecs instanceof booleanCustomSpec) {
-                                //    emitError((booleanCustomSpec)typeCustomSpecs, propertyMsg);
-                                if (typeCustomSpecs instanceof booleanSpecialSpec) {
-                                    emitError((booleanSpecialSpec)typeCustomSpecs, propertyMsg);
-                                } else if (typeCustomSpecs instanceof intCustomSpec) {
-                                    emitError((intCustomSpec)typeCustomSpecs, propertyMsg);
-                                //} else if (typeCustomSpecs instanceof radioCustomSpec) {
-                                //    emitError((radioCustomSpec)typeCustomSpecs, propertyMsg);
-                                } else if (typeCustomSpecs instanceof stringCustomSpec) {
-                                    emitError((stringCustomSpec)typeCustomSpecs, propertyMsg);
-                                }
+
+                                emitError((ASTNode) typeCustomSpecs, propertyMsg);
                                 //int startOffset = n.getidentifier().getIToken().getStartOffset();
                                 //int endOffset = n.getRIGHTBRACE().getIToken().getEndOffset();
                                 //emitError(startOffset, endOffset, "Property specification not consistent with field type");
