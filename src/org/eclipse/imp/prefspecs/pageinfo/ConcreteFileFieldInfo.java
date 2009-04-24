@@ -17,10 +17,8 @@ package org.eclipse.imp.prefspecs.pageinfo;
 
 /**
  * @author sutton
- *
  */
 public class ConcreteFileFieldInfo extends ConcreteStringFieldInfo {
-
 	/**
 	 * @param vField
 	 * @param parentTab
@@ -28,7 +26,5 @@ public class ConcreteFileFieldInfo extends ConcreteStringFieldInfo {
 	public ConcreteFileFieldInfo(VirtualFileFieldInfo vField,
 			PreferencesTabInfo parentTab) {
 		super(vField, parentTab);
-		// TODO Auto-generated constructor stub
 	}
-
 }
