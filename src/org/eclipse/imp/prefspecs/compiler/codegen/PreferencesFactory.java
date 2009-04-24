@@ -26,6 +26,7 @@ import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirectoryFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteDoubleFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteEnumFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
@@ -372,8 +373,8 @@ public class PreferencesFactory {
     			} else if (vField instanceof VirtualComboFieldInfo) {
                     VirtualComboFieldInfo vCombo= (VirtualComboFieldInfo) vField;
                     fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                    constantsClassName + "." + preferenceConstantForName(vCombo.getName()) + ", " +
-                    vCombo.getDefaultValue() + ");\n";
+                    constantsClassName + "." + preferenceConstantForName(vCombo.getName()) + ", \"" +
+                    vCombo.getDefaultValue() + "\");\n";
                 } else if (vField instanceof VirtualRadioFieldInfo) {
                     VirtualRadioFieldInfo vRadio= (VirtualRadioFieldInfo) vField;
                     fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
@@ -729,6 +730,8 @@ public class PreferencesFactory {
 			result = result + "\t\tDirectoryListFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewDirectoryListField(\n";
 		} else if (fieldInfo instanceof ConcreteFileFieldInfo) {
 			result = result + "\t\tFileFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFileField(\n";
+        } else if (fieldInfo instanceof ConcreteDirectoryFieldInfo) {
+            result = result + "\t\tDirectoryFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewDirectoryField(\n";
 		} else if (fieldInfo instanceof ConcreteStringFieldInfo) {
 			result = result + "\t\tStringFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewStringField(\n";
 		}
