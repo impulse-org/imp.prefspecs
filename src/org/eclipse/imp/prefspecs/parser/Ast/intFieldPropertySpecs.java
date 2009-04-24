@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 78:  intFieldPropertySpecs ::= $Empty
+ *<li>Rule 82:  intFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 79:  intFieldPropertySpecs ::= {$ generalSpecs intSpecificSpec }$
+ *<li>Rule 83:  intFieldPropertySpecs ::= {$ intSpecificSpecs }$
  *</b>
  */
 public class intFieldPropertySpecs extends ASTNode implements IintFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private intSpecificSpec _intSpecificSpec;
+    private intSpecificSpecList _intSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public intSpecificSpec getintSpecificSpec() { return _intSpecificSpec; }
+    public intSpecificSpecList getintSpecificSpecs() { return _intSpecificSpecs; }
 
     public intFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                 generalSpecs _generalSpecs,
-                                 intSpecificSpec _intSpecificSpec)
+                                 intSpecificSpecList _intSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._intSpecificSpec = _intSpecificSpec;
-        ((ASTNode) _intSpecificSpec).setParent(this);
+        this._intSpecificSpecs = _intSpecificSpecs;
+        ((ASTNode) _intSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class intFieldPropertySpecs extends ASTNode implements IintFieldPropertyS
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_intSpecificSpec);
+        list.add(_intSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class intFieldPropertySpecs extends ASTNode implements IintFieldPropertyS
         if (! (o instanceof intFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         intFieldPropertySpecs other = (intFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _intSpecificSpec.equals(other._intSpecificSpec)) return false;
+        if (! _intSpecificSpecs.equals(other._intSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_intSpecificSpec.hashCode());
+        hash = hash * 31 + (_intSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class intFieldPropertySpecs extends ASTNode implements IintFieldPropertyS
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _intSpecificSpec.accept(v);
-        }
+            _intSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

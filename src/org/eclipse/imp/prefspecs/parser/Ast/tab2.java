@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 30:  tab ::= INSTANCE
+ *<li>Rule 185:  tab ::= INSTANCE
  *</b>
  */
 public class tab2 extends ASTNodeToken implements Itab

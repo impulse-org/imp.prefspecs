@@ -14,7 +14,17 @@
 package org.eclipse.imp.prefspecs.parser.Ast;
 
 /**
- * is implemented by <b>booleanSpecialSpec</b>
+ * is implemented by:
+ *<b>
+ *<ul>
+ *<li>isEditableSpec
+ *<li>isRemovableSpec
+ *<li>optLabelSpec
+ *<li>optToolTipSpec
+ *<li>booleanSpecialSpec
+ *<li>booleanDefValueSpec
+ *</ul>
+ *</b>
  */
 public interface IbooleanCustomSpec extends ItypeCustomSpecs {}
 

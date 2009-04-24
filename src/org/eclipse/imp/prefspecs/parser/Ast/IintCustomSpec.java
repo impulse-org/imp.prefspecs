@@ -14,7 +14,18 @@
 package org.eclipse.imp.prefspecs.parser.Ast;
 
 /**
- * is implemented by <b>intCustomSpec</b>
+ * is implemented by:
+ *<b>
+ *<ul>
+ *<li>isEditableSpec
+ *<li>isRemovableSpec
+ *<li>optLabelSpec
+ *<li>optToolTipSpec
+ *<li>intRangeSpec
+ *<li>intSpecialSpec
+ *<li>intDefValueSpec
+ *</ul>
+ *</b>
  */
 public interface IintCustomSpec extends ItypeCustomSpecs {}
 

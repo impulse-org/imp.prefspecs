@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 84:  optConditionalSpec ::= $Empty
+ *<li>Rule 167:  optConditionalSpec ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 85:  optConditionalSpec ::= conditionType identifier
+ *<li>Rule 168:  optConditionalSpec ::= conditionType identifier
  *</b>
  */
 public class optConditionalSpec extends ASTNode implements IoptConditionalSpec

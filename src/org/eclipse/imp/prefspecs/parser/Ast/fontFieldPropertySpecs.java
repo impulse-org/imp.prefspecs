@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,34 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 76:  fontFieldPropertySpecs ::= $Empty
+ *<li>Rule 80:  fontFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 77:  fontFieldPropertySpecs ::= {$ generalSpecs fontSpecificSpec }$
+ *<li>Rule 81:  fontFieldPropertySpecs ::= {$ fontSpecificSpecs }$
  *</b>
  */
 public class fontFieldPropertySpecs extends ASTNode implements IfontFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private fontDefValueSpec _fontSpecificSpec;
+    private fontSpecificSpecList _fontSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    /**
-     * The value returned by <b>getfontSpecificSpec</b> may be <b>null</b>
-     */
-    public fontDefValueSpec getfontSpecificSpec() { return _fontSpecificSpec; }
+    public fontSpecificSpecList getfontSpecificSpecs() { return _fontSpecificSpecs; }
 
     public fontFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                  generalSpecs _generalSpecs,
-                                  fontDefValueSpec _fontSpecificSpec)
+                                  fontSpecificSpecList _fontSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._fontSpecificSpec = _fontSpecificSpec;
-        if (_fontSpecificSpec != null) ((ASTNode) _fontSpecificSpec).setParent(this);
+        this._fontSpecificSpecs = _fontSpecificSpecs;
+        ((ASTNode) _fontSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -61,8 +54,7 @@ public class fontFieldPropertySpecs extends ASTNode implements IfontFieldPropert
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_fontSpecificSpec);
+        list.add(_fontSpecificSpecs);
         return list;
     }
 
@@ -72,19 +64,14 @@ public class fontFieldPropertySpecs extends ASTNode implements IfontFieldPropert
         if (! (o instanceof fontFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         fontFieldPropertySpecs other = (fontFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (_fontSpecificSpec == null)
-            if (other._fontSpecificSpec != null) return false;
-            else; // continue
-        else if (! _fontSpecificSpec.equals(other._fontSpecificSpec)) return false;
+        if (! _fontSpecificSpecs.equals(other._fontSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_fontSpecificSpec == null ? 0 : _fontSpecificSpec.hashCode());
+        hash = hash * 31 + (_fontSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -99,10 +86,7 @@ public class fontFieldPropertySpecs extends ASTNode implements IfontFieldPropert
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            if (_fontSpecificSpec != null) _fontSpecificSpec.accept(v);
-        }
+            _fontSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

@@ -16,6 +16,6 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 /**
  * is implemented by <b>doubleRangeSpec</b>
  */
-public interface IdoubleRangeSpec extends IdoubleCustomSpec {}
+public interface IdoubleRangeSpec extends IdoubleSpecificSpec {}
 
 

@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 172:  identifier ::= IDENTIFIER
+ *<li>Rule 171:  identifier ::= IDENTIFIER
  *</b>
  */
 public class identifier extends ASTNodeToken implements Iidentifier

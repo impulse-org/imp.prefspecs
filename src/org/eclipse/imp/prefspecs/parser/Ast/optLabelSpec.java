@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,12 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- *<em>
- *<li>Rule 110:  optLabelSpec ::= $Empty
- *</em>
- *<p>
  *<b>
- *<li>Rule 111:  optLabelSpec ::= LABEL$ STRING_LITERAL ;$
+ *<li>Rule 96:  optLabelSpec ::= LABEL$ STRING_LITERAL ;$
  *</b>
  */
 public class optLabelSpec extends ASTNode implements IoptLabelSpec

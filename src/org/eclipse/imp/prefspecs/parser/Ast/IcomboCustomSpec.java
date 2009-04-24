@@ -23,7 +23,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * is implemented by <b>comboCustomSpec</b>
+ * is implemented by:
+ *<b>
+ *<ul>
+ *<li>isEditableSpec
+ *<li>isRemovableSpec
+ *<li>optLabelSpec
+ *<li>optToolTipSpec
+ *<li>comboDefValueSpec
+ *<li>columnsSpec
+ *<li>typeOrValuesSpec0
+ *<li>typeOrValuesSpec1
+ *</ul>
+ *</b>
  */
 public interface IcomboCustomSpec
 {

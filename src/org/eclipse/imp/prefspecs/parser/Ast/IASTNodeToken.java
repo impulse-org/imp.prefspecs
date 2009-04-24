@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -30,23 +31,27 @@ import java.util.HashMap;
  *<li>stringValue
  *<li>onOff0
  *<li>onOff1
- *<li>tab0
- *<li>tab1
- *<li>tab2
- *<li>tab3
  *<li>inout0
  *<li>inout1
- *<li>conditionType0
- *<li>conditionType1
  *<li>fontStyle0
  *<li>fontStyle1
  *<li>fontStyle2
+ *<li>conditionType0
+ *<li>conditionType1
  *<li>booleanValue0
  *<li>booleanValue1
  *<li>signedNumber0
  *<li>signedNumber1
  *<li>sign0
  *<li>sign1
+ *<li>tab0
+ *<li>tab1
+ *<li>tab2
+ *<li>tab3
+ *<li>typeCustomSpecs0
+ *<li>typeCustomSpecs1
+ *<li>typeCustomSpecs2
+ *<li>typeCustomSpecs3
  *</ul>
  *</b>
  */

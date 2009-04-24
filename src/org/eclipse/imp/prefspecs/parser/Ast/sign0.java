@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 178:  sign ::= PLUS
+ *<li>Rule 177:  sign ::= PLUS
  *</b>
  */
 public class sign0 extends ASTNodeToken implements Isign

@@ -13,15 +13,6 @@
 
 package org.eclipse.imp.prefspecs.parser.Ast;
 
-import lpg.runtime.*;
-
-import org.eclipse.imp.parser.IParser;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
  * is implemented by:
  *<b>
@@ -31,12 +22,6 @@ import java.util.HashMap;
  *</ul>
  *</b>
  */
-public interface ItypeOrValuesSpec
-{
-    public IToken getLeftIToken();
-    public IToken getRightIToken();
-
-    void accept(IAstVisitor v);
-}
+public interface ItypeOrValuesSpec extends IcomboSpecificSpec, IradioSpecificSpec {}
 
 

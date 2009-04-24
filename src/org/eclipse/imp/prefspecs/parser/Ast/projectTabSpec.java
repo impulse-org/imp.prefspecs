@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -30,14 +31,14 @@ import java.util.HashMap;
 public class projectTabSpec extends ASTNode implements IprojectTabSpec
 {
     private Iinout _inout;
-    private generalSpecs _generalSpecs;
+    private generalSpecList _generalSpecs;
 
     public Iinout getinout() { return _inout; }
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
+    public generalSpecList getgeneralSpecs() { return _generalSpecs; }
 
     public projectTabSpec(IToken leftIToken, IToken rightIToken,
                           Iinout _inout,
-                          generalSpecs _generalSpecs)
+                          generalSpecList _generalSpecs)
     {
         super(leftIToken, rightIToken);
 

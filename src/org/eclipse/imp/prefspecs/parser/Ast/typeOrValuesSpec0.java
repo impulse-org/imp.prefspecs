@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 128:  typeOrValuesSpec ::= TYPE$ identifier ;$
+ *<li>Rule 146:  typeOrValuesSpec ::= TYPE$ identifier ;$
  *</b>
  */
 public class typeOrValuesSpec0 extends ASTNode implements ItypeOrValuesSpec

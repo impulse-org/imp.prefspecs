@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 82:  stringFieldPropertySpecs ::= $Empty
+ *<li>Rule 86:  stringFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 83:  stringFieldPropertySpecs ::= {$ generalSpecs stringSpecificSpec }$
+ *<li>Rule 87:  stringFieldPropertySpecs ::= {$ stringSpecificSpecs }$
  *</b>
  */
 public class stringFieldPropertySpecs extends ASTNode implements IstringFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private stringSpecificSpec _stringSpecificSpec;
+    private stringSpecificSpecList _stringSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public stringSpecificSpec getstringSpecificSpec() { return _stringSpecificSpec; }
+    public stringSpecificSpecList getstringSpecificSpecs() { return _stringSpecificSpecs; }
 
     public stringFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                    generalSpecs _generalSpecs,
-                                    stringSpecificSpec _stringSpecificSpec)
+                                    stringSpecificSpecList _stringSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._stringSpecificSpec = _stringSpecificSpec;
-        ((ASTNode) _stringSpecificSpec).setParent(this);
+        this._stringSpecificSpecs = _stringSpecificSpecs;
+        ((ASTNode) _stringSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class stringFieldPropertySpecs extends ASTNode implements IstringFieldPro
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_stringSpecificSpec);
+        list.add(_stringSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class stringFieldPropertySpecs extends ASTNode implements IstringFieldPro
         if (! (o instanceof stringFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         stringFieldPropertySpecs other = (stringFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _stringSpecificSpec.equals(other._stringSpecificSpec)) return false;
+        if (! _stringSpecificSpecs.equals(other._stringSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_stringSpecificSpec.hashCode());
+        hash = hash * 31 + (_stringSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class stringFieldPropertySpecs extends ASTNode implements IstringFieldPro
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _stringSpecificSpec.accept(v);
-        }
+            _stringSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

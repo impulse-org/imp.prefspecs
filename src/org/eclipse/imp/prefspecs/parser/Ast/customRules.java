@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,12 +25,12 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 89:  customRules ::= $Empty
- *<li>Rule 90:  customRules ::= customRule
+ *<li>Rule 180:  customRules ::= $Empty
+ *<li>Rule 181:  customRules ::= customRule
  *</em>
  *<p>
  *<b>
- *<li>Rule 91:  customRules ::= customRules customRule
+ *<li>Rule 182:  customRules ::= customRules customRule
  *</b>
  */
 public class customRules extends ASTNode implements IcustomRules

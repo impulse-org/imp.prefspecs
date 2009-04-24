@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -33,20 +34,17 @@ import java.util.HashMap;
  */
 public class tabsSpec extends ASTNode implements ItabsSpec
 {
-    private tabSpecs _tabSpecs;
+    private tabSpecList _tabSpecs;
 
-    /**
-     * The value returned by <b>gettabSpecs</b> may be <b>null</b>
-     */
-    public tabSpecs gettabSpecs() { return _tabSpecs; }
+    public tabSpecList gettabSpecs() { return _tabSpecs; }
 
     public tabsSpec(IToken leftIToken, IToken rightIToken,
-                    tabSpecs _tabSpecs)
+                    tabSpecList _tabSpecs)
     {
         super(leftIToken, rightIToken);
 
         this._tabSpecs = _tabSpecs;
-        if (_tabSpecs != null) ((ASTNode) _tabSpecs).setParent(this);
+        ((ASTNode) _tabSpecs).setParent(this);
         initialize();
     }
 
@@ -66,17 +64,14 @@ public class tabsSpec extends ASTNode implements ItabsSpec
         if (! (o instanceof tabsSpec)) return false;
         if (! super.equals(o)) return false;
         tabsSpec other = (tabsSpec) o;
-        if (_tabSpecs == null)
-            if (other._tabSpecs != null) return false;
-            else; // continue
-        else if (! _tabSpecs.equals(other._tabSpecs)) return false;
+        if (! _tabSpecs.equals(other._tabSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_tabSpecs == null ? 0 : _tabSpecs.hashCode());
+        hash = hash * 31 + (_tabSpecs.hashCode());
         return hash;
     }
 
@@ -91,7 +86,7 @@ public class tabsSpec extends ASTNode implements ItabsSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            if (_tabSpecs != null) _tabSpecs.accept(v);
+            _tabSpecs.accept(v);
         v.endVisit(this);
     }
 }

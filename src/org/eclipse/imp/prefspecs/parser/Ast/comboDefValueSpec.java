@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,27 +24,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- *<em>
- *<li>Rule 122:  comboDefValueSpec ::= $Empty
- *</em>
- *<p>
  *<b>
- *<li>Rule 123:  comboDefValueSpec ::= DEFVALUE$ stringValue ;$
+ *<li>Rule 116:  comboDefValueSpec ::= DEFVALUE$ identifier ;$
  *</b>
  */
 public class comboDefValueSpec extends ASTNode implements IcomboDefValueSpec
 {
-    private stringValue _stringValue;
+    private identifier _identifier;
 
-    public stringValue getstringValue() { return _stringValue; }
+    public identifier getidentifier() { return _identifier; }
 
     public comboDefValueSpec(IToken leftIToken, IToken rightIToken,
-                             stringValue _stringValue)
+                             identifier _identifier)
     {
         super(leftIToken, rightIToken);
 
-        this._stringValue = _stringValue;
-        ((ASTNode) _stringValue).setParent(this);
+        this._identifier = _identifier;
+        ((ASTNode) _identifier).setParent(this);
         initialize();
     }
 
@@ -53,7 +50,7 @@ public class comboDefValueSpec extends ASTNode implements IcomboDefValueSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_stringValue);
+        list.add(_identifier);
         return list;
     }
 
@@ -63,14 +60,14 @@ public class comboDefValueSpec extends ASTNode implements IcomboDefValueSpec
         if (! (o instanceof comboDefValueSpec)) return false;
         if (! super.equals(o)) return false;
         comboDefValueSpec other = (comboDefValueSpec) o;
-        if (! _stringValue.equals(other._stringValue)) return false;
+        if (! _identifier.equals(other._identifier)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_stringValue.hashCode());
+        hash = hash * 31 + (_identifier.hashCode());
         return hash;
     }
 
@@ -85,7 +82,7 @@ public class comboDefValueSpec extends ASTNode implements IcomboDefValueSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            _stringValue.accept(v);
+            _identifier.accept(v);
         v.endVisit(this);
     }
 }

@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 130:  valuesSpec ::= VALUES$ {$ labelledStringValueList }$
+ *<li>Rule 148:  valuesSpec ::= VALUES$ {$ labelledStringValueList }$
  *</b>
  */
 public class valuesSpec extends ASTNode implements IvaluesSpec

@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 72:  doubleFieldPropertySpecs ::= $Empty
+ *<li>Rule 76:  doubleFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 73:  doubleFieldPropertySpecs ::= {$ generalSpecs doubleSpecificSpec }$
+ *<li>Rule 77:  doubleFieldPropertySpecs ::= {$ doubleSpecificSpecs }$
  *</b>
  */
 public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private doubleSpecificSpec _doubleSpecificSpec;
+    private doubleSpecificSpecList _doubleSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public doubleSpecificSpec getdoubleSpecificSpec() { return _doubleSpecificSpec; }
+    public doubleSpecificSpecList getdoubleSpecificSpecs() { return _doubleSpecificSpecs; }
 
     public doubleFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                    generalSpecs _generalSpecs,
-                                    doubleSpecificSpec _doubleSpecificSpec)
+                                    doubleSpecificSpecList _doubleSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._doubleSpecificSpec = _doubleSpecificSpec;
-        ((ASTNode) _doubleSpecificSpec).setParent(this);
+        this._doubleSpecificSpecs = _doubleSpecificSpecs;
+        ((ASTNode) _doubleSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPro
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_doubleSpecificSpec);
+        list.add(_doubleSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPro
         if (! (o instanceof doubleFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         doubleFieldPropertySpecs other = (doubleFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _doubleSpecificSpec.equals(other._doubleSpecificSpec)) return false;
+        if (! _doubleSpecificSpecs.equals(other._doubleSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_doubleSpecificSpec.hashCode());
+        hash = hash * 31 + (_doubleSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPro
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _doubleSpecificSpec.accept(v);
-        }
+            _doubleSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

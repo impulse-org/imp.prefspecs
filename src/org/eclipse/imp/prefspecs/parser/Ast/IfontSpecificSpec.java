@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,7 +24,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * is implemented by <b>fontDefValueSpec</b>
+ * is implemented by:
+ *<b>
+ *<ul>
+ *<li>isEditableSpec
+ *<li>isRemovableSpec
+ *<li>optLabelSpec
+ *<li>optToolTipSpec
+ *<li>fontDefValueSpec
+ *</ul>
+ *</b>
  */
 public interface IfontSpecificSpec
 {

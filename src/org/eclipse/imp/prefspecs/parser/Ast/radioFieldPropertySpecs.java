@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 80:  radioFieldPropertySpecs ::= $Empty
+ *<li>Rule 84:  radioFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 81:  radioFieldPropertySpecs ::= {$ generalSpecs radioSpecificSpec }$
+ *<li>Rule 85:  radioFieldPropertySpecs ::= {$ radioSpecificSpecs }$
  *</b>
  */
 public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private radioSpecificSpec _radioSpecificSpec;
+    private radioSpecificSpecList _radioSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public radioSpecificSpec getradioSpecificSpec() { return _radioSpecificSpec; }
+    public radioSpecificSpecList getradioSpecificSpecs() { return _radioSpecificSpecs; }
 
     public radioFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                   generalSpecs _generalSpecs,
-                                   radioSpecificSpec _radioSpecificSpec)
+                                   radioSpecificSpecList _radioSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._radioSpecificSpec = _radioSpecificSpec;
-        ((ASTNode) _radioSpecificSpec).setParent(this);
+        this._radioSpecificSpecs = _radioSpecificSpecs;
+        ((ASTNode) _radioSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPrope
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_radioSpecificSpec);
+        list.add(_radioSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPrope
         if (! (o instanceof radioFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         radioFieldPropertySpecs other = (radioFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _radioSpecificSpec.equals(other._radioSpecificSpec)) return false;
+        if (! _radioSpecificSpecs.equals(other._radioSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_radioSpecificSpec.hashCode());
+        hash = hash * 31 + (_radioSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPrope
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _radioSpecificSpec.accept(v);
-        }
+            _radioSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

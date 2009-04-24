@@ -14,7 +14,7 @@
 package org.eclipse.imp.prefspecs.parser.Ast;
 
 /**
- * is implemented by <b>generalSpecs</b>
+ * is implemented by <b>generalSpecList</b>
  */
 public interface IgeneralSpecs extends InewPropertySpecs {}
 

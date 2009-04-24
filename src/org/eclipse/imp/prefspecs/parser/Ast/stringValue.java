@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 175:  stringValue ::= STRING_LITERAL
+ *<li>Rule 174:  stringValue ::= STRING_LITERAL
  *</b>
  */
 public class stringValue extends ASTNodeToken implements IstringValue

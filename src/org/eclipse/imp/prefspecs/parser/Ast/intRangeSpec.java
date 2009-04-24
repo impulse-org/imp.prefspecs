@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,12 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- *<em>
- *<li>Rule 149:  intRangeSpec ::= $Empty
- *</em>
- *<p>
  *<b>
- *<li>Rule 150:  intRangeSpec ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ;$
+ *<li>Rule 137:  intRangeSpec ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ;$
  *</b>
  */
 public class intRangeSpec extends ASTNode implements IintRangeSpec

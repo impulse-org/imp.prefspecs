@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 102:  conditionalSpecs ::= conditionalSpecs conditionalSpec ;
+ *<li>Rule 197:  conditionalSpecs ::= conditionalSpecs conditionalSpec ;
  *</b>
  */
 public class conditionalSpecs1 extends ASTNode implements IconditionalSpecs

@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,12 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- *<em>
- *<li>Rule 118:  booleanDefValueSpec ::= $Empty
- *</em>
- *<p>
  *<b>
- *<li>Rule 119:  booleanDefValueSpec ::= DEFVALUE$ booleanValue ;$
+ *<li>Rule 104:  booleanDefValueSpec ::= DEFVALUE$ booleanValue ;$
  *</b>
  */
 public class booleanDefValueSpec extends ASTNode implements IbooleanDefValueSpec

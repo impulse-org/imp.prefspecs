@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 124:  radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
+ *<li>Rule 146:  radioSpecificSpec ::= radioCustomSpec radioDefValueSpec
  *</b>
  */
 public class radioSpecificSpec extends ASTNode implements IradioSpecificSpec

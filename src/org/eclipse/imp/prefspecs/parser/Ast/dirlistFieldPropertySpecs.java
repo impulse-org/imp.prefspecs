@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 70:  dirlistFieldPropertySpecs ::= $Empty
+ *<li>Rule 74:  dirlistFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 71:  dirlistFieldPropertySpecs ::= {$ generalSpecs stringSpecificSpec }$
+ *<li>Rule 75:  dirlistFieldPropertySpecs ::= {$ stringSpecificSpecs }$
  *</b>
  */
 public class dirlistFieldPropertySpecs extends ASTNode implements IdirlistFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private stringSpecificSpec _stringSpecificSpec;
+    private stringSpecificSpecList _stringSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public stringSpecificSpec getstringSpecificSpec() { return _stringSpecificSpec; }
+    public stringSpecificSpecList getstringSpecificSpecs() { return _stringSpecificSpecs; }
 
     public dirlistFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                     generalSpecs _generalSpecs,
-                                     stringSpecificSpec _stringSpecificSpec)
+                                     stringSpecificSpecList _stringSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._stringSpecificSpec = _stringSpecificSpec;
-        ((ASTNode) _stringSpecificSpec).setParent(this);
+        this._stringSpecificSpecs = _stringSpecificSpecs;
+        ((ASTNode) _stringSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class dirlistFieldPropertySpecs extends ASTNode implements IdirlistFieldP
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_stringSpecificSpec);
+        list.add(_stringSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class dirlistFieldPropertySpecs extends ASTNode implements IdirlistFieldP
         if (! (o instanceof dirlistFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         dirlistFieldPropertySpecs other = (dirlistFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _stringSpecificSpec.equals(other._stringSpecificSpec)) return false;
+        if (! _stringSpecificSpecs.equals(other._stringSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_stringSpecificSpec.hashCode());
+        hash = hash * 31 + (_stringSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class dirlistFieldPropertySpecs extends ASTNode implements IdirlistFieldP
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _stringSpecificSpec.accept(v);
-        }
+            _stringSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,31 +24,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ *<em>
+ *<li>Rule 72:  directoryFieldPropertySpecs ::= $Empty
+ *</em>
+ *<p>
  *<b>
- *<li>Rule 121:  comboCustomSpec ::= columnsSpec typeOrValuesSpec
+ *<li>Rule 73:  directoryFieldPropertySpecs ::= {$ stringSpecificSpecs }$
  *</b>
  */
-public class comboCustomSpec extends ASTNode implements IcomboCustomSpec
+public class directoryFieldPropertySpecs extends ASTNode implements IdirectoryFieldPropertySpecs
 {
-    private columnsSpec _columnsSpec;
-    private ItypeOrValuesSpec _typeOrValuesSpec;
+    private stringSpecificSpecList _stringSpecificSpecs;
 
-    /**
-     * The value returned by <b>getcolumnsSpec</b> may be <b>null</b>
-     */
-    public columnsSpec getcolumnsSpec() { return _columnsSpec; }
-    public ItypeOrValuesSpec gettypeOrValuesSpec() { return _typeOrValuesSpec; }
+    public stringSpecificSpecList getstringSpecificSpecs() { return _stringSpecificSpecs; }
 
-    public comboCustomSpec(IToken leftIToken, IToken rightIToken,
-                           columnsSpec _columnsSpec,
-                           ItypeOrValuesSpec _typeOrValuesSpec)
+    public directoryFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
+                                       stringSpecificSpecList _stringSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._columnsSpec = _columnsSpec;
-        if (_columnsSpec != null) ((ASTNode) _columnsSpec).setParent(this);
-        this._typeOrValuesSpec = _typeOrValuesSpec;
-        ((ASTNode) _typeOrValuesSpec).setParent(this);
+        this._stringSpecificSpecs = _stringSpecificSpecs;
+        ((ASTNode) _stringSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -57,30 +54,24 @@ public class comboCustomSpec extends ASTNode implements IcomboCustomSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_columnsSpec);
-        list.add(_typeOrValuesSpec);
+        list.add(_stringSpecificSpecs);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof comboCustomSpec)) return false;
+        if (! (o instanceof directoryFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
-        comboCustomSpec other = (comboCustomSpec) o;
-        if (_columnsSpec == null)
-            if (other._columnsSpec != null) return false;
-            else; // continue
-        else if (! _columnsSpec.equals(other._columnsSpec)) return false;
-        if (! _typeOrValuesSpec.equals(other._typeOrValuesSpec)) return false;
+        directoryFieldPropertySpecs other = (directoryFieldPropertySpecs) o;
+        if (! _stringSpecificSpecs.equals(other._stringSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_columnsSpec == null ? 0 : _columnsSpec.hashCode());
-        hash = hash * 31 + (_typeOrValuesSpec.hashCode());
+        hash = hash * 31 + (_stringSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -95,10 +86,7 @@ public class comboCustomSpec extends ASTNode implements IcomboCustomSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            if (_columnsSpec != null) _columnsSpec.accept(v);
-            _typeOrValuesSpec.accept(v);
-        }
+            _stringSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

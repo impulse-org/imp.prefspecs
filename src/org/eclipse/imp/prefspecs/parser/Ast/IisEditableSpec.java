@@ -13,24 +13,9 @@
 
 package org.eclipse.imp.prefspecs.parser.Ast;
 
-import lpg.runtime.*;
-
-import org.eclipse.imp.parser.IParser;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
  * is implemented by <b>isEditableSpec</b>
  */
-public interface IisEditableSpec
-{
-    public IToken getLeftIToken();
-    public IToken getRightIToken();
-
-    void accept(IAstVisitor v);
-}
+public interface IisEditableSpec extends IgeneralSpec {}
 
 

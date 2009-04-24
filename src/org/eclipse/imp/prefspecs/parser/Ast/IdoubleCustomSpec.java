@@ -23,7 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * is implemented by <b>doubleRangeSpec</b>
+ * is implemented by:
+ *<b>
+ *<ul>
+ *<li>doubleRangeSpec
+ *<li>doubleDefValueSpec
+ *</ul>
+ *</b>
  */
 public interface IdoubleCustomSpec
 {

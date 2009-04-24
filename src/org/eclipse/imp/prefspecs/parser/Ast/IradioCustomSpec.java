@@ -14,7 +14,15 @@
 package org.eclipse.imp.prefspecs.parser.Ast;
 
 /**
- * is implemented by <b>radioCustomSpec</b>
+ * is implemented by:
+ *<b>
+ *<ul>
+ *<li>radioDefValueSpec
+ *<li>columnsSpec
+ *<li>typeOrValuesSpec0
+ *<li>typeOrValuesSpec1
+ *</ul>
+ *</b>
  */
 public interface IradioCustomSpec extends ItypeCustomSpecs {}
 

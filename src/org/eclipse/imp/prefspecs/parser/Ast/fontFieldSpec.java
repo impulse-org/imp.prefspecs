@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 60:  fontFieldSpec ::= FONT$ identifier fontFieldPropertySpecs optConditionalSpec
+ *<li>Rule 62:  fontFieldSpec ::= FONT$ identifier fontFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class fontFieldSpec extends ASTNode implements IfontFieldSpec

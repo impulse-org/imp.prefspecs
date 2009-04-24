@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -23,12 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- *<em>
- *<li>Rule 126:  radioDefValueSpec ::= $Empty
- *</em>
- *<p>
  *<b>
- *<li>Rule 127:  radioDefValueSpec ::= DEFVALUE$ identifier ;$
+ *<li>Rule 145:  radioDefValueSpec ::= DEFVALUE$ identifier ;$
  *</b>
  */
 public class radioDefValueSpec extends ASTNode implements IradioDefValueSpec

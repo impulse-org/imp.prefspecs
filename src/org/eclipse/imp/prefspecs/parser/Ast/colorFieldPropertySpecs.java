@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,34 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 66:  colorFieldPropertySpecs ::= $Empty
+ *<li>Rule 68:  colorFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 67:  colorFieldPropertySpecs ::= {$ generalSpecs colorSpecificSpec }$
+ *<li>Rule 69:  colorFieldPropertySpecs ::= {$ colorSpecificSpecs }$
  *</b>
  */
 public class colorFieldPropertySpecs extends ASTNode implements IcolorFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private colorDefValueSpec _colorSpecificSpec;
+    private colorSpecificSpecList _colorSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    /**
-     * The value returned by <b>getcolorSpecificSpec</b> may be <b>null</b>
-     */
-    public colorDefValueSpec getcolorSpecificSpec() { return _colorSpecificSpec; }
+    public colorSpecificSpecList getcolorSpecificSpecs() { return _colorSpecificSpecs; }
 
     public colorFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                   generalSpecs _generalSpecs,
-                                   colorDefValueSpec _colorSpecificSpec)
+                                   colorSpecificSpecList _colorSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._colorSpecificSpec = _colorSpecificSpec;
-        if (_colorSpecificSpec != null) ((ASTNode) _colorSpecificSpec).setParent(this);
+        this._colorSpecificSpecs = _colorSpecificSpecs;
+        ((ASTNode) _colorSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -61,8 +54,7 @@ public class colorFieldPropertySpecs extends ASTNode implements IcolorFieldPrope
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_colorSpecificSpec);
+        list.add(_colorSpecificSpecs);
         return list;
     }
 
@@ -72,19 +64,14 @@ public class colorFieldPropertySpecs extends ASTNode implements IcolorFieldPrope
         if (! (o instanceof colorFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         colorFieldPropertySpecs other = (colorFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (_colorSpecificSpec == null)
-            if (other._colorSpecificSpec != null) return false;
-            else; // continue
-        else if (! _colorSpecificSpec.equals(other._colorSpecificSpec)) return false;
+        if (! _colorSpecificSpecs.equals(other._colorSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_colorSpecificSpec == null ? 0 : _colorSpecificSpec.hashCode());
+        hash = hash * 31 + (_colorSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -99,10 +86,7 @@ public class colorFieldPropertySpecs extends ASTNode implements IcolorFieldPrope
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            if (_colorSpecificSpec != null) _colorSpecificSpec.accept(v);
-        }
+            _colorSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

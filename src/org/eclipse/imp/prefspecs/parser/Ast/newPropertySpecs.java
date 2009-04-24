@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,26 +25,23 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 93:  newPropertySpecs ::= generalSpecs
+ *<li>Rule 188:  newPropertySpecs ::= generalSpecs
  *</em>
  *<p>
  *<b>
- *<li>Rule 94:  newPropertySpecs ::= generalSpecs typeCustomSpecs
+ *<li>Rule 189:  newPropertySpecs ::= generalSpecs typeCustomSpecs
  *</b>
  */
 public class newPropertySpecs extends ASTNode implements InewPropertySpecs
 {
-    private generalSpecs _generalSpecs;
+    private generalSpecList _generalSpecs;
     private ItypeCustomSpecs _typeCustomSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    /**
-     * The value returned by <b>gettypeCustomSpecs</b> may be <b>null</b>
-     */
+    public generalSpecList getgeneralSpecs() { return _generalSpecs; }
     public ItypeCustomSpecs gettypeCustomSpecs() { return _typeCustomSpecs; }
 
     public newPropertySpecs(IToken leftIToken, IToken rightIToken,
-                            generalSpecs _generalSpecs,
+                            generalSpecList _generalSpecs,
                             ItypeCustomSpecs _typeCustomSpecs)
     {
         super(leftIToken, rightIToken);
@@ -51,7 +49,7 @@ public class newPropertySpecs extends ASTNode implements InewPropertySpecs
         this._generalSpecs = _generalSpecs;
         ((ASTNode) _generalSpecs).setParent(this);
         this._typeCustomSpecs = _typeCustomSpecs;
-        if (_typeCustomSpecs != null) ((ASTNode) _typeCustomSpecs).setParent(this);
+        ((ASTNode) _typeCustomSpecs).setParent(this);
         initialize();
     }
 
@@ -73,10 +71,7 @@ public class newPropertySpecs extends ASTNode implements InewPropertySpecs
         if (! super.equals(o)) return false;
         newPropertySpecs other = (newPropertySpecs) o;
         if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (_typeCustomSpecs == null)
-            if (other._typeCustomSpecs != null) return false;
-            else; // continue
-        else if (! _typeCustomSpecs.equals(other._typeCustomSpecs)) return false;
+        if (! _typeCustomSpecs.equals(other._typeCustomSpecs)) return false;
         return true;
     }
 
@@ -84,7 +79,7 @@ public class newPropertySpecs extends ASTNode implements InewPropertySpecs
     {
         int hash = super.hashCode();
         hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_typeCustomSpecs == null ? 0 : _typeCustomSpecs.hashCode());
+        hash = hash * 31 + (_typeCustomSpecs.hashCode());
         return hash;
     }
 
@@ -101,7 +96,7 @@ public class newPropertySpecs extends ASTNode implements InewPropertySpecs
         if (checkChildren)
         {
             _generalSpecs.accept(v);
-            if (_typeCustomSpecs != null) _typeCustomSpecs.accept(v);
+            _typeCustomSpecs.accept(v);
         }
         v.endVisit(this);
     }

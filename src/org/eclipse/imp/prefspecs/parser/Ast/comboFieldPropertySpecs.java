@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 68:  comboFieldPropertySpecs ::= $Empty
+ *<li>Rule 70:  comboFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 69:  comboFieldPropertySpecs ::= {$ generalSpecs comboSpecificSpec }$
+ *<li>Rule 71:  comboFieldPropertySpecs ::= {$ comboSpecificSpecs }$
  *</b>
  */
 public class comboFieldPropertySpecs extends ASTNode implements IcomboFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private comboSpecificSpec _comboSpecificSpec;
+    private comboSpecificSpecList _comboSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public comboSpecificSpec getcomboSpecificSpec() { return _comboSpecificSpec; }
+    public comboSpecificSpecList getcomboSpecificSpecs() { return _comboSpecificSpecs; }
 
     public comboFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                   generalSpecs _generalSpecs,
-                                   comboSpecificSpec _comboSpecificSpec)
+                                   comboSpecificSpecList _comboSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._comboSpecificSpec = _comboSpecificSpec;
-        ((ASTNode) _comboSpecificSpec).setParent(this);
+        this._comboSpecificSpecs = _comboSpecificSpecs;
+        ((ASTNode) _comboSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class comboFieldPropertySpecs extends ASTNode implements IcomboFieldPrope
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_comboSpecificSpec);
+        list.add(_comboSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class comboFieldPropertySpecs extends ASTNode implements IcomboFieldPrope
         if (! (o instanceof comboFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         comboFieldPropertySpecs other = (comboFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _comboSpecificSpec.equals(other._comboSpecificSpec)) return false;
+        if (! _comboSpecificSpecs.equals(other._comboSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_comboSpecificSpec.hashCode());
+        hash = hash * 31 + (_comboSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class comboFieldPropertySpecs extends ASTNode implements IcomboFieldPrope
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _comboSpecificSpec.accept(v);
-        }
+            _comboSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

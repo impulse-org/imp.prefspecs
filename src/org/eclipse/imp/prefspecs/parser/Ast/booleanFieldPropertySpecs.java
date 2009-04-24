@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,31 +25,26 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 64:  booleanFieldPropertySpecs ::= $Empty
+ *<li>Rule 66:  booleanFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 65:  booleanFieldPropertySpecs ::= {$ generalSpecs booleanSpecificSpec }$
+ *<li>Rule 67:  booleanFieldPropertySpecs ::= {$ booleanSpecificSpecs }$
  *</b>
  */
 public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldPropertySpecs
 {
-    private generalSpecs _generalSpecs;
-    private booleanSpecificSpec _booleanSpecificSpec;
+    private booleanSpecificSpecList _booleanSpecificSpecs;
 
-    public generalSpecs getgeneralSpecs() { return _generalSpecs; }
-    public booleanSpecificSpec getbooleanSpecificSpec() { return _booleanSpecificSpec; }
+    public booleanSpecificSpecList getbooleanSpecificSpecs() { return _booleanSpecificSpecs; }
 
     public booleanFieldPropertySpecs(IToken leftIToken, IToken rightIToken,
-                                     generalSpecs _generalSpecs,
-                                     booleanSpecificSpec _booleanSpecificSpec)
+                                     booleanSpecificSpecList _booleanSpecificSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
-        this._booleanSpecificSpec = _booleanSpecificSpec;
-        ((ASTNode) _booleanSpecificSpec).setParent(this);
+        this._booleanSpecificSpecs = _booleanSpecificSpecs;
+        ((ASTNode) _booleanSpecificSpecs).setParent(this);
         initialize();
     }
 
@@ -58,8 +54,7 @@ public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldP
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_generalSpecs);
-        list.add(_booleanSpecificSpec);
+        list.add(_booleanSpecificSpecs);
         return list;
     }
 
@@ -69,16 +64,14 @@ public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldP
         if (! (o instanceof booleanFieldPropertySpecs)) return false;
         if (! super.equals(o)) return false;
         booleanFieldPropertySpecs other = (booleanFieldPropertySpecs) o;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
-        if (! _booleanSpecificSpec.equals(other._booleanSpecificSpec)) return false;
+        if (! _booleanSpecificSpecs.equals(other._booleanSpecificSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_generalSpecs.hashCode());
-        hash = hash * 31 + (_booleanSpecificSpec.hashCode());
+        hash = hash * 31 + (_booleanSpecificSpecs.hashCode());
         return hash;
     }
 
@@ -93,10 +86,7 @@ public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldP
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _generalSpecs.accept(v);
-            _booleanSpecificSpec.accept(v);
-        }
+            _booleanSpecificSpecs.accept(v);
         v.endVisit(this);
     }
 }

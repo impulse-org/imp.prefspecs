@@ -16,6 +16,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 import lpg.runtime.*;
 
 import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 55:  colorFieldSpec ::= COLOR$ identifier colorFieldPropertySpecs optConditionalSpec
+ *<li>Rule 56:  colorFieldSpec ::= COLOR$ identifier colorFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class colorFieldSpec extends ASTNode implements IcolorFieldSpec

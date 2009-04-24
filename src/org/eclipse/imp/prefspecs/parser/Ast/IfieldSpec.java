@@ -20,6 +20,7 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  *<li>booleanFieldSpec
  *<li>colorFieldSpec
  *<li>comboFieldSpec
+ *<li>directoryFieldSpec
  *<li>dirListFieldSpec
  *<li>doubleFieldSpec
  *<li>fileFieldSpec
