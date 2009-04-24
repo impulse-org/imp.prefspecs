@@ -50,7 +50,7 @@ public class PrefspecsTokenColorer implements PrefspecsParsersym, ITokenColorer 
             case TK_IN: case TK_OUT:
             case TK_TRUE: case TK_FALSE:
             	return valueKeywordAttribute;
-            case TK_BOOLEAN: case TK_COMBO: case TK_DIRLIST: case TK_FILE:
+            case TK_BOOLEAN: case TK_COMBO: case TK_DIRLIST: case TK_FILE: case TK_DIRECTORY:
             case TK_INT: case TK_RADIO: case TK_STRING: case TK_FONT:
             	return fieldTypeKeywordAttribute;
             case TK_HASSPECIAL: case TK_RANGE:

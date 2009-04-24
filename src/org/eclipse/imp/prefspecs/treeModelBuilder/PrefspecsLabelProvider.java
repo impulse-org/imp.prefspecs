@@ -49,18 +49,39 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 			.get(IPrefspecsResources.PREFSPECS_FILE_WARNING);
 	private static Image FILE_WITH_ERROR_IMAGE = sImageRegistry
 			.get(IPrefspecsResources.PREFSPECS_FILE_ERROR);
-	
+
 	private static Image BOOLEAN_FIELD_IMAGE =
 		sImageRegistry.get(IPrefspecsResources.BOOLEAN_FIELD);
-	
+
+    private static Image COLOR_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.COLOR_FIELD);
+
+    private static Image COMBO_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.COMBO_FIELD);
+
+    private static Image DIRECTORY_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.DIRECTORY_FIELD);
+
+    private static Image DIRLIST_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.DIRLIST_FIELD);
+
+    private static Image DOUBLE_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.DOUBLE_FIELD);
+
+    private static Image FILE_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.FILE_FIELD);
+
+    private static Image FONT_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.FONT_FIELD);
+
+    private static Image INT_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.INT_FIELD);
+
+    private static Image RADIO_FIELD_IMAGE =
+        sImageRegistry.get(IPrefspecsResources.RADIO_FIELD);
+
 	private static Image STRING_FIELD_IMAGE =
 		sImageRegistry.get(IPrefspecsResources.STRING_FIELD);
-	
-	private static Image INT_FIELD_IMAGE =
-		sImageRegistry.get(IPrefspecsResources.INT_FIELD);
-	
-	private static Image DIRLIST_FIELD_IMAGE =
-		sImageRegistry.get(IPrefspecsResources.DIRLIST_FIELD);
 
 	public Image getImage(Object element) {
 		if (element instanceof IFile) {
@@ -78,26 +99,34 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 				return FILE_IMAGE;
 			}
 		}
-		ASTNode n = (element instanceof ModelTreeNode) ? (ASTNode) ((ModelTreeNode) element)
-				.getASTNode()
+		ASTNode n = (element instanceof ModelTreeNode) ? (ASTNode) ((ModelTreeNode) element).getASTNode()
 				: (ASTNode) element;
 		return getImageFor(n);
 	}
 
 	public static Image getImageFor(ASTNode n) {
-		// TODO:  return specific images for specific node
-		// types, as images are available and appropriate
-		
 		if (n instanceof booleanFieldSpec)
 			return BOOLEAN_FIELD_IMAGE;
-		if (n instanceof stringFieldSpec)
-			return STRING_FIELD_IMAGE;
+        if (n instanceof colorFieldSpec)
+            return COLOR_FIELD_IMAGE;
+        if (n instanceof comboFieldSpec)
+            return COMBO_FIELD_IMAGE;
+        if (n instanceof directoryFieldSpec)
+            return DIRECTORY_FIELD_IMAGE;
+        if (n instanceof dirListFieldSpec)
+            return DIRLIST_FIELD_IMAGE;
+        if (n instanceof doubleFieldSpec)
+            return DOUBLE_FIELD_IMAGE;
+        if (n instanceof fontFieldSpec)
+            return FONT_FIELD_IMAGE;
+        if (n instanceof fileFieldSpec)
+            return FILE_FIELD_IMAGE;
 		if (n instanceof intFieldSpec)
 			return INT_FIELD_IMAGE;
-		if (n instanceof fileFieldSpec)
-			return FILE_IMAGE;
-		if (n instanceof dirListFieldSpec)
-			return DIRLIST_FIELD_IMAGE;
+        if (n instanceof radioFieldSpec)
+            return RADIO_FIELD_IMAGE;
+        if (n instanceof stringFieldSpec)
+            return STRING_FIELD_IMAGE;
 		
 		return DEFAULT_IMAGE;
 	}
@@ -129,19 +158,27 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 		if (n instanceof fieldsSpec)
 			return "Fields";
 		if (n instanceof booleanFieldSpec)
-			return ((booleanFieldSpec)n).getidentifier().toString();
+			return ((booleanFieldSpec) n).getidentifier().toString();
+        if (n instanceof colorFieldSpec)
+            return ((colorFieldSpec) n).getidentifier().toString();
 		if (n instanceof comboFieldSpec)
-			return ((comboFieldSpec)n).getidentifier().toString();
+			return ((comboFieldSpec) n).getidentifier().toString();
+        if (n instanceof directoryFieldSpec)
+            return ((directoryFieldSpec) n).getidentifier().toString();
 		if (n instanceof dirListFieldSpec)
-			return ((dirListFieldSpec)n).getidentifier().toString();
+			return ((dirListFieldSpec) n).getidentifier().toString();
+        if (n instanceof doubleFieldSpec)
+            return ((doubleFieldSpec) n).getidentifier().toString();
 		if (n instanceof fileFieldSpec)
-			return ((fileFieldSpec)n).getidentifier().toString();	
+			return ((fileFieldSpec) n).getidentifier().toString();	
+        if (n instanceof fontFieldSpec)
+            return ((fontFieldSpec) n).getidentifier().toString();  
 		if (n instanceof intFieldSpec)
-			return ((intFieldSpec)n).getidentifier().toString();
+			return ((intFieldSpec) n).getidentifier().toString();
 		if (n instanceof radioFieldSpec)
-			return ((radioFieldSpec)n).getidentifier().toString();	
+			return ((radioFieldSpec) n).getidentifier().toString();	
 		if (n instanceof stringFieldSpec)
-			return ((stringFieldSpec)n).getidentifier().toString();
+			return ((stringFieldSpec) n).getidentifier().toString();
 	
 		if (n instanceof customSpec)
 			return "Custom";

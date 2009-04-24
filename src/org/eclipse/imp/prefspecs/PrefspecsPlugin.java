@@ -92,22 +92,50 @@ public class PrefspecsPlugin extends PluginBase {
 		path = ICONS_PATH.append("prefspecs_file_error.gif");//$NON-NLS-1$
 		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
 		reg.put(IPrefspecsResources.PREFSPECS_FILE_ERROR, imageDescriptor);
-		
+
 		path = ICONS_PATH.append("boolean_field.gif");//$NON-NLS-1$
 		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
 		reg.put(IPrefspecsResources.BOOLEAN_FIELD, imageDescriptor);
-		
-		path = ICONS_PATH.append("string_field.gif");//$NON-NLS-1$
-		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
-		reg.put(IPrefspecsResources.STRING_FIELD, imageDescriptor);
-		
+
+        path = ICONS_PATH.append("color_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.COLOR_FIELD, imageDescriptor);
+
+        path = ICONS_PATH.append("combo_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.COMBO_FIELD, imageDescriptor);
+
+        path = ICONS_PATH.append("directory_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.DIRECTORY_FIELD, imageDescriptor);
+
+        path = ICONS_PATH.append("dir_list_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.DIRLIST_FIELD, imageDescriptor);
+
+        path = ICONS_PATH.append("double_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.DOUBLE_FIELD, imageDescriptor);
+
+        path = ICONS_PATH.append("file_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.FILE_FIELD, imageDescriptor);
+
+        path = ICONS_PATH.append("font_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.FONT_FIELD, imageDescriptor);
+
 		path = ICONS_PATH.append("int_field.gif");//$NON-NLS-1$
 		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
 		reg.put(IPrefspecsResources.INT_FIELD, imageDescriptor);
-		
-		path = ICONS_PATH.append("dir_list_field.gif");//$NON-NLS-1$
-		imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
-		reg.put(IPrefspecsResources.DIRLIST_FIELD, imageDescriptor);
+
+		path = ICONS_PATH.append("radio_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.RADIO_FIELD, imageDescriptor);
+        
+        path = ICONS_PATH.append("string_field.gif");//$NON-NLS-1$
+        imageDescriptor = createImageDescriptor(getInstance().getBundle(), path);
+        reg.put(IPrefspecsResources.STRING_FIELD, imageDescriptor);
 	}
 
 	public static org.eclipse.jface.resource.ImageDescriptor createImageDescriptor(
