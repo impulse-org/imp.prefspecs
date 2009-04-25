@@ -80,6 +80,9 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 	
 	
 	public void setSpecialValue(String s) {
+        if (!getHasSpecialValue())
+            throw new IllegalStateException(
+                "VirtualStringFieldInfo.setSpecialValue(String):  attempt to set special value when field has no special value");
 		specialValue = s;
 	}
 	
@@ -103,9 +106,6 @@ public class VirtualStringFieldInfo extends VirtualFieldInfo {
 
 	
 	public void setEmptyValue(String s) {
-		if (!getHasSpecialValue())
-			throw new IllegalStateException(
-				"VirtualStringFieldInfo.setSpecialValue(String):  attempt to set special value when field has no special value");
 		emptyValue = s;
 		hasEmptyValueSpec = true;
 	}
