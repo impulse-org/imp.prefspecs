@@ -182,7 +182,7 @@
 
 
     doubleSpecificSpecs$$doubleSpecificSpec ::= doubleSpecificSpec | doubleSpecificSpecs doubleSpecificSpec
-    doubleSpecificSpec ::= doubleRangeSpec | doubleDefValueSpec
+    doubleSpecificSpec ::= doubleRangeSpec | doubleDefValueSpec | generalSpec
     doubleRangeSpec    ::= RANGE$ DECIMAL$low DOTS$ DECIMAL$high ';'$
     doubleDefValueSpec ::= DEFVALUE$ DECIMAL ';'$
 
@@ -202,7 +202,7 @@
 
 
     radioSpecificSpecs$$radioSpecificSpec ::= radioSpecificSpec | radioSpecificSpecs radioSpecificSpec
-    radioSpecificSpec ::= radioDefValueSpec | columnsSpec | typeOrValuesSpec
+    radioSpecificSpec ::= radioDefValueSpec | columnsSpec | typeOrValuesSpec | generalSpec
     radioDefValueSpec ::= DEFVALUE$ identifier ';'$
 
     typeOrValuesSpec  ::= TYPE$ identifier ';'$ | valuesSpec ';'$
