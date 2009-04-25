@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 139:  intDefValueSpec ::= DEFVALUE$ signedNumber ;$
+ *<li>Rule 140:  intDefValueSpec ::= DEFVALUE$ signedNumber ;$
  *</b>
  */
 public class intDefValueSpec extends ASTNode implements IintDefValueSpec

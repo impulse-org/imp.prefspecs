@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 162:  stringSpecialSpec ::= HASSPECIAL$ stringValue ;$
+ *<li>Rule 164:  stringSpecialSpec ::= HASSPECIAL$ stringValue ;$
  *</b>
  */
 public class stringSpecialSpec extends ASTNode implements IstringSpecialSpec

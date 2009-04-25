@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 179:  customSpec ::= CUSTOM$ {$ customRules }$
+ *<li>Rule 181:  customSpec ::= CUSTOM$ {$ customRules }$
  *</b>
  */
 public class customSpec extends ASTNode implements IcustomSpec

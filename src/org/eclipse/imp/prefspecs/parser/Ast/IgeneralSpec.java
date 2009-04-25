@@ -24,6 +24,6 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  *</ul>
  *</b>
  */
-public interface IgeneralSpec extends IbooleanSpecificSpec, IcolorSpecificSpec, IcomboSpecificSpec, IfontSpecificSpec, IintSpecificSpec, IstringSpecificSpec {}
+public interface IgeneralSpec extends IbooleanSpecificSpec, IcolorSpecificSpec, IcomboSpecificSpec, IdoubleSpecificSpec, IfontSpecificSpec, IintSpecificSpec, IradioSpecificSpec, IstringSpecificSpec {}
 
 

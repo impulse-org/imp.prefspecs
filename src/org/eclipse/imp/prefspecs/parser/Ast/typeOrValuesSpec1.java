@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 147:  typeOrValuesSpec ::= valuesSpec ;$
+ *<li>Rule 149:  typeOrValuesSpec ::= valuesSpec ;$
  *</b>
  */
 public class typeOrValuesSpec1 extends ASTNode implements ItypeOrValuesSpec

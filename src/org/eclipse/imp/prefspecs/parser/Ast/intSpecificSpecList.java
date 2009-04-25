@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 131:  intSpecificSpecs ::= intSpecificSpec
- *<li>Rule 132:  intSpecificSpecs ::= intSpecificSpecs intSpecificSpec
+ *<li>Rule 132:  intSpecificSpecs ::= intSpecificSpec
+ *<li>Rule 133:  intSpecificSpecs ::= intSpecificSpecs intSpecificSpec
  *</b>
  */
 public class intSpecificSpecList extends AbstractASTNodeList implements IintSpecificSpecs

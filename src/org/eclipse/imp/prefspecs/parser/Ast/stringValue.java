@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 174:  stringValue ::= STRING_LITERAL
+ *<li>Rule 176:  stringValue ::= STRING_LITERAL
  *</b>
  */
 public class stringValue extends ASTNodeToken implements IstringValue

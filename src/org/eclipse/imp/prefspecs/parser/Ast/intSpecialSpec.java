@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 138:  intSpecialSpec ::= HASSPECIAL$ signedNumber ;$
+ *<li>Rule 139:  intSpecialSpec ::= HASSPECIAL$ signedNumber ;$
  *</b>
  */
 public class intSpecialSpec extends ASTNode implements IintSpecialSpec

@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 145:  radioDefValueSpec ::= DEFVALUE$ identifier ;$
+ *<li>Rule 147:  radioDefValueSpec ::= DEFVALUE$ identifier ;$
  *</b>
  */
 public class radioDefValueSpec extends ASTNode implements IradioDefValueSpec

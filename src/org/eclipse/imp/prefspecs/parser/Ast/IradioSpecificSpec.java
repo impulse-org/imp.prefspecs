@@ -27,6 +27,10 @@ import java.util.HashMap;
  * is implemented by:
  *<b>
  *<ul>
+ *<li>isEditableSpec
+ *<li>isRemovableSpec
+ *<li>optLabelSpec
+ *<li>optToolTipSpec
  *<li>radioDefValueSpec
  *<li>columnsSpec
  *<li>typeOrValuesSpec0

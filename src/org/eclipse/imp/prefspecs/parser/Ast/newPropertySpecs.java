@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 188:  newPropertySpecs ::= generalSpecs
+ *<li>Rule 190:  newPropertySpecs ::= generalSpecs
  *</em>
  *<p>
  *<b>
- *<li>Rule 189:  newPropertySpecs ::= generalSpecs typeCustomSpecs
+ *<li>Rule 191:  newPropertySpecs ::= generalSpecs typeCustomSpecs
  *</b>
  */
 public class newPropertySpecs extends ASTNode implements InewPropertySpecs

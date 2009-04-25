@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 140:  radioSpecificSpecs ::= radioSpecificSpec
- *<li>Rule 141:  radioSpecificSpecs ::= radioSpecificSpecs radioSpecificSpec
+ *<li>Rule 141:  radioSpecificSpecs ::= radioSpecificSpec
+ *<li>Rule 142:  radioSpecificSpecs ::= radioSpecificSpecs radioSpecificSpec
  *</b>
  */
 public class radioSpecificSpecList extends AbstractASTNodeList implements IradioSpecificSpecs

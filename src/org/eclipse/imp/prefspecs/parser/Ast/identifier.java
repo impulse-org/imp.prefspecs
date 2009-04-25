@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 171:  identifier ::= IDENTIFIER
+ *<li>Rule 173:  identifier ::= IDENTIFIER
  *</b>
  */
 public class identifier extends ASTNodeToken implements Iidentifier

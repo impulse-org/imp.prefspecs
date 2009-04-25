@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 166:  stringValidatorSpec ::= VALIDATOR$ stringValue$qualClassName ;$
+ *<li>Rule 168:  stringValidatorSpec ::= VALIDATOR$ stringValue$qualClassName ;$
  *</b>
  */
 public class stringValidatorSpec extends ASTNode implements IstringValidatorSpec

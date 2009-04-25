@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 192:  typeCustomSpecs ::= radioCustomSpec
+ *<li>Rule 194:  typeCustomSpecs ::= radioCustomSpec
  *</b>
  */
 public class typeCustomSpecs2 extends ASTNodeToken implements ItypeCustomSpecs

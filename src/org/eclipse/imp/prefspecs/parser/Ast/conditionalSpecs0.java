@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 196:  conditionalSpecs ::= conditionalSpec ;
+ *<li>Rule 198:  conditionalSpecs ::= conditionalSpec ;
  *</b>
  */
 public class conditionalSpecs0 extends ASTNode implements IconditionalSpecs

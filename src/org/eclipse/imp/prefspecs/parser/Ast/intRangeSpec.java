@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 137:  intRangeSpec ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ;$
+ *<li>Rule 138:  intRangeSpec ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ;$
  *</b>
  */
 public class intRangeSpec extends ASTNode implements IintRangeSpec
