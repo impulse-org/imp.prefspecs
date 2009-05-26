@@ -1002,27 +1002,11 @@ public class PreferencesFactory {
 //		BooleanFieldEditor emitDiagnostics      = (BooleanFieldEditor) fields[2];
 //		BooleanFieldEditor generateLog          = (BooleanFieldEditor) fields[3];
 
-		fileText = fileText + "\t\t// Declare a 'holder' for each preference field; not strictly necessary\n";
-		fileText = fileText + "\t\t// but helpful in various manipulations of fields and controls to follow\n";
-		
-		
-		// Generate a 'holder' for each field (for ease of expression in later uses of fields)
-		
-		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		cFields = tabInfo.getConcreteFields();
-		while (cFields.hasNext()) {
-			ConcreteFieldInfo cFieldInfo = (ConcreteFieldInfo) cFields.next();
-			fileText = fileText + "\t\tComposite " + cFieldInfo.getName() + "Holder = null;\n";
-		}			
-
-		
 		// Generate next block of field-independent text
 
 		fileText = fileText + "\t\t// If we have a new project preferences node, then do various things\n";
 		fileText = fileText + "\t\t// to set up the project's preferences\n";
 		fileText = fileText + "\t\tif (newNode != null && newNode instanceof IEclipsePreferences) {\n";
-		fileText = fileText + "\t\t\t// Set project name in the selected-project field\n";
-		fileText = fileText + "\t\t\tselectedProjectName.setStringValue(newNode.name());\n\n";
 	
 		fileText = fileText + "\t\t\t// If the containing composite is not disposed, then set field values\n";
 		fileText = fileText + "\t\t\t// and make them enabled and editable (as appropriate to the type of field)\n\n";
@@ -1040,10 +1024,6 @@ public class PreferencesFactory {
 		fileText = fileText + "\t\t\t\t// overwritten by values set here--so the values set here should be consistent\n";
 		fileText = fileText + "\t\t\t\t// with what the listener would set.\n\n";
 		
-		//fileText = fileText + "\t\t\t\t// Used in setting enabled and editable status\n";
-		//fileText = fileText + "\t\t\t\tboolean enabledState = false;\n\n";
-		
-			
 		// Generate code for the (field-specific) initialization and enabling of each field
 		// For conditionally enabled fields, attempts to account for the conditionally enabling
 		// field
@@ -1052,7 +1032,6 @@ public class PreferencesFactory {
 		while (cFields.hasNext()) {
 			ConcreteFieldInfo cFieldInfo = (ConcreteFieldInfo) cFields.next();
 			String fieldName = cFieldInfo.getName();
-			String holderName = fieldName + "Holder";
 			String enabledRepresentation = null;
 			if (!cFieldInfo.getIsConditional()) {
 				// simple case--enabled state is what it is
@@ -1065,14 +1044,12 @@ public class PreferencesFactory {
 			}
 
 			if (cFieldInfo instanceof ConcreteBooleanFieldInfo) {
-				fileText = fileText + "\t\t\t\t" + holderName + " = " + fieldName + ".getChangeControl().getParent();\n";
-				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
+				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + fieldName + ".getHolder());\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getChangeControl().setEnabled(" + enabledRepresentation + ");\n";
 			} else if (cFieldInfo instanceof ConcreteIntFieldInfo ||
 					   cFieldInfo instanceof ConcreteStringFieldInfo)
 			{
-				fileText = fileText + "\t\t\t\t" + holderName + " = " + fieldName + ".getTextControl().getParent();\n";	
-				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + holderName + ");\n";
+				fileText = fileText + "\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + fieldName + ".getHolder());\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getTextControl().setEditable(" + enabledRepresentation + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".getTextControl().setEnabled(" + enabledRepresentation + ");\n";
 				fileText = fileText + "\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n";
@@ -1092,10 +1069,10 @@ public class PreferencesFactory {
 		while (cFields.hasNext()) {
 			ConcreteFieldInfo cFieldInfo = (ConcreteFieldInfo) cFields.next();
 			String fieldName = cFieldInfo.getName();
-			String holderName = fieldName + "Holder";
+            // TODO RMF 5/26/2009 - is it really possible for getHolder() to be null? should it be?
 			fileText = fileText + 
-				"\t\t\tif (" + holderName + " != null) addProjectPreferenceChangeListeners(" + 
-								fieldName + ", \"" + fieldName + "\", " + holderName + ");\n";
+				"\t\t\tif (" + fieldName + ".getHolder() != null) addProjectPreferenceChangeListeners(" + 
+								fieldName + ", \"" + fieldName + "\", " + fieldName + ".getHolder());\n";
 		}
 		
 		fileText = fileText + "\n\t\t\thaveCurrentListeners = true;\n";
@@ -1109,9 +1086,6 @@ public class PreferencesFactory {
 		fileText = fileText + "\t\tif (newNode == null || !(newNode instanceof IEclipsePreferences)) {\n";
 		fileText = fileText + "\t\t\t// May happen when the preferences page is first brought up, or\n";
 		fileText = fileText + "\t\t\t// if we allow the project to be deselected\\nn";
-
-		fileText = fileText + "\t\t\t// Unset project name in the tab\n";
-		fileText = fileText + "\t\t\tselectedProjectName.setStringValue(\"none selected\");\n\n";
 
 		fileText = fileText + "\t\t\t// Clear the preferences from the store\n";
 		fileText = fileText + "\t\t\tfPrefService.clearPreferencesAtLevel(IPreferencesService.PROJECT_LEVEL);\n\n";
