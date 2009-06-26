@@ -80,7 +80,7 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.*;
 import org.eclipse.imp.wizards.CodeServiceWizard;
-import org.eclipse.imp.wizards.ExtensionPointEnabler;
+import org.eclipse.imp.wizards.ExtensionEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -1346,7 +1346,7 @@ public class PrefspecsCompiler {
 				// (extension "id" is an attribute of the "page" child
 				// of the "preferencePage" extension)
 				IProject project = specFile.getProject();
-				IPluginModel pluginModel = ExtensionPointEnabler.getPluginModel(project);
+				IPluginModel pluginModel = ExtensionEnabler.getPluginModel(project);
 				
 				// SMS 30 Jul 2008
 			    if (pluginModel instanceof BundlePluginModel) {
@@ -1358,7 +1358,7 @@ public class PrefspecsCompiler {
 			    }
 				
 				// Load the IMP way to get the complete model
-    	    	ExtensionPointEnabler.loadImpExtensionsModel(pluginModel, project);
+    	    	ExtensionEnabler.loadImpExtensionsModel(pluginModel, project);
 		    	IExtensions pmExtensions = pluginModel.getExtensions();
 		    	IPluginExtension[] pluginExtensions = pmExtensions.getExtensions();
 		    	for (int i = 0; i < pluginExtensions.length; i++) {
@@ -1380,7 +1380,7 @@ public class PrefspecsCompiler {
 		    			}
 		    		}
 		    	}
-		    	ExtensionPointEnabler.saveAndRefresh(pluginModel);
+		    	ExtensionEnabler.saveAndRefresh(pluginModel);
 
                 generateCodeStubs(specFile, mon);
 				
@@ -1390,7 +1390,7 @@ public class PrefspecsCompiler {
 				    String pageParent= (lastCompIdx > 0) ? (fPageId + "." + pageName.substring(0, lastCompIdx-1)) : "";
 				    String pageLabel= pageName.substring(lastCompIdx);
 
-				    ExtensionPointEnabler.enable(
+				    ExtensionEnabler.enable(
     					specFile.getProject(), "org.eclipse.ui", "preferencePages", 
     					new String[][] {
     						{ "page:id", fPageId + "." + pageName },
@@ -1602,7 +1602,7 @@ public class PrefspecsCompiler {
     		result = fLanguageName;
        	if (project != null) {
             String activator = null;
-            IPluginModel pm = ExtensionPointEnabler.getPluginModelForProject(project);
+            IPluginModel pm = ExtensionEnabler.getPluginModelForProject(project);
             if (pm != null) {
             	WorkspaceBundleModel wbm = new WorkspaceBundleModel(project.getFile("META-INF/MANIFEST.MF")); //$NON-NLS-1$
             	activator = wbm.getBundle().getHeader("Bundle-Activator");
@@ -1645,7 +1645,7 @@ public class PrefspecsCompiler {
     		result = fPageClassNameBase + "Plugin";
        	if (project != null) {
             String activator = null;
-            IPluginModel pm = ExtensionPointEnabler.getPluginModelForProject(project);
+            IPluginModel pm = ExtensionEnabler.getPluginModelForProject(project);
             if (pm != null) {
             	WorkspaceBundleModel wbm = new WorkspaceBundleModel(project.getFile("META-INF/MANIFEST.MF")); //$NON-NLS-1$	
             	activator = wbm.getBundle().getHeader("Bundle-Activator");
@@ -1684,7 +1684,7 @@ public class PrefspecsCompiler {
     	if (result == null)
     		getPluginPackageName(project, null);
        	if (project != null) {
-            result = ExtensionPointEnabler.getPluginIDForProject(project);
+            result = ExtensionEnabler.getPluginIDForProject(project);
     	}
        	return result;
     }
