@@ -31,7 +31,7 @@ import java.util.HashMap;
  *<li>isRemovableSpec
  *<li>optLabelSpec
  *<li>optToolTipSpec
- *<li>comboDefValueSpec
+ *<li>enumDefValueSpec
  *<li>columnsSpec
  *<li>typeOrValuesSpec0
  *<li>typeOrValuesSpec1

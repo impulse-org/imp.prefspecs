@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 175:  booleanValue ::= FALSE
+ *<li>Rule 176:  booleanValue ::= FALSE
  *</b>
  */
 public class booleanValue1 extends ASTNodeToken implements IbooleanValue

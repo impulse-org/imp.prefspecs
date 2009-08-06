@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 178:  signedNumber ::= sign INTEGER
+ *<li>Rule 179:  signedNumber ::= sign INTEGER
  *</b>
  */
 public class signedNumber1 extends ASTNode implements IsignedNumber

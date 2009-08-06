@@ -48,10 +48,6 @@ import java.util.HashMap;
  *<li>tab1
  *<li>tab2
  *<li>tab3
- *<li>typeCustomSpecs0
- *<li>typeCustomSpecs1
- *<li>typeCustomSpecs2
- *<li>typeCustomSpecs3
  *</ul>
  *</b>
  */

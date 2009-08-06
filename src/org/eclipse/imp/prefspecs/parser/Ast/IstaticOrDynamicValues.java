@@ -24,28 +24,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * is implemented by:
  *<b>
- *<li>Rule 181:  sign ::= MINUS
+ *<ul>
+ *<li>staticOrDynamicValues
+ *<li>labelledStringValueList
+ *</ul>
  *</b>
  */
-public class sign1 extends ASTNodeToken implements Isign
+public interface IstaticOrDynamicValues
 {
-    public IToken getMINUS() { return leftIToken; }
+    public IToken getLeftIToken();
+    public IToken getRightIToken();
 
-    public sign1(IToken token) { super(token); initialize(); }
-
-    public void accept(IAstVisitor v)
-    {
-        if (! v.preVisit(this)) return;
-        enter((Visitor) v);
-        v.postVisit(this);
-    }
-
-    public void enter(Visitor v)
-    {
-        v.visit(this);
-        v.endVisit(this);
-    }
+    void accept(IAstVisitor v);
 }
 
 

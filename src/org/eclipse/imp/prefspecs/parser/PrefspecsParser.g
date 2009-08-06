@@ -69,7 +69,7 @@
 
     -- Rules for the major parts:  types, pages and their sections
     
-    typeSpec ::= CHOICETYPE$ identifier '{'$ labelledStringValueList '}'$
+    typeSpec ::= CHOICETYPE$ identifier '{'$ staticOrDynamicValues '}'$
 
     pageSpec ::= PAGE$ pageName '{'$ pageBody '}'$
 
@@ -143,17 +143,17 @@
     stringFieldSpec    ::= STRING$    identifier stringFieldPropertySpecs    optConditionalSpec
 
 
-    booleanFieldPropertySpecs   ::= %empty | '{'$ booleanSpecificSpecs '}'$
-    colorFieldPropertySpecs     ::= %empty | '{'$ colorSpecificSpecs   '}'$
-    comboFieldPropertySpecs     ::= %empty | '{'$ comboSpecificSpecs   '}'$
-    directoryFieldPropertySpecs ::= %empty | '{'$ stringSpecificSpecs  '}'$
-    dirlistFieldPropertySpecs   ::= %empty | '{'$ stringSpecificSpecs  '}'$
-    doubleFieldPropertySpecs    ::= %empty | '{'$ doubleSpecificSpecs  '}'$
-    fileFieldPropertySpecs      ::= %empty | '{'$ stringSpecificSpecs  '}'$
-    fontFieldPropertySpecs      ::= %empty | '{'$ fontSpecificSpecs    '}'$
-    intFieldPropertySpecs       ::= %empty | '{'$ intSpecificSpecs     '}'$
-    radioFieldPropertySpecs     ::= %empty | '{'$ radioSpecificSpecs   '}'$
-    stringFieldPropertySpecs    ::= %empty | '{'$ stringSpecificSpecs  '}'$
+    booleanFieldPropertySpecs   ::= %empty | '{'$ booleanSpecificSpecs  '}'$
+    colorFieldPropertySpecs     ::= %empty | '{'$ colorSpecificSpecs    '}'$
+    comboFieldPropertySpecs     ::= %empty | '{'$ comboSpecificSpecs    '}'$
+    directoryFieldPropertySpecs ::= %empty | '{'$ stringSpecificSpecs   '}'$
+    dirlistFieldPropertySpecs   ::= %empty | '{'$ stringSpecificSpecs   '}'$
+    doubleFieldPropertySpecs    ::= %empty | '{'$ doubleSpecificSpecs   '}'$
+    fileFieldPropertySpecs      ::= %empty | '{'$ stringSpecificSpecs   '}'$
+    fontFieldPropertySpecs      ::= %empty | '{'$ fontSpecificSpecs     '}'$
+    intFieldPropertySpecs       ::= %empty | '{'$ intSpecificSpecs      '}'$
+    radioFieldPropertySpecs     ::= %empty | '{'$ radioSpecificSpecs    '}'$
+    stringFieldPropertySpecs    ::= %empty | '{'$ stringSpecificSpecs   '}'$
 
     -- Rules for specifications used in various parts
     generalSpecs$$generalSpec ::= %empty | generalSpecs generalSpec
@@ -177,8 +177,8 @@
 
 
     comboSpecificSpecs$$comboSpecificSpec ::= comboSpecificSpec | comboSpecificSpecs comboSpecificSpec
-    comboSpecificSpec ::= columnsSpec | typeOrValuesSpec | comboDefValueSpec | generalSpec
-    comboDefValueSpec ::= DEFVALUE$ identifier ';'$
+    comboSpecificSpec ::= columnsSpec | typeOrValuesSpec | enumDefValueSpec | generalSpec
+    enumDefValueSpec ::= DEFVALUE$ identifier ';'$
 
 
     doubleSpecificSpecs$$doubleSpecificSpec ::= doubleSpecificSpec | doubleSpecificSpecs doubleSpecificSpec
@@ -202,12 +202,12 @@
 
 
     radioSpecificSpecs$$radioSpecificSpec ::= radioSpecificSpec | radioSpecificSpecs radioSpecificSpec
-    radioSpecificSpec ::= radioDefValueSpec | columnsSpec | typeOrValuesSpec | generalSpec
-    radioDefValueSpec ::= DEFVALUE$ identifier ';'$
+    radioSpecificSpec ::= enumDefValueSpec | columnsSpec | typeOrValuesSpec | generalSpec
 
-    typeOrValuesSpec  ::= TYPE$ identifier ';'$ | valuesSpec ';'$
-    valuesSpec        ::= VALUES$ '{'$ labelledStringValueList '}'$
-    columnsSpec       ::= COLUMNS$ INTEGER ';'$
+    typeOrValuesSpec      ::= TYPE$ identifier ';'$ | valuesSpec ';'$
+    valuesSpec            ::= VALUES$ '{'$ staticOrDynamicValues '}'$
+    staticOrDynamicValues ::= DYNAMIC$ stringValue$qualClassName | labelledStringValueList
+    columnsSpec           ::= COLUMNS$ INTEGER ';'$
 
     labelledStringValueList$$labelledStringValue ::=
         labelledStringValue | labelledStringValueList ','$ labelledStringValue
@@ -255,10 +255,9 @@
     newPropertySpecs ::= generalSpecs 
                        | generalSpecs typeCustomSpecs
 
-    typeCustomSpecs ::=  booleanCustomSpec
-                     |   intCustomSpec
-                     |   radioCustomSpec
-                     |   stringCustomSpec
+    typeCustomSpecs ::=  booleanSpecialSpec
+                     |   intRangeSpec intSpecialSpec
+                     |   stringSpecialSpec stringEmptySpec
 
 
     -- Rules for the "conditionals" section

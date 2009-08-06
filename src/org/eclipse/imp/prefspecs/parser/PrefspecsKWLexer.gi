@@ -55,6 +55,7 @@
     BOLD
     COLUMNS
     DEFVALUE
+    DYNAMIC
     EMPTYALLOWED
     HASSPECIAL
     ISEDITABLE
@@ -203,6 +204,12 @@
     Keyword ::= d o u b l e
         /.$BeginAction
             $setResult($_DOUBLE);
+          $EndAction
+        ./
+
+    Keyword ::= d y n a m i c
+        /.$BeginAction
+            $setResult($_DYNAMIC);
           $EndAction
         ./
 

@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 189:  customRule ::= tab identifier {$ newPropertySpecs }$
+ *<li>Rule 190:  customRule ::= tab identifier {$ newPropertySpecs }$
  *</b>
  */
 public class customRule extends ASTNode implements IcustomRule

@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 187:  tab ::= INSTANCE
+ *<li>Rule 188:  tab ::= INSTANCE
  *</b>
  */
 public class tab2 extends ASTNodeToken implements Itab

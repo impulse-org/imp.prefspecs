@@ -187,8 +187,8 @@ public interface Visitor extends IAstVisitor
     boolean visit(comboSpecificSpecList n);
     void endVisit(comboSpecificSpecList n);
 
-    boolean visit(comboDefValueSpec n);
-    void endVisit(comboDefValueSpec n);
+    boolean visit(enumDefValueSpec n);
+    void endVisit(enumDefValueSpec n);
 
     boolean visit(doubleSpecificSpecList n);
     void endVisit(doubleSpecificSpecList n);
@@ -220,11 +220,11 @@ public interface Visitor extends IAstVisitor
     boolean visit(radioSpecificSpecList n);
     void endVisit(radioSpecificSpecList n);
 
-    boolean visit(radioDefValueSpec n);
-    void endVisit(radioDefValueSpec n);
-
     boolean visit(valuesSpec n);
     void endVisit(valuesSpec n);
+
+    boolean visit(staticOrDynamicValues n);
+    void endVisit(staticOrDynamicValues n);
 
     boolean visit(columnsSpec n);
     void endVisit(columnsSpec n);
@@ -345,12 +345,6 @@ public interface Visitor extends IAstVisitor
 
     boolean visit(typeCustomSpecs1 n);
     void endVisit(typeCustomSpecs1 n);
-
-    boolean visit(typeCustomSpecs2 n);
-    void endVisit(typeCustomSpecs2 n);
-
-    boolean visit(typeCustomSpecs3 n);
-    void endVisit(typeCustomSpecs3 n);
 
     boolean visit(conditionalSpecs0 n);
     void endVisit(conditionalSpecs0 n);

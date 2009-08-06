@@ -25,14 +25,59 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 194:  typeCustomSpecs ::= radioCustomSpec
+ *<li>Rule 204:  typeCustomSpecs ::= stringSpecialSpec stringEmptySpec
  *</b>
  */
-public class typeCustomSpecs2 extends ASTNodeToken implements ItypeCustomSpecs
+public class typeCustomSpecs2 extends ASTNode implements ItypeCustomSpecs
 {
-    public IToken getradioCustomSpec() { return leftIToken; }
+    private stringSpecialSpec _stringSpecialSpec;
+    private IstringEmptySpec _stringEmptySpec;
 
-    public typeCustomSpecs2(IToken token) { super(token); initialize(); }
+    public stringSpecialSpec getstringSpecialSpec() { return _stringSpecialSpec; }
+    public IstringEmptySpec getstringEmptySpec() { return _stringEmptySpec; }
+
+    public typeCustomSpecs2(IToken leftIToken, IToken rightIToken,
+                            stringSpecialSpec _stringSpecialSpec,
+                            IstringEmptySpec _stringEmptySpec)
+    {
+        super(leftIToken, rightIToken);
+
+        this._stringSpecialSpec = _stringSpecialSpec;
+        ((ASTNode) _stringSpecialSpec).setParent(this);
+        this._stringEmptySpec = _stringEmptySpec;
+        ((ASTNode) _stringEmptySpec).setParent(this);
+        initialize();
+    }
+
+    /**
+     * A list of all children of this node, including the null ones.
+     */
+    public java.util.ArrayList getAllChildren()
+    {
+        java.util.ArrayList list = new java.util.ArrayList();
+        list.add(_stringSpecialSpec);
+        list.add(_stringEmptySpec);
+        return list;
+    }
+
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (! (o instanceof typeCustomSpecs2)) return false;
+        if (! super.equals(o)) return false;
+        typeCustomSpecs2 other = (typeCustomSpecs2) o;
+        if (! _stringSpecialSpec.equals(other._stringSpecialSpec)) return false;
+        if (! _stringEmptySpec.equals(other._stringEmptySpec)) return false;
+        return true;
+    }
+
+    public int hashCode()
+    {
+        int hash = super.hashCode();
+        hash = hash * 31 + (_stringSpecialSpec.hashCode());
+        hash = hash * 31 + (_stringEmptySpec.hashCode());
+        return hash;
+    }
 
     public void accept(IAstVisitor v)
     {
@@ -43,7 +88,12 @@ public class typeCustomSpecs2 extends ASTNodeToken implements ItypeCustomSpecs
 
     public void enter(Visitor v)
     {
-        v.visit(this);
+        boolean checkChildren = v.visit(this);
+        if (checkChildren)
+        {
+            _stringSpecialSpec.accept(v);
+            _stringEmptySpec.accept(v);
+        }
         v.endVisit(this);
     }
 }

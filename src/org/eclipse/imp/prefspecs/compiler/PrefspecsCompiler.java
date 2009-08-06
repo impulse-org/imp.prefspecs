@@ -7,7 +7,6 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.compiler;
@@ -71,6 +70,7 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualComboFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualDirListFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualDirectoryFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualDoubleFieldInfo;
+import org.eclipse.imp.prefspecs.pageinfo.VirtualEnumFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualFontFieldInfo;
@@ -84,6 +84,7 @@ import org.eclipse.imp.wizards.ExtensionEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.resource.StringConverter;
@@ -101,26 +102,13 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class PrefspecsCompiler {
-    private static class LabelledValueDescriptor {
-        private final List<String> fValues= new ArrayList<String>();
-        private final List<String> fLabels= new ArrayList<String>();
+    public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
 
-        public LabelledValueDescriptor(labelledStringValueList svList) {
-            for(int i=0; i < svList.size(); i++) {
-                labelledStringValue lsv= svList.getlabelledStringValueAt(i);
-                stringValue sv= lsv.getoptLabel();
-                fValues.add(lsv.getidentifier().getIDENTIFIER().toString());
-                fLabels.add(sv != null ? sv.getSTRING_LITERAL().toString() : null);
-            }
-        }
-        public int size() { return fValues.size(); }
-        public String getValue(int i) { return fValues.get(i); }
-        public String getLabel(int i) { return fLabels.get(i); }
-        public List<String> getValues() { return fValues; }
-        public List<String> getLabels() { return fLabels; }
-    }
+    private final String ENUM_VALUE_PROVIDER_INTF_QUAL_NAME= "org.eclipse.imp.preferences.fields.IEnumValueProvider";
 
-	protected IProject fProject = null;
+    private static final String VALIDATOR_INTF_QUAL_NAME= "org.eclipse.imp.preferences.fields.StringFieldEditor.Validator";
+
+    protected IProject fProject = null;
 	protected String fProjectName = null;
 	protected String fLanguageName = null;
 
@@ -142,12 +130,10 @@ public class PrefspecsCompiler {
 
 	private IFile fSpecFile;	
 
-    private Map<String,LabelledValueDescriptor> fTypeMap= new HashMap<String, LabelledValueDescriptor>();
+	private Map<String,IEnumValueSource> fTypeMap= new HashMap<String, IEnumValueSource>();
 
     private final MessageConsoleStream fConsoleStream;
 	
-    public static String PROBLEM_MARKER_ID = PrefspecsPlugin.kPluginID + ".problem";
-
     public PrefspecsCompiler(String problem_marker_id, MessageConsoleStream messageConsoleStream) {
         PROBLEM_MARKER_ID = problem_marker_id;
         this.fConsoleStream= messageConsoleStream;
@@ -851,9 +837,13 @@ public class PrefspecsCompiler {
             	stringValidatorSpec validatorSpec= findSpec(stringSpecificSpecs, stringValidatorSpec.class);
             	if (validatorSpec != null) {
             	    String validatorQualClass= unquoteString(validatorSpec.getqualClassName().getSTRING_LITERAL().toString());
-                    vString.setValidatorQualClass(validatorQualClass);
-                    if (!findClass(validatorQualClass)) {
+            	    IType validatorClass= findClass(validatorQualClass);
+
+            	    vString.setValidatorQualClass(validatorQualClass);
+                    if (validatorClass == null) {
                         createErrorMarker("Validator class " + validatorQualClass + " does not exist", validatorSpec);
+                    } else if (!classImplementsInterface(validatorClass, VALIDATOR_INTF_QUAL_NAME)) {
+                        createErrorMarker("Validator class " + validatorQualClass + " must implement " + VALIDATOR_INTF_QUAL_NAME, validatorSpec);
                     }
             	}
         	}
@@ -963,12 +953,29 @@ public class PrefspecsCompiler {
             return false;
         }
 
+        private IEnumValueSource getValueSourceFrom(IstaticOrDynamicValues sodv) {
+            if (sodv instanceof labelledStringValueList) {
+                return new LiteralEnumValueSource((labelledStringValueList) sodv);
+            } else if (sodv instanceof staticOrDynamicValues) {
+                String qualClassName= unquoteString(((staticOrDynamicValues) sodv).getqualClassName().toString());
+                IType qualClass = findClass(qualClassName);
+
+                if (qualClass == null) {
+                    createErrorMarker("Value provider class '" + qualClassName + "' does not exist in this project's classpath.", (ASTNode) sodv);
+                } else if (!classImplementsInterface(qualClass, ENUM_VALUE_PROVIDER_INTF_QUAL_NAME)) {
+                    createErrorMarker("Value provider class '" + qualClassName + "' must implement " + ENUM_VALUE_PROVIDER_INTF_QUAL_NAME, (ASTNode) sodv);
+                }
+                return new DynamicEnumValueSource(qualClassName);
+            }
+            throw new IllegalStateException("Unexpected type of enum value source: " + sodv.getClass().getCanonicalName());
+        }
+
         @Override
         public boolean visit(typeSpec n) {
             String typeName= n.getidentifier().getIDENTIFIER().toString();
-            LabelledValueDescriptor vd= new LabelledValueDescriptor(n.getlabelledStringValueList());
+            IEnumValueSource vs= getValueSourceFrom(n.getstaticOrDynamicValues());
 
-            fTypeMap.put(typeName, vd);
+            fTypeMap.put(typeName, vs);
             return false;
         }
 
@@ -979,28 +986,12 @@ public class PrefspecsCompiler {
 
             if (propSpecs != null) {
                 comboSpecificSpecList comboSpecificSpecs= propSpecs.getcomboSpecificSpecs();
-                comboDefValueSpec defValueSpec = findSpec(comboSpecificSpecs, comboDefValueSpec.class);
+                enumDefValueSpec defValueSpec = findSpec(comboSpecificSpecs, enumDefValueSpec.class);
                 ItypeOrValuesSpec tovSpec = findSpec(comboSpecificSpecs, ItypeOrValuesSpec.class);
                 columnsSpec columnsSpec = findSpec(comboSpecificSpecs, columnsSpec.class);
-                LabelledValueDescriptor lvd;
-
-                if (tovSpec instanceof typeOrValuesSpec0) {
-                    lvd= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
-                } else {
-                    typeOrValuesSpec1 tovs1= (typeOrValuesSpec1) tovSpec;
-                    lvd= new LabelledValueDescriptor(tovs1.getvaluesSpec().getlabelledStringValueList());
-                }
 
                 setVirtualProperties(vCombo, comboSpecificSpecs, comboField.getoptConditionalSpec());
-
-                if (defValueSpec != null) {
-                    vCombo.setDefaultValue(defValueSpec.getidentifier().getIDENTIFIER().toString());
-                }
-
-                List<String> valuesList= lvd.getValues();
-                List<String> labelsList= lvd.getLabels();
-
-                vCombo.setValuesAndLabels(valuesList, labelsList);
+                setupValueSource(vCombo, tovSpec, defValueSpec);
 
                 if (columnsSpec != null) {
                     vCombo.setNumColumns(Integer.parseInt((columnsSpec.getINTEGER().toString())));
@@ -1024,6 +1015,29 @@ public class PrefspecsCompiler {
             return false;
         }
 
+        private void setupValueSource(VirtualEnumFieldInfo vEnum, ItypeOrValuesSpec tovSpec, enumDefValueSpec defValueSpec) {
+            IEnumValueSource vs;
+
+            if (tovSpec instanceof typeOrValuesSpec0) {
+                vs= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
+            } else {
+                typeOrValuesSpec1 tovs1= (typeOrValuesSpec1) tovSpec;
+                vs= getValueSourceFrom(tovs1.getvaluesSpec().getstaticOrDynamicValues());
+            }
+
+            if (defValueSpec != null) {
+                if (vs instanceof LiteralEnumValueSource) {
+                    LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
+
+                    levs.setDefaultKey(defValueSpec.getidentifier().getIDENTIFIER().toString());
+                } else {
+                    createErrorMarker("Can't specify a hard-wired default value for a dynamic value provider", defValueSpec);
+                }
+            }
+
+            vEnum.setValueSource(vs);
+        }
+
         @Override
         public boolean visit(radioFieldSpec radioField) {
             VirtualRadioFieldInfo vRadio= new VirtualRadioFieldInfo(fPageInfo, radioField.getidentifier().toString());
@@ -1031,29 +1045,12 @@ public class PrefspecsCompiler {
 
             if (propSpecs != null) {
                 radioSpecificSpecList radioSpecificSpecs= propSpecs.getradioSpecificSpecs();
-                radioDefValueSpec defValueSpec = findSpec(radioSpecificSpecs, radioDefValueSpec.class);
+                enumDefValueSpec defValueSpec = findSpec(radioSpecificSpecs, enumDefValueSpec.class);
                 ItypeOrValuesSpec tovSpec = findSpec(radioSpecificSpecs, ItypeOrValuesSpec.class);
                 columnsSpec columnsSpec = findSpec(radioSpecificSpecs, columnsSpec.class);
 
-                LabelledValueDescriptor lvd;
-
-                if (tovSpec instanceof typeOrValuesSpec0) {
-                    lvd= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
-                } else {
-                    typeOrValuesSpec1 tovs1= (typeOrValuesSpec1) tovSpec;
-                    lvd= new LabelledValueDescriptor(tovs1.getvaluesSpec().getlabelledStringValueList());
-                }
-
                 setVirtualProperties(vRadio, radioSpecificSpecs, radioField.getoptConditionalSpec());
-
-                if (defValueSpec != null) {
-                    vRadio.setDefaultValue(defValueSpec.getidentifier().getIDENTIFIER().toString());
-                }
-
-                List<String> valuesList= lvd.getValues();
-                List<String> labelsList= lvd.getLabels();
-
-                vRadio.setValuesAndLabels(valuesList, labelsList);
+                setupValueSource(vRadio, tovSpec, defValueSpec);
 
                 if (columnsSpec != null) {
                     vRadio.setNumColumns(Integer.parseInt((columnsSpec.getINTEGER().toString())));
@@ -1284,16 +1281,30 @@ public class PrefspecsCompiler {
     }
 
     
-    public boolean findClass(String validatorQualClass) {
+    public IType findClass(String validatorQualClass) {
         IJavaProject javaProj= JavaCore.create(fProject);
-        String validatorPathSuffix= validatorQualClass.replace('.', File.separatorChar);
+//      String validatorPathSuffix= validatorQualClass.replace('.', File.separatorChar);
         try {
-            return javaProj.findElement(new Path(validatorPathSuffix).addFileExtension("java")) != null;
+            return javaProj.findType(validatorQualClass);
+//          return javaProj.findElement(new Path(validatorPathSuffix).addFileExtension("java")) != null;
         } catch (JavaModelException e) {
-            return false;
+            return null;
         }
     }
 
+    public boolean classImplementsInterface(IType clazz, String interfaceQualName) {
+        try {
+            String[] supers= clazz.getSuperInterfaceNames(); // Blah! - These aren't qualified unless they appeared that way in the source
+            for(String sup: supers) {
+                // The following hack works around not having qualified type names - accept unqualified ones too
+                if (sup.equals(interfaceQualName) || sup.equals(interfaceQualName.substring(interfaceQualName.lastIndexOf('.') + 1))) {
+                    return true;
+                }
+            }
+        } catch (JavaModelException e) {
+        }
+        return false;
+    }
 
     private List<IClasspathEntry> getSourceCPEntries(IJavaProject javaProj) {
         List<IClasspathEntry> result= new ArrayList<IClasspathEntry>();
@@ -1333,7 +1344,8 @@ public class PrefspecsCompiler {
 
     public void compile(final IFile specFile, final IProgressMonitor mon) {
 	    this.fSpecFile = specFile;
-		IWorkspaceRunnable wsop= new IWorkspaceRunnable() {
+
+	    IWorkspaceRunnable wsop= new IWorkspaceRunnable() {
 		    public void run(IProgressMonitor monitor) throws CoreException {
 				getGenerationParameters(specFile);
 				collectCodeParms(specFile);
@@ -1412,8 +1424,7 @@ public class PrefspecsCompiler {
 	}
 	
 	
-	protected void collectCodeParms(IFile file)
-	{	
+	protected void collectCodeParms(IFile file) {	
 		fProject = file.getProject();
 		fProjectName = fProject.getName();
 		
@@ -1430,11 +1441,9 @@ public class PrefspecsCompiler {
 		//fPageClassNameBase = getPageInfo(file, new NullProgressMonitor()).getPageName();
 		fLanguageName = CodeServiceWizard.discoverProjectLanguage(file.getProject());	
 	}
-	
-	
-	protected void getGenerationParameters(IFile file)
-	throws CoreException
-	{
+
+
+	protected void getGenerationParameters(IFile file) throws CoreException {
 		// Get the generation-parameters file
 		IFile genParamsFile = null;
 		IContainer parent = file.getParent();
@@ -1486,8 +1495,7 @@ public class PrefspecsCompiler {
 	}
 	
 	
-	public void generateCodeStubs(IFile specFile, IProgressMonitor mon) throws CoreException
-	{
+	public void generateCodeStubs(IFile specFile, IProgressMonitor mon) throws CoreException {
 		IProject fProject = specFile.getProject();
         Map<String,String> subs= getStandardSubstitutions(fProject);
 
@@ -1503,6 +1511,7 @@ public class PrefspecsCompiler {
 
         List<PreferencesPageInfo> pageInfos = getPreferencesPageInfos(specFile);
 
+        // Abort before code gen if there are any errors
         if (specFile.findMarkers(PROBLEM_MARKER_ID, true, 0).length > 0) {
             return;
         }

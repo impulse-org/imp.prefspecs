@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 166:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
+ *<li>Rule 167:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
  *</b>
  */
 public class stringEmptySpec1 extends ASTNode implements IstringEmptySpec

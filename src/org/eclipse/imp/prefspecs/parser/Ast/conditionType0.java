@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 171:  conditionType ::= IF
+ *<li>Rule 172:  conditionType ::= IF
  *</b>
  */
 public class conditionType0 extends ASTNodeToken implements IconditionType

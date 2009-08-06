@@ -25,22 +25,22 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 150:  valuesSpec ::= VALUES$ {$ labelledStringValueList }$
+ *<li>Rule 149:  valuesSpec ::= VALUES$ {$ staticOrDynamicValues }$
  *</b>
  */
 public class valuesSpec extends ASTNode implements IvaluesSpec
 {
-    private labelledStringValueList _labelledStringValueList;
+    private IstaticOrDynamicValues _staticOrDynamicValues;
 
-    public labelledStringValueList getlabelledStringValueList() { return _labelledStringValueList; }
+    public IstaticOrDynamicValues getstaticOrDynamicValues() { return _staticOrDynamicValues; }
 
     public valuesSpec(IToken leftIToken, IToken rightIToken,
-                      labelledStringValueList _labelledStringValueList)
+                      IstaticOrDynamicValues _staticOrDynamicValues)
     {
         super(leftIToken, rightIToken);
 
-        this._labelledStringValueList = _labelledStringValueList;
-        ((ASTNode) _labelledStringValueList).setParent(this);
+        this._staticOrDynamicValues = _staticOrDynamicValues;
+        ((ASTNode) _staticOrDynamicValues).setParent(this);
         initialize();
     }
 
@@ -50,7 +50,7 @@ public class valuesSpec extends ASTNode implements IvaluesSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_labelledStringValueList);
+        list.add(_staticOrDynamicValues);
         return list;
     }
 
@@ -60,14 +60,14 @@ public class valuesSpec extends ASTNode implements IvaluesSpec
         if (! (o instanceof valuesSpec)) return false;
         if (! super.equals(o)) return false;
         valuesSpec other = (valuesSpec) o;
-        if (! _labelledStringValueList.equals(other._labelledStringValueList)) return false;
+        if (! _staticOrDynamicValues.equals(other._staticOrDynamicValues)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_labelledStringValueList.hashCode());
+        hash = hash * 31 + (_staticOrDynamicValues.hashCode());
         return hash;
     }
 
@@ -82,7 +82,7 @@ public class valuesSpec extends ASTNode implements IvaluesSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            _labelledStringValueList.accept(v);
+            _staticOrDynamicValues.accept(v);
         v.endVisit(this);
     }
 }

@@ -25,22 +25,22 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 168:  stringDefValueSpec ::= DEFVALUE$ stringValue ;$
+ *<li>Rule 116:  enumDefValueSpec ::= DEFVALUE$ identifier ;$
  *</b>
  */
-public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec
+public class enumDefValueSpec extends ASTNode implements IenumDefValueSpec
 {
-    private stringValue _stringValue;
+    private identifier _identifier;
 
-    public stringValue getstringValue() { return _stringValue; }
+    public identifier getidentifier() { return _identifier; }
 
-    public stringDefValueSpec(IToken leftIToken, IToken rightIToken,
-                              stringValue _stringValue)
+    public enumDefValueSpec(IToken leftIToken, IToken rightIToken,
+                            identifier _identifier)
     {
         super(leftIToken, rightIToken);
 
-        this._stringValue = _stringValue;
-        ((ASTNode) _stringValue).setParent(this);
+        this._identifier = _identifier;
+        ((ASTNode) _identifier).setParent(this);
         initialize();
     }
 
@@ -50,24 +50,24 @@ public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_stringValue);
+        list.add(_identifier);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof stringDefValueSpec)) return false;
+        if (! (o instanceof enumDefValueSpec)) return false;
         if (! super.equals(o)) return false;
-        stringDefValueSpec other = (stringDefValueSpec) o;
-        if (! _stringValue.equals(other._stringValue)) return false;
+        enumDefValueSpec other = (enumDefValueSpec) o;
+        if (! _identifier.equals(other._identifier)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_stringValue.hashCode());
+        hash = hash * 31 + (_identifier.hashCode());
         return hash;
     }
 
@@ -82,7 +82,7 @@ public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            _stringValue.accept(v);
+            _identifier.accept(v);
         v.endVisit(this);
     }
 }

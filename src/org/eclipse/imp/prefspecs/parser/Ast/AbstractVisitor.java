@@ -190,8 +190,8 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(comboSpecificSpecList n) { unimplementedVisitor("visit(comboSpecificSpecList)"); return true; }
     public void endVisit(comboSpecificSpecList n) { unimplementedVisitor("endVisit(comboSpecificSpecList)"); }
 
-    public boolean visit(comboDefValueSpec n) { unimplementedVisitor("visit(comboDefValueSpec)"); return true; }
-    public void endVisit(comboDefValueSpec n) { unimplementedVisitor("endVisit(comboDefValueSpec)"); }
+    public boolean visit(enumDefValueSpec n) { unimplementedVisitor("visit(enumDefValueSpec)"); return true; }
+    public void endVisit(enumDefValueSpec n) { unimplementedVisitor("endVisit(enumDefValueSpec)"); }
 
     public boolean visit(doubleSpecificSpecList n) { unimplementedVisitor("visit(doubleSpecificSpecList)"); return true; }
     public void endVisit(doubleSpecificSpecList n) { unimplementedVisitor("endVisit(doubleSpecificSpecList)"); }
@@ -223,11 +223,11 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(radioSpecificSpecList n) { unimplementedVisitor("visit(radioSpecificSpecList)"); return true; }
     public void endVisit(radioSpecificSpecList n) { unimplementedVisitor("endVisit(radioSpecificSpecList)"); }
 
-    public boolean visit(radioDefValueSpec n) { unimplementedVisitor("visit(radioDefValueSpec)"); return true; }
-    public void endVisit(radioDefValueSpec n) { unimplementedVisitor("endVisit(radioDefValueSpec)"); }
-
     public boolean visit(valuesSpec n) { unimplementedVisitor("visit(valuesSpec)"); return true; }
     public void endVisit(valuesSpec n) { unimplementedVisitor("endVisit(valuesSpec)"); }
+
+    public boolean visit(staticOrDynamicValues n) { unimplementedVisitor("visit(staticOrDynamicValues)"); return true; }
+    public void endVisit(staticOrDynamicValues n) { unimplementedVisitor("endVisit(staticOrDynamicValues)"); }
 
     public boolean visit(columnsSpec n) { unimplementedVisitor("visit(columnsSpec)"); return true; }
     public void endVisit(columnsSpec n) { unimplementedVisitor("endVisit(columnsSpec)"); }
@@ -349,12 +349,6 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(typeCustomSpecs1 n) { unimplementedVisitor("visit(typeCustomSpecs1)"); return true; }
     public void endVisit(typeCustomSpecs1 n) { unimplementedVisitor("endVisit(typeCustomSpecs1)"); }
 
-    public boolean visit(typeCustomSpecs2 n) { unimplementedVisitor("visit(typeCustomSpecs2)"); return true; }
-    public void endVisit(typeCustomSpecs2 n) { unimplementedVisitor("endVisit(typeCustomSpecs2)"); }
-
-    public boolean visit(typeCustomSpecs3 n) { unimplementedVisitor("visit(typeCustomSpecs3)"); return true; }
-    public void endVisit(typeCustomSpecs3 n) { unimplementedVisitor("endVisit(typeCustomSpecs3)"); }
-
     public boolean visit(conditionalSpecs0 n) { unimplementedVisitor("visit(conditionalSpecs0)"); return true; }
     public void endVisit(conditionalSpecs0 n) { unimplementedVisitor("endVisit(conditionalSpecs0)"); }
 
@@ -423,7 +417,7 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof colorSpecificSpecList) return visit((colorSpecificSpecList) n);
         else if (n instanceof colorDefValueSpec) return visit((colorDefValueSpec) n);
         else if (n instanceof comboSpecificSpecList) return visit((comboSpecificSpecList) n);
-        else if (n instanceof comboDefValueSpec) return visit((comboDefValueSpec) n);
+        else if (n instanceof enumDefValueSpec) return visit((enumDefValueSpec) n);
         else if (n instanceof doubleSpecificSpecList) return visit((doubleSpecificSpecList) n);
         else if (n instanceof doubleRangeSpec) return visit((doubleRangeSpec) n);
         else if (n instanceof doubleDefValueSpec) return visit((doubleDefValueSpec) n);
@@ -434,8 +428,8 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof intSpecialSpec) return visit((intSpecialSpec) n);
         else if (n instanceof intDefValueSpec) return visit((intDefValueSpec) n);
         else if (n instanceof radioSpecificSpecList) return visit((radioSpecificSpecList) n);
-        else if (n instanceof radioDefValueSpec) return visit((radioDefValueSpec) n);
         else if (n instanceof valuesSpec) return visit((valuesSpec) n);
+        else if (n instanceof staticOrDynamicValues) return visit((staticOrDynamicValues) n);
         else if (n instanceof columnsSpec) return visit((columnsSpec) n);
         else if (n instanceof labelledStringValueList) return visit((labelledStringValueList) n);
         else if (n instanceof labelledStringValue) return visit((labelledStringValue) n);
@@ -476,8 +470,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof tab3) return visit((tab3) n);
         else if (n instanceof typeCustomSpecs0) return visit((typeCustomSpecs0) n);
         else if (n instanceof typeCustomSpecs1) return visit((typeCustomSpecs1) n);
-        else if (n instanceof typeCustomSpecs2) return visit((typeCustomSpecs2) n);
-        else if (n instanceof typeCustomSpecs3) return visit((typeCustomSpecs3) n);
         else if (n instanceof conditionalSpecs0) return visit((conditionalSpecs0) n);
         else if (n instanceof conditionalSpecs1) return visit((conditionalSpecs1) n);
         else if (n instanceof conditionalSpec0) return visit((conditionalSpec0) n);
@@ -539,7 +531,7 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof colorSpecificSpecList) endVisit((colorSpecificSpecList) n);
         else if (n instanceof colorDefValueSpec) endVisit((colorDefValueSpec) n);
         else if (n instanceof comboSpecificSpecList) endVisit((comboSpecificSpecList) n);
-        else if (n instanceof comboDefValueSpec) endVisit((comboDefValueSpec) n);
+        else if (n instanceof enumDefValueSpec) endVisit((enumDefValueSpec) n);
         else if (n instanceof doubleSpecificSpecList) endVisit((doubleSpecificSpecList) n);
         else if (n instanceof doubleRangeSpec) endVisit((doubleRangeSpec) n);
         else if (n instanceof doubleDefValueSpec) endVisit((doubleDefValueSpec) n);
@@ -550,8 +542,8 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof intSpecialSpec) endVisit((intSpecialSpec) n);
         else if (n instanceof intDefValueSpec) endVisit((intDefValueSpec) n);
         else if (n instanceof radioSpecificSpecList) endVisit((radioSpecificSpecList) n);
-        else if (n instanceof radioDefValueSpec) endVisit((radioDefValueSpec) n);
         else if (n instanceof valuesSpec) endVisit((valuesSpec) n);
+        else if (n instanceof staticOrDynamicValues) endVisit((staticOrDynamicValues) n);
         else if (n instanceof columnsSpec) endVisit((columnsSpec) n);
         else if (n instanceof labelledStringValueList) endVisit((labelledStringValueList) n);
         else if (n instanceof labelledStringValue) endVisit((labelledStringValue) n);
@@ -592,8 +584,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof tab3) endVisit((tab3) n);
         else if (n instanceof typeCustomSpecs0) endVisit((typeCustomSpecs0) n);
         else if (n instanceof typeCustomSpecs1) endVisit((typeCustomSpecs1) n);
-        else if (n instanceof typeCustomSpecs2) endVisit((typeCustomSpecs2) n);
-        else if (n instanceof typeCustomSpecs3) endVisit((typeCustomSpecs3) n);
         else if (n instanceof conditionalSpecs0) endVisit((conditionalSpecs0) n);
         else if (n instanceof conditionalSpecs1) endVisit((conditionalSpecs1) n);
         else if (n instanceof conditionalSpec0) endVisit((conditionalSpec0) n);

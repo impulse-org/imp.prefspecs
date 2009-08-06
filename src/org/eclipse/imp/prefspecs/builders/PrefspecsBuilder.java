@@ -120,6 +120,7 @@ public class PrefspecsBuilder extends BuilderBase {
 
             compiler.compile(file, monitor);
 
+            // TODO Should actually refresh the folder corresponding to the prefspecs file's declared package...
             doRefresh(file.getParent());
         } catch (Exception e) {
             getPlugin().writeErrorMsg(e.getMessage());

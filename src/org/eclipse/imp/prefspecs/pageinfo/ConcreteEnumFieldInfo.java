@@ -1,7 +1,6 @@
 package org.eclipse.imp.prefspecs.pageinfo;
 
-import java.util.List;
-
+import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class ConcreteEnumFieldInfo extends ConcreteFieldInfo {
@@ -33,20 +32,8 @@ public class ConcreteEnumFieldInfo extends ConcreteFieldInfo {
         this.vEnumFieldInfo= vEnumFieldInfo;
     }
 
-    public String getDefaultValue() {
-        return vEnumFieldInfo.getDefaultValue();
-    }
-
-    public String[] getValueList() {
-        List<String> values= vEnumFieldInfo.getValues();
-
-        return values.toArray(new String[values.size()]);
-    }
-
-    public String[] getLabelList() {
-        List<String> labels= vEnumFieldInfo.getLabels();
-
-        return labels.toArray(new String[labels.size()]);
+    public IEnumValueSource getValueSource() {
+        return vEnumFieldInfo.getValueSource();
     }
 
     public int getNumColumns() {
@@ -59,7 +46,6 @@ public class ConcreteEnumFieldInfo extends ConcreteFieldInfo {
     public void dump(String prefix, MessageConsoleStream out) {
         super.dump(prefix, out);
         String indent= prefix + "  ";
-        out.println(indent + "default value = " + getDefaultValue());
+        out.println(indent + "value source = " + getValueSource());
     }
-
 }

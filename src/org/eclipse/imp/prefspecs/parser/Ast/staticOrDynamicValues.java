@@ -24,23 +24,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ *<em>
+ *<li>Rule 151:  staticOrDynamicValues ::= labelledStringValueList
+ *</em>
+ *<p>
  *<b>
- *<li>Rule 168:  stringDefValueSpec ::= DEFVALUE$ stringValue ;$
+ *<li>Rule 150:  staticOrDynamicValues ::= DYNAMIC$ stringValue$qualClassName
  *</b>
  */
-public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec
+public class staticOrDynamicValues extends ASTNode implements IstaticOrDynamicValues
 {
-    private stringValue _stringValue;
+    private stringValue _qualClassName;
 
-    public stringValue getstringValue() { return _stringValue; }
+    public stringValue getqualClassName() { return _qualClassName; }
 
-    public stringDefValueSpec(IToken leftIToken, IToken rightIToken,
-                              stringValue _stringValue)
+    public staticOrDynamicValues(IToken leftIToken, IToken rightIToken,
+                                 stringValue _qualClassName)
     {
         super(leftIToken, rightIToken);
 
-        this._stringValue = _stringValue;
-        ((ASTNode) _stringValue).setParent(this);
+        this._qualClassName = _qualClassName;
+        ((ASTNode) _qualClassName).setParent(this);
         initialize();
     }
 
@@ -50,24 +54,24 @@ public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_stringValue);
+        list.add(_qualClassName);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof stringDefValueSpec)) return false;
+        if (! (o instanceof staticOrDynamicValues)) return false;
         if (! super.equals(o)) return false;
-        stringDefValueSpec other = (stringDefValueSpec) o;
-        if (! _stringValue.equals(other._stringValue)) return false;
+        staticOrDynamicValues other = (staticOrDynamicValues) o;
+        if (! _qualClassName.equals(other._qualClassName)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_stringValue.hashCode());
+        hash = hash * 31 + (_qualClassName.hashCode());
         return hash;
     }
 
@@ -82,7 +86,7 @@ public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            _stringValue.accept(v);
+            _qualClassName.accept(v);
         v.endVisit(this);
     }
 }

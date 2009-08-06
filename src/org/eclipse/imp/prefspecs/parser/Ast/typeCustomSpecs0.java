@@ -25,14 +25,59 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 192:  typeCustomSpecs ::= booleanCustomSpec
+ *<li>Rule 194:  typeCustomSpecs ::= intRangeSpec intSpecialSpec
  *</b>
  */
-public class typeCustomSpecs0 extends ASTNodeToken implements ItypeCustomSpecs
+public class typeCustomSpecs0 extends ASTNode implements ItypeCustomSpecs
 {
-    public IToken getbooleanCustomSpec() { return leftIToken; }
+    private intRangeSpec _intRangeSpec;
+    private intSpecialSpec _intSpecialSpec;
 
-    public typeCustomSpecs0(IToken token) { super(token); initialize(); }
+    public intRangeSpec getintRangeSpec() { return _intRangeSpec; }
+    public intSpecialSpec getintSpecialSpec() { return _intSpecialSpec; }
+
+    public typeCustomSpecs0(IToken leftIToken, IToken rightIToken,
+                            intRangeSpec _intRangeSpec,
+                            intSpecialSpec _intSpecialSpec)
+    {
+        super(leftIToken, rightIToken);
+
+        this._intRangeSpec = _intRangeSpec;
+        ((ASTNode) _intRangeSpec).setParent(this);
+        this._intSpecialSpec = _intSpecialSpec;
+        ((ASTNode) _intSpecialSpec).setParent(this);
+        initialize();
+    }
+
+    /**
+     * A list of all children of this node, including the null ones.
+     */
+    public java.util.ArrayList getAllChildren()
+    {
+        java.util.ArrayList list = new java.util.ArrayList();
+        list.add(_intRangeSpec);
+        list.add(_intSpecialSpec);
+        return list;
+    }
+
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (! (o instanceof typeCustomSpecs0)) return false;
+        if (! super.equals(o)) return false;
+        typeCustomSpecs0 other = (typeCustomSpecs0) o;
+        if (! _intRangeSpec.equals(other._intRangeSpec)) return false;
+        if (! _intSpecialSpec.equals(other._intSpecialSpec)) return false;
+        return true;
+    }
+
+    public int hashCode()
+    {
+        int hash = super.hashCode();
+        hash = hash * 31 + (_intRangeSpec.hashCode());
+        hash = hash * 31 + (_intSpecialSpec.hashCode());
+        return hash;
+    }
 
     public void accept(IAstVisitor v)
     {
@@ -43,7 +88,12 @@ public class typeCustomSpecs0 extends ASTNodeToken implements ItypeCustomSpecs
 
     public void enter(Visitor v)
     {
-        v.visit(this);
+        boolean checkChildren = v.visit(this);
+        if (checkChildren)
+        {
+            _intRangeSpec.accept(v);
+            _intSpecialSpec.accept(v);
+        }
         v.endVisit(this);
     }
 }

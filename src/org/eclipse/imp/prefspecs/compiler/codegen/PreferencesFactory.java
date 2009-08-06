@@ -22,6 +22,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.preferences.PreferencesService;
+import org.eclipse.imp.preferences.fields.StaticEnumValueProvider;
+import org.eclipse.imp.prefspecs.compiler.DynamicEnumValueSource;
+import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
+import org.eclipse.imp.prefspecs.compiler.LiteralEnumValueSource;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
@@ -372,14 +376,16 @@ public class PreferencesFactory {
     									vString.getDefaultValue() + ");\n";
     			} else if (vField instanceof VirtualComboFieldInfo) {
                     VirtualComboFieldInfo vCombo= (VirtualComboFieldInfo) vField;
+
                     fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                    constantsClassName + "." + preferenceConstantForName(vCombo.getName()) + ", \"" +
-                    vCombo.getDefaultValue() + "\");\n";
+                    constantsClassName + "." + preferenceConstantForName(vCombo.getName()) + ", " +
+                    getEnumDefaultValueExpr(vCombo.getValueSource()) + ");\n";
                 } else if (vField instanceof VirtualRadioFieldInfo) {
                     VirtualRadioFieldInfo vRadio= (VirtualRadioFieldInfo) vField;
+
                     fileText= fileText + "\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                    constantsClassName + "." + preferenceConstantForName(vRadio.getName()) + ", \"" +
-                    vRadio.getDefaultValue() + "\");\n";
+                    constantsClassName + "." + preferenceConstantForName(vRadio.getName()) + ", " +
+                    getEnumDefaultValueExpr(vRadio.getValueSource()) + ");\n";
     			} else {
     				fileText = fileText + "\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n";
     			}
@@ -388,6 +394,16 @@ public class PreferencesFactory {
 		return fileText;		
 	}
 
+	private static String getEnumDefaultValueExpr(IEnumValueSource vs) {
+	    if (vs instanceof LiteralEnumValueSource) {
+            LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
+	        return "\"" + levs.getDefaultKey() + "\"";
+	    } else if (vs instanceof DynamicEnumValueSource) {
+            DynamicEnumValueSource devs= (DynamicEnumValueSource) vs;
+	        return "new " + devs.getQualClassName() + "().getDefaultLabel()";
+	    }
+	    return "";
+	}
 	
 	protected static String generateInitializersAfterFields(String pluginClassName, String fileText) {
 		// Note:  first closing brace in text is for the initializeDefaultPreferences method
@@ -855,24 +871,29 @@ public class PreferencesFactory {
         
         String result = "\n";
 
-        result = result + "\t\tComboFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewComboField(\n";
-        result = result + "\t\t\tpage, this, fPrefService,\n";
-        result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
-        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
-        result = result + "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
-        result = result + "\t\t\tnew String[] " + toString(fieldInfo.getValueList()) + ",\n"; // values
-        result = result + "\t\t\tnew String[] " + getLabelStrings(fieldInfo) + ",\n"; // labels
-        result = result + "\t\t\tparent,\n";
-        result = result + "\t\t\t" + editable + ",\n";
-        result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
-        result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
+        if (fieldInfo.getValueSource() instanceof DynamicEnumValueSource) {
+            DynamicEnumValueSource evs= (DynamicEnumValueSource) fieldInfo.getValueSource();
+            result += "\t\tIEnumValueProvider evp = new " + evs.getQualClassName() + "();\n";
+        }
+
+        result += "\t\tComboFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewComboField(\n";
+        result += "\t\t\tpage, this, fPrefService,\n";
+        result += "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result += "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
+        result += "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
+        result += "\t\t\t" + getValueStringsExpr(fieldInfo.getValueSource()) + ",\n"; // values
+        result += "\t\t\t" + getLabelStringsExpr(fieldInfo.getValueSource()) + ",\n"; // labels
+        result += "\t\t\tparent,\n";
+        result += "\t\t\t" + editable + ",\n";
+        result += "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+        result += "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
         
         if (!pageInfo.getNoDetails()) {
             String linkName = fieldInfo.getName() + "DetailsLink";
-            result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+            result += "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
                 fieldInfo.getName() + ", " + fieldInfo.getName() + ".getComboBoxControl().getParent()" + ", \"Details ...\");\n\n";
-            result = result + "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
-            result = result + "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
+            result += "\t\t" + linkName + ".setEnabled(" + editable + ");\n";
+            result += "\t\tfDetailsLinks.add(" + linkName + ");\n\n";
         }
         
         return result;
@@ -896,17 +917,22 @@ public class PreferencesFactory {
         
         String result = "\n";
 
-        result = result + "\t\tRadioGroupFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewRadioGroupField(\n";
-        result = result + "\t\t\tpage, this, fPrefService,\n";
-        result = result + "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
-        result = result + "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
-        result = result + "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
-        result = result + "\t\t\tnew String[] " + toString(fieldInfo.getValueList()) + ",\n";
-        result = result + "\t\t\tnew String[] " + getLabelStrings(fieldInfo) + ",\n";
-        result = result + "\t\t\tparent,\n";
-        result = result + "\t\t\ttrue,\n";
-        result = result + "\t\t\t" + editable + ",\n";
-        result = result + "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
+        if (fieldInfo.getValueSource() instanceof DynamicEnumValueSource) {
+            DynamicEnumValueSource evs= (DynamicEnumValueSource) fieldInfo.getValueSource();
+            result += "\t\tIEnumValueProvider evp = new " + evs.getQualClassName() + "();\n";
+        }
+
+        result += "\t\tRadioGroupFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewRadioGroupField(\n";
+        result += "\t\t\tpage, this, fPrefService,\n";
+        result += "\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n";  // tab level, key, text\n";
+        result += "\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n";
+        result += "\t\t\t" + fieldInfo.getNumColumns() + ",\n";
+        result += "\t\t\t" + getValueStringsExpr(fieldInfo.getValueSource()) + ",\n";
+        result += "\t\t\t" + getLabelStringsExpr(fieldInfo.getValueSource()) + ",\n";
+        result += "\t\t\tparent,\n";
+        result += "\t\t\ttrue,\n";
+        result += "\t\t\t" + editable + ",\n";
+        result += "\t\t\t" + fieldInfo.getIsRemovable() + ");\n";   // false for default tab but not necessarily any others\n";
 
         result = result + "\t\tfields.add(" + fieldInfo.getName() + ");\n\n";
         
@@ -1055,7 +1081,7 @@ public class PreferencesFactory {
 				fileText = fileText + "\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n";
 			} // etc.
 			// enable (or not) the details link, regardless of the type of field
-			fileText = fileText + "\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectName != null);\n\n";
+			fileText = fileText + "\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectCombo != null);\n\n";
 		}	
 		fileText = fileText + "\t\t\t\tclearModifiedMarksOnLabels();\n"; 
 		fileText = fileText + "\t\t\t}\n\n";	// closes if not disposed ...
@@ -1235,9 +1261,9 @@ public class PreferencesFactory {
 		return s.substring(newStart, newEnd);
 	}
 
-	public static String toString(String[] strings) {
+	public static String toStringArrayLiteral(String[] strings) {
 	    StringBuilder sb= new StringBuilder();
-        sb.append("{ ");
+        sb.append("new String[] { ");
 	    for(int i= 0; i < strings.length; i++) {
 	        if (i > 0) { sb.append(", "); }
 	        final String s= strings[i];
@@ -1251,7 +1277,36 @@ public class PreferencesFactory {
 	    return sb.toString();
 	}
 
-    private static void appendWithQuotes(final String s, StringBuilder sb) {
+    public static String toStringArrayLiteral(List<String> strings) {
+        StringBuilder sb= new StringBuilder();
+        sb.append("new String[] { ");
+        for(int i= 0; i < strings.size(); i++) {
+            if (i > 0) { sb.append(", "); }
+            final String s= strings.get(i);
+            if (s != null) {
+                appendWithQuotes(s, sb);
+            } else {
+                sb.append("null");
+            }
+        }
+        sb.append(" }");
+        return sb.toString();
+    }
+
+	public static String getValueStringsExpr(IEnumValueSource vs) {
+	    if (vs instanceof LiteralEnumValueSource) {
+            LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
+            List<String> labels= levs.getValues();
+
+            return toStringArrayLiteral(labels);
+	    } else if (vs instanceof DynamicEnumValueSource) {
+	        // Uses local variable 'evp' generated earlier by the caller
+            return "evp.getValues()";
+	    }
+	    throw new IllegalStateException("Unexpected type of enum value source: " + vs.getClass().getCanonicalName());
+	}
+
+	private static void appendWithQuotes(final String s, StringBuilder sb) {
         if (!s.startsWith("\"")) {
             sb.append("\"");
         }
@@ -1261,20 +1316,31 @@ public class PreferencesFactory {
         }
     }
 
-	public static String getLabelStrings(ConcreteEnumFieldInfo fieldInfo) {
+	public static String getLabelStringsExpr(IEnumValueSource vs) {
 	    StringBuilder sb= new StringBuilder();
-	    sb.append("{ ");
-	    String[] values= fieldInfo.getValueList();
-        String[] labels= fieldInfo.getLabelList();
-        for(int i=0; i < labels.length; i++) {
-            if (i > 0) { sb.append(", "); }
-            if (labels[i] != null) {
-                appendWithQuotes(labels[i], sb);
-            } else {
-                appendWithQuotes(createLabelFor(values[i]), sb);
+
+	    if (vs instanceof LiteralEnumValueSource) {
+            LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
+            List<String> values= levs.getValues();
+            List<String> labels= levs.getLabels();
+	        
+            sb.append("new String[] { ");
+            for(int i=0; i < labels.size(); i++) {
+                if (i > 0) { sb.append(", "); }
+                if (labels.get(i) != null) {
+                    appendWithQuotes(labels.get(i), sb);
+                } else {
+                    appendWithQuotes(createLabelFor(values.get(i)), sb);
+                }
             }
-        }
-        sb.append(" }");
+            sb.append(" }");
+	    } else if (vs instanceof DynamicEnumValueSource) {
+//	        DynamicEnumValueSource devs= (DynamicEnumValueSource) vs;
+//
+//	        sb.append("new ");
+//	        sb.append(stripQuotes(devs.getQualClassName()));
+	        sb.append("evp.getLabels()");
+	    }
 	    return sb.toString();
 	}
 }

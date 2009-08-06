@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 154:  labelledStringValue ::= identifier optLabel
+ *<li>Rule 155:  labelledStringValue ::= identifier optLabel
  *</b>
  */
 public class labelledStringValue extends ASTNode implements IlabelledStringValue

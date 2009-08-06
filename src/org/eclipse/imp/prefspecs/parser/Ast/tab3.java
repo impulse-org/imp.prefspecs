@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 188:  tab ::= PROJECT
+ *<li>Rule 189:  tab ::= PROJECT
  *</b>
  */
 public class tab3 extends ASTNodeToken implements Itab

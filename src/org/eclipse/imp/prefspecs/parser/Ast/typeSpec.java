@@ -25,27 +25,27 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 14:  typeSpec ::= CHOICETYPE$ identifier {$ labelledStringValueList }$
+ *<li>Rule 14:  typeSpec ::= CHOICETYPE$ identifier {$ staticOrDynamicValues }$
  *</b>
  */
 public class typeSpec extends ASTNode implements ItypeSpec
 {
     private identifier _identifier;
-    private labelledStringValueList _labelledStringValueList;
+    private IstaticOrDynamicValues _staticOrDynamicValues;
 
     public identifier getidentifier() { return _identifier; }
-    public labelledStringValueList getlabelledStringValueList() { return _labelledStringValueList; }
+    public IstaticOrDynamicValues getstaticOrDynamicValues() { return _staticOrDynamicValues; }
 
     public typeSpec(IToken leftIToken, IToken rightIToken,
                     identifier _identifier,
-                    labelledStringValueList _labelledStringValueList)
+                    IstaticOrDynamicValues _staticOrDynamicValues)
     {
         super(leftIToken, rightIToken);
 
         this._identifier = _identifier;
         ((ASTNode) _identifier).setParent(this);
-        this._labelledStringValueList = _labelledStringValueList;
-        ((ASTNode) _labelledStringValueList).setParent(this);
+        this._staticOrDynamicValues = _staticOrDynamicValues;
+        ((ASTNode) _staticOrDynamicValues).setParent(this);
         initialize();
     }
 
@@ -56,7 +56,7 @@ public class typeSpec extends ASTNode implements ItypeSpec
     {
         java.util.ArrayList list = new java.util.ArrayList();
         list.add(_identifier);
-        list.add(_labelledStringValueList);
+        list.add(_staticOrDynamicValues);
         return list;
     }
 
@@ -67,7 +67,7 @@ public class typeSpec extends ASTNode implements ItypeSpec
         if (! super.equals(o)) return false;
         typeSpec other = (typeSpec) o;
         if (! _identifier.equals(other._identifier)) return false;
-        if (! _labelledStringValueList.equals(other._labelledStringValueList)) return false;
+        if (! _staticOrDynamicValues.equals(other._staticOrDynamicValues)) return false;
         return true;
     }
 
@@ -75,7 +75,7 @@ public class typeSpec extends ASTNode implements ItypeSpec
     {
         int hash = super.hashCode();
         hash = hash * 31 + (_identifier.hashCode());
-        hash = hash * 31 + (_labelledStringValueList.hashCode());
+        hash = hash * 31 + (_staticOrDynamicValues.hashCode());
         return hash;
     }
 
@@ -92,7 +92,7 @@ public class typeSpec extends ASTNode implements ItypeSpec
         if (checkChildren)
         {
             _identifier.accept(v);
-            _labelledStringValueList.accept(v);
+            _staticOrDynamicValues.accept(v);
         }
         v.endVisit(this);
     }
