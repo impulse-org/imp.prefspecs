@@ -1081,7 +1081,7 @@ public class PreferencesFactory {
 				fileText = fileText + "\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n";
 			} // etc.
 			// enable (or not) the details link, regardless of the type of field
-			fileText = fileText + "\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectCombo != null);\n\n";
+			fileText = fileText + "\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectCombo.getText().length() > 0);\n\n";
 		}	
 		fileText = fileText + "\t\t\t\tclearModifiedMarksOnLabels();\n"; 
 		fileText = fileText + "\t\t\t}\n\n";	// closes if not disposed ...
