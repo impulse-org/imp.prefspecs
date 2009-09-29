@@ -1,0 +1,742 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+   <head>
+      <title>The Preferences Specification Language</title>
+   </head>
+
+   <body>
+      <h2>
+         A Simple Preferences Specification File
+      </h2>
+
+      <pre>
+         package foo.bar;
+         page LPG {
+            fields {
+              boolean GenerateASTs { defvalue true; }
+              int MaxErrors { defvalue 100; }
+              dirlist IncludePath
+            }
+         }
+      </pre>
+
+      <h2>
+         A More Interesting Preferences Specification File
+      </h2>
+
+      <pre>
+         package org.eclipse.imp.lpg.preferences;
+         page LPG {
+            tabs {
+                default out { }
+                configuration in { }
+                instance in { }
+                project in { }
+            }
+            fields {
+              boolean GenerateASTs {
+                  defvalue true;
+                  tooltip "If true, automatically generate an AST hierarchy from the grammar";
+              }
+              int MaxErrors { defvalue 100; }
+              boolean UseDefaultExecutable { defvalue true; }
+              file ExecutableToUse {
+                  tooltip "The full path to the LPG generator executable";
+                  defvalue "${pluginResource:lpg.generator/lpgexe/lpg-${os}_${arch}}";
+              } unless UseDefaultExecutable
+            }
+         }
+      </pre>
+
+      <h2>Preference Value Substitutions</h2>
+
+      The above example makes use of <em>preference substitutions</em>, which provide a set of variables
+      that can be interpolated into the values of string-typed preferences. These can be used not
+      only in hard-wired default values but also in user-supplied values. Substitutions are of one
+      of two forms: (1) ordinary preference keys, which cause the associated value to be interpreted,
+      and (2) predefined pseudo-keys, which provide access to various useful values, such as the
+      location of the workspace, a workspace project, a plugin resource, and the like.
+
+      The predefined pseudo-keys fall into two categories: simple and parameterized. Simple
+      pseudo-keys are accessed using the syntax <pre>${key}</pre>. These are the simple pseudo-keys:
+
+      <table border="1" width="60%" cellpadding="3" cellspacing="0">
+        <thead><tr bgcolor="#ccccff"><td><b>Pseudo-key</b></td><td><b>Description</b></td></tr></thead>
+        <tr>
+          <td>${os}</td><td>A string indicating the operating system of the host environment</td>
+        </tr>
+        <tr>
+          <td>${arch}</td><td>A string indicating the processor architecture of the host environment</td>
+        </tr>
+        <tr>
+          <td>${workspaceLoc}</td><td>A string indicating the fully-qualified filesystem path to the workspace</td>
+        </tr>
+        <tr>
+          <td>${nl}</td><td>A string indicating the local language of the host environment</td>
+        </tr>
+        <tr>
+          <td>${ws}</td><td>A string identifying the windowing system of the host environment</td>
+        </tr>
+      </table>
+
+      Parameterized pseudo-keys require one or more parameters, and use the syntax <pre>${key:param}</pre>.
+      As of this writing, the only parameterized pseudo-keys take one parameter. They are as follows:
+
+      <table border="1" width="60%" cellpadding="3" cellspacing="0">
+        <thead><tr bgcolor="#ccccff"><td><b>Pseudo-key</b></td><td><b>Description</b></td></tr></thead>
+        <tr>
+          <td>${pluginLoc:pluginID}</td><td>A string indicating the fully-qualified filesystem path of the plugin's installation location</td>
+        </tr>
+        <tr>
+          <td>${pluginResource:pluginID/resourcePath}</td><td>A string indicating the fully-qualified filesystem path of the resource with the given path in the given plugin</td>
+        </tr>
+        <tr>
+          <td>${pluginVersion:pluginID}</td><td>A string giving the currently enabled version of the plugin with the given ID</td>
+        </tr>
+        <tr>
+          <td>${projectLoc:projectName}</td><td>A string indicating the fully-qualified filesystem path of the project with the given name</td>
+        </tr>
+      </table>
+
+      <h2>
+         An Even More Interesting Preferences Specification File
+      </h2>
+
+      <pre>
+         package org.eclipse.imp.lpg.preferences;
+         choicetype Severity { error, warning, info }
+         page LPG {
+            tabs {
+                default out { }
+                configuration in { }
+                instance in { }
+                project in { }
+            }
+            fields {
+              boolean GenerateASTs {
+                  defvalue true;
+                  tooltip "If true, automatically generate an AST hierarchy from the grammar";
+              }
+              int MaxErrors { defvalue 100; }
+              boolean UseDefaultExecutable { defvalue true; }
+              file ExecutableToUse {
+                  tooltip "The full path to the LPG generator executable";
+                  defvalue "${pluginResource:lpg.generator/lpgexe/lpg-${os}_${arch}}";
+              } unless UseDefaultExecutable
+              radio Verbosity { values { low, high, ridiculous } defvalue low; }
+              combo NoSuchSymbol { type Severity; defvalue info; }
+              combo MissingProsthesisDecl { type Severity; defvalue warning; }
+            }
+         }
+      </pre>
+
+      <h2>
+         Preferences Specification Grammar
+      </h2>
+
+      The following describes the syntax and meaning of the prefspecs language syntax, using
+      EBNF.
+
+      <p>
+      <table border="1" width="100%" cellpadding="3" cellspacing="0">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+          <tr>
+            <td>prefspecs</td>
+            <td>A preferences specification file consists of an optional <a href="#packageSpec">package specification</a>,
+                followed by an optional <a href="detailsSpec">details specification</a>, followed by a set of
+                <a href="#topLevelItem">top-level items</a>.</td>
+            <td><a href="#packageSpec">packageSpec</a>? <a href="#detailsSpec">detailsSpec</a>? <a href="#topLevelItem">topLevelItem</a>+</td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+
+      <p>
+      <a name="packageSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>packageSpec</td>
+               <td><em>packageName</em> is simply a fully-qualified Java package name, which identifies the
+                   package into which the generated classes are to be placed.</td>
+               <td><b>PACKAGE</b> packageName ';'</td>
+            </tr>
+        </tbody>
+      </table>
+      
+      <p>
+      <a name="detailsSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>detailsSpec</td>
+               <td>This specification determines whether a "details link" is provided with each preference
+                   field. This link, when clicked, brings up a dialog that displays information such as the
+                   value in effect for that preference at that level, and where that value comes from (the
+                   given level, or some higher level).</td>
+               <td><b>DETAILS</b> (<b>ON</b> | <b>OFF</b>) ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="topLevelItem"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>topLevelItem</td>
+               <td>There are two types of top-level items: specifications of enumerated types that can be
+                   reused across multiple preference fields (e.g. "error/warning/info"), and preference
+                   page specifications.</td>
+               <td><a href="#typeSpec">typeSpec</a> | <a href="#pageSpec">pageSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h3>Type Specifications</h3>
+
+      <p>
+      <a name="typeSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>typeSpec</td>
+               <td>This declares an enumerated type that can be used in defining both radio- and combo-typed
+                   preferences.</td>
+               <td><b>CHOICETYPE</b> identifier '{' <a href="#staticOrDynamicValues">staticOrDynamicValues</a> '}'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="staticOrDynamicValues"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr> 
+               <td>staticOrDynamicValues</td>
+               <td>There are two ways of defining the values for a <b>CHOICETYPE</b>: dynamic, which uses the
+                   fully-qualified name of a class that computes the legal values, or a static set of string
+                   values.</td>
+               <td><b>DYNAMIC</b> qualifiedClassName | <a href="#labelledStringValue">labelledStringValue</a>+','</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="labelledStringValue"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>labelledStringValue</td>
+               <td>This provides a name (a valid Java identifier) that uniquely identifies the value
+                   (which is used by client code to identify this particular value), with an optional
+                   label that is presented in the user interface. If the label is not given explicitly,
+                   one is created from the identifier.</td>
+               <td>identifier stringLabel?</td>
+            </tr>
+        </tbody>
+      </table>
+      <p>
+
+      <h3>Page Specifications</h3>
+
+      <p>
+      <a name="pageSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>pageSpec</td>
+               <td></td>
+               <td><b>PAGE</b> pageName '{' pageBody '}'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="pageName"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>pageName</td>
+               <td>This construct specifies the name for the given preference page.
+                   The name may be qualified, in which case this page is nested inside the innermost parent.
+                   For example, the name specifier <em>foo.bar</em> will give this page the name <em>bar</em>
+                   and nest it under the page named <em>foo</em>. </td>
+               <td>(identifier '.')* identifier</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="pageBody"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>pageBody</td>
+               <td>A <em>pageBody</em> consists mainly of a set of field specifications.
+                   At the moment, it is permissible (but not advisable) for the <em>pageBody</em> to include
+                   one or more tabSpecs. <em>optionalSpecs</em> are used mostly to collect conditional field
+                   specifications in one place (if the user so desires).</td>
+               <td>tabsSpec <a href="#fieldsSpec">fieldsSpec</a> optionalSpecs</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h3>Field Specifications</h3>
+
+      <p>
+      <a name="fieldsSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>fieldsSpec</td>
+               <td></td>
+               <td><b>FIELDS</b> '{' <a href="#fieldSpec">fieldSpec</a>+ '}'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="fieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>fieldSpec</td>
+               <td></td>
+               <td><a href="#booleanFieldSpec">booleanFieldSpec</a><br>
+                 | <a href="#colorFieldSpec">colorFieldSpec</a><br>
+                 | <a href="#comboFieldSpec">comboFieldSpec</a><br>
+                 | <a href="#directoryFieldSpec">directoryFieldSpec</a><br>
+                 | <a href="#dirListFieldSpec">dirListFieldSpec</a><br>
+                 | <a href="#doubleFieldSpec">doubleFieldSpec</a><br>
+                 | <a href="#fileFieldSpec">fileFieldSpec</a><br>
+                 | <a href="#fontFieldSpec">fontFieldSpec</a><br>
+                 | <a href="#intFieldSpec">intFieldSpec</a><br>
+                 | <a href="#radioFieldSpec">radioFieldSpec</a><br>
+                 | <a href="#stringFieldSpec">stringFieldSpec</a><br>
+               </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h3>Generic Field Properties</h3>
+
+      <p>
+      <a name="generalSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>generalSpec</td>
+               <td>Properties that are valid for fields of any type</td>
+               <td><a href="#labelSpec">labelSpec</a> | <a href="#toolTipSpec">toolTipSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="labelSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>labelSpec</td>
+               <td>Specifies a non-default label for the preference field in the UI.</td>
+               <td><b>LABEL</b> STRING_LITERAL ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="toolTipSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>toolTipSpec</td>
+               <td>Provides help text for the tool-tip for this preference field.</td>
+               <td><b>TOOLTIP</b> STRING_LITERAL ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="conditionalSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>conditionalSpec</td>
+               <td>Establishes that this preference field is only enabled for editing if another (boolean)
+                   field currently has the value true. Can be applied to fields of any type.</td>
+               <td>(<b>IF</b> | <b>UNLESS</b>) identifier</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h3>Field Types</h3>
+
+      <h4>Scalar-typed Fields</h4>
+
+      <p>
+      <a name="booleanFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>booleanFieldSpec</td>
+               <td>A preference field whose value is either true or false, presented as a checkbox</td>
+               <td><b>BOOLEAN</b> identifier '{' (<a href="#booleanDefValueSpec">booleanDefValueSpec</a> | <a href="#generalSpec">generalSpec</a>)* '}' <a href="#conditionalSpec">conditionalSpec</a>?</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="booleanDefValueSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>booleanDefValueSpec</td>
+               <td></td>
+               <td><b>DEFVALUE</b> (<b>true</b> | <b>false</b>) ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="intFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>intFieldSpec</td>
+               <td></td>
+               <td><b>INT</b> identifier '{' ( <a href="#intRangeSpec">intRangeSpec</a> | <a href="#intDefValueSpec">intDefValueSpec</a> | <a href="#generalSpec">generalSpec</a>)* '}' <a href="#conditionalSpec">conditionalSpec</a>? </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="intRangeSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>intRangeSpec</td>
+               <td><em>low</em> and <em>high</em> are signed integer literals</td>
+               <td><b>RANGE</b> low '..' high ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="intDefValueSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>intDefValueSpec</td>
+               <td></td>
+               <td><b>DEFVALUE</b> integer</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="doubleFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>doubleFieldSpec</td>
+               <td></td>
+               <td><b>DOUBLE</b> identifier '{' ( <a href="#doubleRangeSpec">doubleRangeSpec</a> | <a href="#doubleDefValueSpec">doubleDefValueSpec</a> | <a href="#generalSpec">generalSpec</a>)* '}' <a href="#conditionalSpec">conditionalSpec</a>? </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="doubleRangeSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>doubleRangeSpec</td>
+               <td><em>low</em> and <em>high</em> are signed floating-point literals</td>
+               <td><b>RANGE</b> low '..' high ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="doubleDefValueSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>doubleDefValueSpec</td>
+               <td></td>
+               <td><b>DEFVALUE</b> float</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h4>String-typed Fields</h4>
+
+      <p>
+      <a name="stringFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>stringFieldSpec</td>
+               <td></td>
+               <td><b>STRING</b> identifier '{' <a href="#stringDefValueSpec">stringDefValueSpec</a> | <a href="#stringDefValueSpec">stringValidatorSpec</a> | <a href="#generalSpec">generalSpec</a> '}' <a href="#conditionalSpec">conditionalSpec</a>? </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="directoryFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>directoryFieldSpec</td>
+               <td>A special string-typed field that requires its contents to be the fully qualified path to an existing directory</td>
+               <td><b>DIRECTORY</b> identifier '{' <a href="#stringDefValueSpec">stringDefValueSpec</a> | <a href="#stringValidatorSpec">stringValidatorSpec</a> | <a href="#generalSpec">generalSpec</a> '}' <a href="#conditionalSpec">conditionalSpec</a>? </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="dirListFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>dirListFieldSpec</td>
+               <td>A special string-typed field that requires its contents to be a list of directory paths</td>
+               <td><b>STRING</b> identifier '{' <a href="#stringDefValueSpec">stringDefValueSpec</a> | <a href="#stringValidatorSpec">stringValidatorSpec</a> | <a href="#generalSpec">generalSpec</a> '}' <a href="#conditionalSpec">conditionalSpec</a>? </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="fileFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>fileFieldSpec</td>
+               <td>A special string-typed field that requires its contents to be a fully-qualified path to an existing file</td>
+               <td><b>STRING</b> identifier '{' <a href="#stringDefValueSpec">stringDefValueSpec</a> | <a href="#stringValidatorSpec">stringValidatorSpec</a> | <a href="#generalSpec">generalSpec</a> '}' <a href="#conditionalSpec">conditionalSpec</a>? </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="stringDefValueSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>stringDefValueSpec</td>
+               <td></td>
+               <td><b>DEFVALUE</b> string ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="stringValidatorSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>stringValidatorSpec</td>
+               <td>The fully-qualified name of a class implementing the interface org.eclipse.imp.preferences.fields.StringFieldEditor.Validator</td>
+               <td><b>VALIDATOR</b> qualClassName ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h4>Enumerated Field Types (Combos and Radios)</h4>
+
+      <p>
+      <a name="comboFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>comboFieldSpec</td>
+               <td>Specifies a preference whose value can be any one of an enumerated list of string values.
+                   Similar to the <em>radio</em> field type, but uses a combo box field widget.</td>
+               <td><b>COMBO</b> identifier '{' <a href="#comboFieldPropertySpec">comboFieldPropertySpec</a>* '}' <a href="#conditionalSpec">conditionalSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="comboFieldPropertySpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>comboFieldPropertySpec</td>
+               <td></td>
+               <td><a href="#enumDefValueSpec">enumDefValueSpec</a> | <a href="#columnsSpec">columnsSpec</a> | <a href="#typeOrValuesSpec">typeOrValuesSpec</a> | <a href="#generalSpec">generalSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="radioFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>radioFieldSpec</td>
+               <td>Specifies a preference whose value can be any one of an enumerated list of string values.
+                   Similar to the <em>combo</em> field type, but uses a radio button group.</td>
+               <td><b>RADIO</b> identifier '{' <a href="#radioFieldPropertySpec">radioFieldPropertySpec</a>* '}' <a href="#conditionalSpec">conditionalSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="radioFieldPropertySpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>radioFieldPropertySpec</td>
+               <td></td>
+               <td><a href="#enumDefValueSpec">enumDefValueSpec</a> | <a href="#columnsSpec">columnsSpec</a> | <a href="#typeOrValuesSpec">typeOrValuesSpec</a> | <a href="#generalSpec">generalSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="columnsSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>columnsSpec</td>
+               <td>This specifies the number of columns into which the radio button values should be grouped</td>
+               <td><b>COLUMNS</b> INTEGER ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="typeOrValuesSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>typeOrValuesSpec</td>
+               <td>The <b>TYPE</b> variant names a type defined by a <b>CHOICETYPE</b> declaration.</td>
+               <td><b>TYPE</b> identifier ';' | <a href="#valuesSpec">valuesSpec</a> ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="valuesSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>valuesSpec</td>
+               <td></td>
+               <td><b>VALUES</b> '{' <a href="#staticOrDynamicValues">staticOrDynamicValues</a> '}'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="enumDefValueSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>enumDefValueSpec</td>
+               <td>Note that this specifies the <em>identifier</em> of the value, not the label (if one was specified)</td>
+               <td><b>DEFVALUE</b> identifier ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h4>Color Fields</h4>
+
+      <p>
+      <a name="colorFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>colorFieldSpec</td>
+               <td></td>
+               <td><b>COLOR</b> identifier '{' colorFieldPropertySpec* '}' <a href="#conditionalSpec">conditionalSpec</a>?</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="colorFieldPropertySpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>colorFieldPropertySpec</td>
+               <td><em>red</em>, <em>green</em>, and <em>blue</em> are all integer literals between 0 and 255</td>
+               <td><b>DEFVALUE</b> red ',' green ',' blue ';' | <a href="#generalSpec">generalSpec</a></td>
+            </tr>
+        </tbody>
+      </table>
+
+      <h4>Font Fields</h4>
+
+      <p>
+      <a name="fontFieldSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>fontFieldSpec</td>
+               <td></td>
+               <td><b>FONT</b> identifier '{' (<a href="#fontDefValueSpec">fontDefValueSpec</a> | <a href="#generalSpec">generalSpec</a>)* '}' <a href="#conditionalSpec">conditionalSpec</a>?</td>
+            </tr>
+        </tbody>
+      </table>
+
+      <p>
+      <a name="fontDefValueSpec"></a>
+      <table border="1">
+        <thead><tr bgcolor="#ccccff"><td><b>Non-terminal</b></td><td><b>Description</b></td><td><b>Rules</b></td></tr></thead>
+        <tbody>
+            <tr>
+               <td>fontDefValueSpec</td>
+               <td><em>height</em> is an integer</td>
+               <td><b>DEFVALUE</b> fontName height (<b>NORMAL</b> | <b>BOLD</b> | <b>ITALIC</b>) ';'</td>
+            </tr>
+        </tbody>
+      </table>
+
+   </body>
+</html>

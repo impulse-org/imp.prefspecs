@@ -121,4 +121,12 @@
             language="prefspecs">
       </treeBuilder>
    </extension>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            category="IMP"
+            file="docs/toc.xml"
+            primary="true">
+      </toc>
+   </extension>
 </plugin>

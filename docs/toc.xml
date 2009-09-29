@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toc label="IMP Preference Specifications" topic="html/prefspecs.html">
+   <topic href="html/overview.html" label="PrefSpecs Overview">
+   </topic>
+   <topic href="html/language.html" label="Preference Specification Language">
+   </topic>
+</toc>
