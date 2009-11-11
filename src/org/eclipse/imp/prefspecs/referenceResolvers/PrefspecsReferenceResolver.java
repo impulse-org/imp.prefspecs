@@ -12,9 +12,7 @@
 
 package org.eclipse.imp.prefspecs.referenceResolvers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
@@ -42,7 +40,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.tab2;
 import org.eclipse.imp.prefspecs.parser.Ast.tab3;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.IReferenceResolver;
-
 
 public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguageService {
 
@@ -311,37 +308,4 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        	}
      	
 	}		// End PageVisitor
-
-    
-    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
