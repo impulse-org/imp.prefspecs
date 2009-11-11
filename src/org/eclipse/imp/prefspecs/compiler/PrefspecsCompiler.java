@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2007 IBM Corporation.
+*  Copyright (c) 2007 IBM Corporation.
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
@@ -1352,13 +1352,27 @@ public class PrefspecsCompiler {
 				if (fPageId == null) {
 				    PrefspecsCompiler.this.fPageId= PrefspecsCompiler.this.fPagePackageName;
 				}
-				
-				// Remove previous extensions of this point, but only if
-				// they have the same extension id
-				// (extension "id" is an attribute of the "page" child
-				// of the "preferencePage" extension)
+
 				IProject project = specFile.getProject();
-				IPluginModel pluginModel = ExtensionEnabler.getPluginModel(project);
+				IPluginModel pluginModel = getPluginModel(project);
+				
+				// Load the IMP way to get the complete model
+    	    	ExtensionEnabler.loadImpExtensionsModel(pluginModel, project);
+		    	IExtensions pmExtensions = pluginModel.getExtensions();
+		    	IPluginExtension[] pluginExtensions = pmExtensions.getExtensions();
+
+		    	removeOldPageExtensions(pmExtensions, pluginExtensions);
+
+		    	ExtensionEnabler.saveAndRefresh(pluginModel);
+
+                generateCodeStubs(specFile, mon);
+
+				addNewPageExtensions(specFile, monitor);
+		    }
+
+			private IPluginModel getPluginModel(IProject project) {
+				IPluginModel pluginModel;
+				pluginModel= ExtensionEnabler.getPluginModel(project);
 				
 				// SMS 30 Jul 2008
 			    if (pluginModel instanceof BundlePluginModel) {
@@ -1368,34 +1382,10 @@ public class PrefspecsCompiler {
 			    		((WorkspaceBundleModel)bm).setEditable(true);
 			    	}
 			    }
-				
-				// Load the IMP way to get the complete model
-    	    	ExtensionEnabler.loadImpExtensionsModel(pluginModel, project);
-		    	IExtensions pmExtensions = pluginModel.getExtensions();
-		    	IPluginExtension[] pluginExtensions = pmExtensions.getExtensions();
-		    	for (int i = 0; i < pluginExtensions.length; i++) {
-		    		IPluginExtension pluginExtension = pluginExtensions[i];
-		    		if (pluginExtension == null) continue;
-		    		if (pluginExtension.getPoint() == null) continue;
-		    		String point = "org.eclipse.ui" + "." + "preferencePages";
-		    		if (pluginExtension.getPoint() == null) continue;
-		    		if (pluginExtension.getPoint().equals(point)) {
-		    			IPluginObject[] children = pluginExtension.getChildren();
-		    			for (int j = 0; j < children.length; j++) {
-		    	            if(children[j].getName().equals("page")) {
-		    	            	ImpPluginElement ipe = (ImpPluginElement) children[j];
-		    	            	IPluginAttribute pa = ipe.getAttribute("id");
-		    	            	if (pa != null && pa.getValue().startsWith(fPageId)) {
-				    				pmExtensions.remove(pluginExtension);
-		    	            	}
-		    	            }
-		    			}
-		    		}
-		    	}
-		    	ExtensionEnabler.saveAndRefresh(pluginModel);
+				return pluginModel;
+			}
 
-                generateCodeStubs(specFile, mon);
-				
+			private void addNewPageExtensions(final IFile specFile, IProgressMonitor monitor) {
 				for(PreferencesPageInfo pageInfo: fPages) {
 				    String pageName= pageInfo.getPageName();
                     int lastCompIdx= (pageName.indexOf('.') > 0) ? pageName.lastIndexOf('.') + 1 : 0;
@@ -1414,7 +1404,31 @@ public class PrefspecsCompiler {
     					getPluginDependencies(),
     					monitor);
 				}
-		    }	
+			}
+
+			private void removeOldPageExtensions(IExtensions pmExtensions, IPluginExtension[] pluginExtensions) throws CoreException {
+				// Remove previous extensions of this point, but only if they have the same extension id
+				// (extension "id" is an attribute of the "page" child of the "preferencePage" extension)
+				for (int i = 0; i < pluginExtensions.length; i++) {
+		    		IPluginExtension pluginExtension = pluginExtensions[i];
+		    		if (pluginExtension == null) continue;
+		    		if (pluginExtension.getPoint() == null) continue;
+		    		String point = "org.eclipse.ui" + "." + "preferencePages";
+		    		if (pluginExtension.getPoint() == null) continue;
+		    		if (pluginExtension.getPoint().equals(point)) {
+		    			IPluginObject[] children = pluginExtension.getChildren();
+		    			for (int j = 0; j < children.length; j++) {
+		    	            if(children[j].getName().equals("page")) {
+		    	            	ImpPluginElement ipe = (ImpPluginElement) children[j];
+		    	            	IPluginAttribute pa = ipe.getAttribute("id");
+		    	            	if (pa != null && pa.getValue().startsWith(fPageId)) {
+				    				pmExtensions.remove(pluginExtension);
+		    	            	}
+		    	            }
+		    			}
+		    		}
+		    	}
+			}	
 		};
 		try {
 			wsop.run(new NullProgressMonitor());
