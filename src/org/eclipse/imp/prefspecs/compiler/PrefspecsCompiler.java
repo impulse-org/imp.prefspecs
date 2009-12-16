@@ -78,7 +78,94 @@ import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualRadioFieldInfo;
 import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
-import org.eclipse.imp.prefspecs.parser.Ast.*;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
+import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
+import org.eclipse.imp.prefspecs.parser.Ast.AbstractASTNodeList;
+import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
+import org.eclipse.imp.prefspecs.parser.Ast.IbooleanValue;
+import org.eclipse.imp.prefspecs.parser.Ast.IfontStyle;
+import org.eclipse.imp.prefspecs.parser.Ast.IgeneralSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.IsignedNumber;
+import org.eclipse.imp.prefspecs.parser.Ast.IstaticOrDynamicValues;
+import org.eclipse.imp.prefspecs.parser.Ast.IstringEmptySpec;
+import org.eclipse.imp.prefspecs.parser.Ast.ItypeOrValuesSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.booleanSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.colorDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.colorFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.colorFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.colorSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.columnsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.comboFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.comboSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionType__IF;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_AGAINST_identifier;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_WITH_identifier;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs__conditionalSpec_SEMICOLON;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON;
+import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.customRule;
+import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.directoryFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.directoryFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.dirlistFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleRangeSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.doubleSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.enumDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fontDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fontFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.fontFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.fontSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.fontStyle__BOLD;
+import org.eclipse.imp.prefspecs.parser.Ast.fontStyle__ITALIC;
+import org.eclipse.imp.prefspecs.parser.Ast.fontStyle__NORMAL;
+import org.eclipse.imp.prefspecs.parser.Ast.generalSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.instanceTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intRangeSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.intSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.isEditableSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.isRemovableSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.labelledStringValueList;
+import org.eclipse.imp.prefspecs.parser.Ast.optConditionalSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optDetailsSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optLabelSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optPackageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.optToolTipSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.radioFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.radioSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.sign__MINUS;
+import org.eclipse.imp.prefspecs.parser.Ast.signedNumber__INTEGER;
+import org.eclipse.imp.prefspecs.parser.Ast.signedNumber__sign_INTEGER;
+import org.eclipse.imp.prefspecs.parser.Ast.staticOrDynamicValues;
+import org.eclipse.imp.prefspecs.parser.Ast.stringDefValueSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON;
+import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON;
+import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
+import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpecList;
+import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
+import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec__TYPE_identifier_SEMICOLON;
+import org.eclipse.imp.prefspecs.parser.Ast.typeOrValuesSpec__valuesSpec_SEMICOLON;
+import org.eclipse.imp.prefspecs.parser.Ast.typeSpec;
 import org.eclipse.imp.wizards.CodeServiceWizard;
 import org.eclipse.imp.wizards.ExtensionEnabler;
 import org.eclipse.imp.wizards.ExtensionPointWizard;
@@ -333,23 +420,23 @@ public class PrefspecsCompiler {
         }
 
         private int getValueOf(IsignedNumber sn) {
-            if (sn instanceof signedNumber0) {
-                return Integer.parseInt(((signedNumber0) sn).getINTEGER().toString());
+            if (sn instanceof signedNumber__INTEGER) {
+                return Integer.parseInt(((signedNumber__INTEGER) sn).getINTEGER().toString());
             } else {
-                signedNumber1 sn1= (signedNumber1) sn;
+                signedNumber__sign_INTEGER sn1= (signedNumber__sign_INTEGER) sn;
                 int absVal= Integer.parseInt(sn1.getINTEGER().toString());
-                return (sn1.getsign() instanceof sign1) ? -absVal : absVal;
+                return (sn1.getsign() instanceof sign__MINUS) ? -absVal : absVal;
             }
         }
 
         private int getValueOf(IfontStyle style) {
-            if (style instanceof fontStyle0) {
+            if (style instanceof fontStyle__NORMAL) {
                 return SWT.NORMAL;
             }
-            if (style instanceof fontStyle1) {
+            if (style instanceof fontStyle__BOLD) {
                 return SWT.BOLD;
             }
-            if (style instanceof fontStyle2) {
+            if (style instanceof fontStyle__ITALIC) {
                 return SWT.ITALIC;
             }
             return SWT.NORMAL;
@@ -411,7 +498,7 @@ public class PrefspecsCompiler {
             }
             if (condSpec != null) {
                 vField.setIsConditional(true);
-                vField.setConditionalWith(condSpec.getconditionType() instanceof conditionType0);
+                vField.setConditionalWith(condSpec.getconditionType() instanceof conditionType__IF);
                 vField.setConditionField(findConditionalField(condSpec, vField.getName()));
             }
         }
@@ -515,11 +602,11 @@ public class PrefspecsCompiler {
             	}
 
             	IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
-            	if (emptyValueSpec instanceof stringEmptySpec0) {
+            	if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) {
             		vDirList.setEmptyValueAllowed(false);
             		vDirList.setEmptyValue(null);
-            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+            	} else if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) {
+            		stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON ses1 = (stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) emptyValueSpec;
             		vDirList.setEmptyValueAllowed(true);
             		vDirList.setEmptyValue(getValueOf(ses1.getstringValue()));
             	}
@@ -583,11 +670,11 @@ public class PrefspecsCompiler {
                 }
             
                 IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
-                if (emptyValueSpec instanceof stringEmptySpec0) {
+                if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) {
                     vDir.setEmptyValueAllowed(false);
                     vDir.setEmptyValue(null);
-                } else if (emptyValueSpec instanceof stringEmptySpec1) {
-                    stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+                } else if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) {
+                	stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON ses1 = (stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) emptyValueSpec;
                     vDir.setEmptyValueAllowed(true);
                     vDir.setEmptyValue(getValueOf(ses1.getstringValue()));
                 }
@@ -649,11 +736,11 @@ public class PrefspecsCompiler {
             	}
         	
             	IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
-            	if (emptyValueSpec instanceof stringEmptySpec0) {
+            	if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) {
             		vFile.setEmptyValueAllowed(false);
             		vFile.setEmptyValue(null);
-            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+            	} else if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) {
+            		stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON ses1 = (stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) emptyValueSpec;
             		vFile.setEmptyValueAllowed(true);
             		vFile.setEmptyValue(getValueOf(ses1.getstringValue()));
             	}
@@ -826,11 +913,11 @@ public class PrefspecsCompiler {
             	}
 
             	IstringEmptySpec emptyValueSpec = findSpec(stringSpecificSpecs, IstringEmptySpec.class);
-            	if (emptyValueSpec instanceof stringEmptySpec0) {
+            	if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) {
             		vString.setEmptyValueAllowed(false);
             		vString.setEmptyValue(null);
-            	} else if (emptyValueSpec instanceof stringEmptySpec1) {
-               		stringEmptySpec1 ses1 = (stringEmptySpec1) emptyValueSpec;
+            	} else if (emptyValueSpec instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) {
+            		stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON ses1 = (stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) emptyValueSpec;
             		vString.setEmptyValueAllowed(true);
             		vString.setEmptyValue(getValueOf(ses1.getstringValue()));
             	}
@@ -1018,10 +1105,10 @@ public class PrefspecsCompiler {
         private void setupValueSource(VirtualEnumFieldInfo vEnum, ItypeOrValuesSpec tovSpec, enumDefValueSpec defValueSpec) {
             IEnumValueSource vs;
 
-            if (tovSpec instanceof typeOrValuesSpec0) {
-                vs= fTypeMap.get(((typeOrValuesSpec0) tovSpec).getidentifier().getIDENTIFIER().toString());
+            if (tovSpec instanceof typeOrValuesSpec__TYPE_identifier_SEMICOLON) {
+                vs= fTypeMap.get(((typeOrValuesSpec__TYPE_identifier_SEMICOLON) tovSpec).getidentifier().getIDENTIFIER().toString());
             } else {
-                typeOrValuesSpec1 tovs1= (typeOrValuesSpec1) tovSpec;
+                typeOrValuesSpec__valuesSpec_SEMICOLON tovs1= (typeOrValuesSpec__valuesSpec_SEMICOLON) tovSpec;
                 vs= getValueSourceFrom(tovs1.getvaluesSpec().getstaticOrDynamicValues());
             }
 
@@ -1185,7 +1272,7 @@ public class PrefspecsCompiler {
          * For "with" condition rules
          */
         @Override
-        public boolean visit(conditionalSpec0 rule) {
+        public boolean visit(conditionalSpec__identifier_WITH_identifier rule) {
         	
         	String conditionalFieldName = rule.getidentifier().toString();
         	String conditionFieldName = rule.getidentifier3().toString();
@@ -1219,7 +1306,7 @@ public class PrefspecsCompiler {
          * For "against" condition rules
          */
         @Override
-        public boolean visit(conditionalSpec1 rule) {
+        public boolean visit(conditionalSpec__identifier_AGAINST_identifier rule) {
         	
         	String conditionalFieldName = rule.getidentifier().toString();
         	String conditionFieldName = rule.getidentifier3().toString();
@@ -1251,13 +1338,13 @@ public class PrefspecsCompiler {
         
         
         @Override
-        public void endVisit(conditionalSpecs0 spec) {
+        public void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON spec) {
         	propagateConditionsToConcreteSpecs();
         }
         
         
         @Override
-        public void endVisit(conditionalSpecs1 spec) {
+        public void endVisit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON spec) {
         	propagateConditionsToConcreteSpecs();
         }
         

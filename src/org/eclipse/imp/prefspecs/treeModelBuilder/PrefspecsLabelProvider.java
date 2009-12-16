@@ -7,7 +7,6 @@
 *
 * Contributors:
 *    Stan Sutton (suttons@us.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.treeModelBuilder;
@@ -24,7 +23,6 @@ import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
 import org.eclipse.imp.prefspecs.parser.Ast.customRule;
 import org.eclipse.imp.services.ILabelProvider;
 import org.eclipse.imp.utils.MarkerUtils;
@@ -183,14 +181,14 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 		if (n instanceof customSpec)
 			return "Custom";
 		if (n instanceof customRule)
-			return ((customRule)n).getidentifier().toString();
+			return ((customRule) n).getidentifier().toString();
 		
 		if (n instanceof conditionalsSpec)
 			return "Conditionals";
-		if (n instanceof conditionalSpec0)
-			return ((conditionalSpec0)n).getidentifier().toString();
-		if (n instanceof conditionalSpec1)
-			return ((conditionalSpec1)n).getidentifier().toString();
+		if (n instanceof conditionalSpec__identifier_WITH_identifier)
+			return ((conditionalSpec__identifier_WITH_identifier) n).getidentifier().toString();
+		if (n instanceof conditionalSpec__identifier_AGAINST_identifier)
+			return ((conditionalSpec__identifier_AGAINST_identifier) n).getidentifier().toString();
 		
 		return "<???>";
 	}

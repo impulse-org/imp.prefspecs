@@ -7,7 +7,6 @@
 *
 * Contributors:
 *    Stan Sutton (suttons@us.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.treeModelBuilder;
@@ -17,8 +16,8 @@ import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.colorFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec0;
-import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec1;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_AGAINST_identifier;
+import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_WITH_identifier;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.customRule;
@@ -303,25 +302,25 @@ public class PrefspecsTreeModelBuilder extends TreeModelBuilderBase {
 		}
 
         @Override
-		public boolean visit(conditionalSpec0 n) {
+		public boolean visit(conditionalSpec__identifier_WITH_identifier n) {
 			pushSubItem(n);
 			return true;
 		}
 	
         @Override
-		public void endVisit(conditionalSpec0 n) {
+		public void endVisit(conditionalSpec__identifier_WITH_identifier n) {
 			popSubItem();
 		}
 
 		
         @Override
-		public boolean visit(conditionalSpec1 n) {
+		public boolean visit(conditionalSpec__identifier_AGAINST_identifier n) {
 			pushSubItem(n);
 			return true;
 		}
 
         @Override
-		public void endVisit(conditionalSpec1 n) {
+		public void endVisit(conditionalSpec__identifier_AGAINST_identifier n) {
 			popSubItem();
 		}
 	}

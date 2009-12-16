@@ -7,7 +7,6 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.referenceResolvers;
@@ -34,10 +33,10 @@ import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.tab0;
-import org.eclipse.imp.prefspecs.parser.Ast.tab1;
-import org.eclipse.imp.prefspecs.parser.Ast.tab2;
-import org.eclipse.imp.prefspecs.parser.Ast.tab3;
+import org.eclipse.imp.prefspecs.parser.Ast.tab__CONFIGURATION;
+import org.eclipse.imp.prefspecs.parser.Ast.tab__DEFAULT;
+import org.eclipse.imp.prefspecs.parser.Ast.tab__INSTANCE;
+import org.eclipse.imp.prefspecs.parser.Ast.tab__PROJECT;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.IReferenceResolver;
 
@@ -81,17 +80,17 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
     
     protected ASTNode findDeclForTab(Itab node)
     {
-    	if (node instanceof tab0) {
-    		return tabDecls.get(((tab0)node).getDEFAULT().toString());
+    	if (node instanceof tab__DEFAULT) {
+    		return tabDecls.get(((tab__DEFAULT) node).getDEFAULT().toString());
     	}
-    	if (node instanceof tab1) {
-    		return tabDecls.get(((tab1)node).getCONFIGURATION().toString());
+    	if (node instanceof tab__CONFIGURATION) {
+    		return tabDecls.get(((tab__CONFIGURATION) node).getCONFIGURATION().toString());
     	}
-    	if (node instanceof tab2) {
-    		return tabDecls.get(((tab2)node).getINSTANCE().toString());
+    	if (node instanceof tab__INSTANCE) {
+    		return tabDecls.get(((tab__INSTANCE) node).getINSTANCE().toString());
     	}
-    	if (node instanceof tab3) {
-    		ASTNode res = tabDecls.get(((tab3)node).getPROJECT().toString());
+    	if (node instanceof tab__PROJECT) {
+    		ASTNode res = tabDecls.get(((tab__PROJECT) node).getPROJECT().toString());
     		return res;
     	}
     	System.err.println("PrefspecsReferenceResolver.findDeclForTab:  got tab of unknown type, returning null");
@@ -279,28 +278,28 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        	
        	// Tab visits
        	
-       	public boolean visit(tab0 node) {
+       	public boolean visit(tab__DEFAULT node) {
        		if (inTabsSpec) {
        			tabDecls.put(node.getDEFAULT().toString(), node);
        		}
        		return false;	
        	}
 
-       	public boolean visit(tab1 node) {
+       	public boolean visit(tab__CONFIGURATION node) {
        		if (inTabsSpec) {
        			tabDecls.put(node.getCONFIGURATION().toString(), node);
        		}
        		return false;	
        	}
        	
-       	public boolean visit(tab2 node) {
+       	public boolean visit(tab__INSTANCE node) {
        		if (inTabsSpec) {
        			tabDecls.put(node.getINSTANCE().toString(), node);
        		}
        		return false;	
        	}
        	
-       	public boolean visit(tab3 node) {
+       	public boolean visit(tab__PROJECT node) {
        		if (inTabsSpec) {
        			tabDecls.put(node.getPROJECT().toString(), node);
        		}

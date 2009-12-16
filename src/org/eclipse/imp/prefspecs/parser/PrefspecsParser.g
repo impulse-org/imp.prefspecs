@@ -348,8 +348,8 @@
             public void emitError(IToken id, String message) {
                 prsStream.getMessageHandler().handleMessage(
                     ParseErrorCodes.NO_MESSAGE_CODE,
-                    prsStream.getLexStream().getLocation(id.getStartOffset(), id.getEndOffset()),
-                    prsStream.getLexStream().getLocation(0, 0),
+                    prsStream.getILexStream().getLocation(id.getStartOffset(), id.getEndOffset()),
+                    prsStream.getILexStream().getLocation(0, 0),
                     prsStream.getFileName(),
                     new String [] { message });
             }
@@ -357,9 +357,9 @@
             public void emitError(ASTNode node, String message) {
                 prsStream.getMessageHandler().handleMessage(
                     ParseErrorCodes.NO_MESSAGE_CODE,
-                    prsStream.getLexStream().getLocation(
+                    prsStream.getILexStream().getLocation(
                         node.getLeftIToken().getStartOffset(), node.getRightIToken().getEndOffset()),
-                    prsStream.getLexStream().getLocation(0, 0),
+                    prsStream.getILexStream().getLocation(0, 0),
                     prsStream.getFileName(),
                     new String [] { message });
             }
@@ -367,8 +367,8 @@
            public void emitError(int startOffset, int endOffset, String message) {
                 prsStream.getMessageHandler().handleMessage(
                     ParseErrorCodes.NO_MESSAGE_CODE,
-                    prsStream.getLexStream().getLocation(startOffset, endOffset),
-                    prsStream.getLexStream().getLocation(0, 0),
+                    prsStream.getILexStream().getLocation(startOffset, endOffset),
+                    prsStream.getILexStream().getLocation(0, 0),
                     prsStream.getFileName(),
                     new String [] { message });
             }
@@ -540,7 +540,7 @@
                     }
                 }
                 
-                if (n.gettab() instanceof tab0) {
+                if (n.gettab() instanceof tab__DEFAULT) {
                     // Have a the default tab
                     inCustomSpecForDefaultTab = true;
                 }
@@ -555,7 +555,7 @@
         
         
         
-            public boolean visit(conditionalSpec0 n) {
+            public boolean visit(conditionalSpec__identifier_WITH_identifier n) {
                 String id = n.getidentifier().toString();
                 if (!fieldNames.contains(id)) {
                     emitError(n.getidentifier().getIToken(), "Identifier does not represent a declared field");
@@ -569,10 +569,10 @@
                 return true;
             }
 
-            public void endVisit(conditionalSpec0 n) { }
+            public void endVisit(conditionalSpec__identifier_WITH_identifier n) { }
  
  
-             public boolean visit(conditionalSpec1 n) {
+             public boolean visit(conditionalSpec__identifier_AGAINST_identifier n) {
                 String id = n.getidentifier().toString();
                 if (!fieldNames.contains(id)) {
                     emitError(n.getidentifier().getIToken(), "Identifier does not represent a declared field");
@@ -586,7 +586,7 @@
                 return true;
             }
 
-            public void endVisit(conditionalSpec1 n) { }
+            public void endVisit(conditionalSpec__identifier_AGAINST_identifier n) { }
   
   
             
