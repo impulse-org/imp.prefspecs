@@ -13,15 +13,34 @@
 
 package org.eclipse.imp.prefspecs.parser;
 
-import org.eclipse.imp.prefspecs.parser.Ast.*;
-import lpg.runtime.*;
-import org.eclipse.imp.parser.IParser;
-import org.eclipse.imp.parser.SymbolTable;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
+
+import lpg.runtime.BacktrackingParser;
+import lpg.runtime.BadParseException;
+import lpg.runtime.BadParseSymFileException;
+import lpg.runtime.DiagnoseParser;
+import lpg.runtime.ErrorToken;
+import lpg.runtime.IAst;
+import lpg.runtime.ILexStream;
+import lpg.runtime.IPrsStream;
+import lpg.runtime.IToken;
+import lpg.runtime.Monitor;
+import lpg.runtime.NotBacktrackParseTableException;
+import lpg.runtime.NullExportedSymbolsException;
+import lpg.runtime.NullTerminalSymbolsException;
+import lpg.runtime.ParseErrorCodes;
+import lpg.runtime.ParseTable;
+import lpg.runtime.PrsStream;
+import lpg.runtime.RuleAction;
+import lpg.runtime.UndefinedEofSymbolException;
+import lpg.runtime.UnimplementedTerminalsException;
+
+import org.eclipse.imp.parser.IParser;
+import org.eclipse.imp.parser.SymbolTable;
+import org.eclipse.imp.prefspecs.parser.Ast.*;
 
 public class PrefspecsParser implements RuleAction, IParser
 {
@@ -300,7 +319,7 @@ public class PrefspecsParser implements RuleAction, IParser
         //
         
         public boolean visit(isRemovableSpec n) {
-            if (n.getbooleanValue() instanceof booleanValue0) {
+            if (n.getbooleanValue() instanceof booleanValue__TRUE) {
                 if (inDefaultTabSpec || inCustomSpecForDefaultTab) {
                     emitError(n, "Field values on default tab are not removable");
                 }

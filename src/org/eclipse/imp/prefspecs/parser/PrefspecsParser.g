@@ -394,7 +394,7 @@
             //
             
             public boolean visit(isRemovableSpec n) {
-                if (n.getbooleanValue() instanceof booleanValue0) {
+                if (n.getbooleanValue() instanceof booleanValue__TRUE) {
                     if (inDefaultTabSpec || inCustomSpecForDefaultTab) {
                         emitError(n, "Field values on default tab are not removable");
                     }
