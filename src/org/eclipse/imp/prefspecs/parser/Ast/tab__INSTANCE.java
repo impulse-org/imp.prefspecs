@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 187:  tab ::= CONFIGURATION
+ *<li>Rule 188:  tab ::= INSTANCE
  *</b>
  */
-public class tab1 extends ASTNodeToken implements Itab
+public class tab__INSTANCE extends ASTNodeToken implements Itab
 {
-    public IToken getCONFIGURATION() { return leftIToken; }
+    public IToken getINSTANCE() { return leftIToken; }
 
-    public tab1(IToken token) { super(token); initialize(); }
+    public tab__INSTANCE(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

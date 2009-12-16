@@ -17,8 +17,8 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  * is implemented by:
  *<b>
  *<ul>
- *<li>signedNumber0
- *<li>signedNumber1
+ *<li>signedNumber__INTEGER
+ *<li>signedNumber__sign_INTEGER
  *</ul>
  *</b>
  */

@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 39:  inout ::= OUT
+ *<li>Rule 8:  onOff ::= ON
  *</b>
  */
-public class inout1 extends ASTNodeToken implements Iinout
+public class onOff__ON extends ASTNodeToken implements IonOff
 {
-    public IToken getOUT() { return leftIToken; }
+    public IToken getON() { return leftIToken; }
 
-    public inout1(IToken token) { super(token); initialize(); }
+    public onOff__ON(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

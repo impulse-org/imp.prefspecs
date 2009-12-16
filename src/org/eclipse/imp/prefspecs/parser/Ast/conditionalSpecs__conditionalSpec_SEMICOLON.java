@@ -25,32 +25,27 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 201:  conditionalSpec ::= identifier AGAINST identifier
+ *<li>Rule 198:  conditionalSpecs ::= conditionalSpec ;
  *</b>
  */
-public class conditionalSpec1 extends ASTNode implements IconditionalSpec
+public class conditionalSpecs__conditionalSpec_SEMICOLON extends ASTNode implements IconditionalSpecs
 {
-    private identifier _identifier;
-    private ASTNodeToken _AGAINST;
-    private identifier _identifier3;
+    private IconditionalSpec _conditionalSpec;
+    private ASTNodeToken _SEMICOLON;
 
-    public identifier getidentifier() { return _identifier; }
-    public ASTNodeToken getAGAINST() { return _AGAINST; }
-    public identifier getidentifier3() { return _identifier3; }
+    public IconditionalSpec getconditionalSpec() { return _conditionalSpec; }
+    public ASTNodeToken getSEMICOLON() { return _SEMICOLON; }
 
-    public conditionalSpec1(IToken leftIToken, IToken rightIToken,
-                            identifier _identifier,
-                            ASTNodeToken _AGAINST,
-                            identifier _identifier3)
+    public conditionalSpecs__conditionalSpec_SEMICOLON(IToken leftIToken, IToken rightIToken,
+                                                       IconditionalSpec _conditionalSpec,
+                                                       ASTNodeToken _SEMICOLON)
     {
         super(leftIToken, rightIToken);
 
-        this._identifier = _identifier;
-        ((ASTNode) _identifier).setParent(this);
-        this._AGAINST = _AGAINST;
-        ((ASTNode) _AGAINST).setParent(this);
-        this._identifier3 = _identifier3;
-        ((ASTNode) _identifier3).setParent(this);
+        this._conditionalSpec = _conditionalSpec;
+        ((ASTNode) _conditionalSpec).setParent(this);
+        this._SEMICOLON = _SEMICOLON;
+        ((ASTNode) _SEMICOLON).setParent(this);
         initialize();
     }
 
@@ -60,30 +55,27 @@ public class conditionalSpec1 extends ASTNode implements IconditionalSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_identifier);
-        list.add(_AGAINST);
-        list.add(_identifier3);
+        list.add(_conditionalSpec);
+        list.add(_SEMICOLON);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof conditionalSpec1)) return false;
+        if (! (o instanceof conditionalSpecs__conditionalSpec_SEMICOLON)) return false;
         if (! super.equals(o)) return false;
-        conditionalSpec1 other = (conditionalSpec1) o;
-        if (! _identifier.equals(other._identifier)) return false;
-        if (! _AGAINST.equals(other._AGAINST)) return false;
-        if (! _identifier3.equals(other._identifier3)) return false;
+        conditionalSpecs__conditionalSpec_SEMICOLON other = (conditionalSpecs__conditionalSpec_SEMICOLON) o;
+        if (! _conditionalSpec.equals(other._conditionalSpec)) return false;
+        if (! _SEMICOLON.equals(other._SEMICOLON)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_identifier.hashCode());
-        hash = hash * 31 + (_AGAINST.hashCode());
-        hash = hash * 31 + (_identifier3.hashCode());
+        hash = hash * 31 + (_conditionalSpec.hashCode());
+        hash = hash * 31 + (_SEMICOLON.hashCode());
         return hash;
     }
 
@@ -99,9 +91,8 @@ public class conditionalSpec1 extends ASTNode implements IconditionalSpec
         boolean checkChildren = v.visit(this);
         if (checkChildren)
         {
-            _identifier.accept(v);
-            _AGAINST.accept(v);
-            _identifier3.accept(v);
+            _conditionalSpec.accept(v);
+            _SEMICOLON.accept(v);
         }
         v.endVisit(this);
     }

@@ -17,8 +17,8 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  * is always implemented by <b>ASTNodeToken</b>. It is also implemented by:
  *<b>
  *<ul>
- *<li>onOff0
- *<li>onOff1
+ *<li>onOff__ON
+ *<li>onOff__OFF
  *</ul>
  *</b>
  */

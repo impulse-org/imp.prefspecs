@@ -25,27 +25,27 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 204:  typeCustomSpecs ::= stringSpecialSpec stringEmptySpec
+ *<li>Rule 179:  signedNumber ::= sign INTEGER
  *</b>
  */
-public class typeCustomSpecs2 extends ASTNode implements ItypeCustomSpecs
+public class signedNumber__sign_INTEGER extends ASTNode implements IsignedNumber
 {
-    private stringSpecialSpec _stringSpecialSpec;
-    private IstringEmptySpec _stringEmptySpec;
+    private Isign _sign;
+    private ASTNodeToken _INTEGER;
 
-    public stringSpecialSpec getstringSpecialSpec() { return _stringSpecialSpec; }
-    public IstringEmptySpec getstringEmptySpec() { return _stringEmptySpec; }
+    public Isign getsign() { return _sign; }
+    public ASTNodeToken getINTEGER() { return _INTEGER; }
 
-    public typeCustomSpecs2(IToken leftIToken, IToken rightIToken,
-                            stringSpecialSpec _stringSpecialSpec,
-                            IstringEmptySpec _stringEmptySpec)
+    public signedNumber__sign_INTEGER(IToken leftIToken, IToken rightIToken,
+                                      Isign _sign,
+                                      ASTNodeToken _INTEGER)
     {
         super(leftIToken, rightIToken);
 
-        this._stringSpecialSpec = _stringSpecialSpec;
-        ((ASTNode) _stringSpecialSpec).setParent(this);
-        this._stringEmptySpec = _stringEmptySpec;
-        ((ASTNode) _stringEmptySpec).setParent(this);
+        this._sign = _sign;
+        ((ASTNode) _sign).setParent(this);
+        this._INTEGER = _INTEGER;
+        ((ASTNode) _INTEGER).setParent(this);
         initialize();
     }
 
@@ -55,27 +55,27 @@ public class typeCustomSpecs2 extends ASTNode implements ItypeCustomSpecs
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_stringSpecialSpec);
-        list.add(_stringEmptySpec);
+        list.add(_sign);
+        list.add(_INTEGER);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof typeCustomSpecs2)) return false;
+        if (! (o instanceof signedNumber__sign_INTEGER)) return false;
         if (! super.equals(o)) return false;
-        typeCustomSpecs2 other = (typeCustomSpecs2) o;
-        if (! _stringSpecialSpec.equals(other._stringSpecialSpec)) return false;
-        if (! _stringEmptySpec.equals(other._stringEmptySpec)) return false;
+        signedNumber__sign_INTEGER other = (signedNumber__sign_INTEGER) o;
+        if (! _sign.equals(other._sign)) return false;
+        if (! _INTEGER.equals(other._INTEGER)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_stringSpecialSpec.hashCode());
-        hash = hash * 31 + (_stringEmptySpec.hashCode());
+        hash = hash * 31 + (_sign.hashCode());
+        hash = hash * 31 + (_INTEGER.hashCode());
         return hash;
     }
 
@@ -91,8 +91,8 @@ public class typeCustomSpecs2 extends ASTNode implements ItypeCustomSpecs
         boolean checkChildren = v.visit(this);
         if (checkChildren)
         {
-            _stringSpecialSpec.accept(v);
-            _stringEmptySpec.accept(v);
+            _sign.accept(v);
+            _INTEGER.accept(v);
         }
         v.endVisit(this);
     }

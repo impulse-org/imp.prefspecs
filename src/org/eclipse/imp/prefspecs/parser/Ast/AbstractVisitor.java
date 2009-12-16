@@ -274,92 +274,92 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(conditionalsSpec n) { unimplementedVisitor("visit(conditionalsSpec)"); return true; }
     public void endVisit(conditionalsSpec n) { unimplementedVisitor("endVisit(conditionalsSpec)"); }
 
-    public boolean visit(onOff0 n) { unimplementedVisitor("visit(onOff0)"); return true; }
-    public void endVisit(onOff0 n) { unimplementedVisitor("endVisit(onOff0)"); }
+    public boolean visit(onOff__ON n) { unimplementedVisitor("visit(onOff__ON)"); return true; }
+    public void endVisit(onOff__ON n) { unimplementedVisitor("endVisit(onOff__ON)"); }
 
-    public boolean visit(onOff1 n) { unimplementedVisitor("visit(onOff1)"); return true; }
-    public void endVisit(onOff1 n) { unimplementedVisitor("endVisit(onOff1)"); }
+    public boolean visit(onOff__OFF n) { unimplementedVisitor("visit(onOff__OFF)"); return true; }
+    public void endVisit(onOff__OFF n) { unimplementedVisitor("endVisit(onOff__OFF)"); }
 
-    public boolean visit(inout0 n) { unimplementedVisitor("visit(inout0)"); return true; }
-    public void endVisit(inout0 n) { unimplementedVisitor("endVisit(inout0)"); }
+    public boolean visit(inout__IN n) { unimplementedVisitor("visit(inout__IN)"); return true; }
+    public void endVisit(inout__IN n) { unimplementedVisitor("endVisit(inout__IN)"); }
 
-    public boolean visit(inout1 n) { unimplementedVisitor("visit(inout1)"); return true; }
-    public void endVisit(inout1 n) { unimplementedVisitor("endVisit(inout1)"); }
+    public boolean visit(inout__OUT n) { unimplementedVisitor("visit(inout__OUT)"); return true; }
+    public void endVisit(inout__OUT n) { unimplementedVisitor("endVisit(inout__OUT)"); }
 
-    public boolean visit(fontStyle0 n) { unimplementedVisitor("visit(fontStyle0)"); return true; }
-    public void endVisit(fontStyle0 n) { unimplementedVisitor("endVisit(fontStyle0)"); }
+    public boolean visit(fontStyle__NORMAL n) { unimplementedVisitor("visit(fontStyle__NORMAL)"); return true; }
+    public void endVisit(fontStyle__NORMAL n) { unimplementedVisitor("endVisit(fontStyle__NORMAL)"); }
 
-    public boolean visit(fontStyle1 n) { unimplementedVisitor("visit(fontStyle1)"); return true; }
-    public void endVisit(fontStyle1 n) { unimplementedVisitor("endVisit(fontStyle1)"); }
+    public boolean visit(fontStyle__BOLD n) { unimplementedVisitor("visit(fontStyle__BOLD)"); return true; }
+    public void endVisit(fontStyle__BOLD n) { unimplementedVisitor("endVisit(fontStyle__BOLD)"); }
 
-    public boolean visit(fontStyle2 n) { unimplementedVisitor("visit(fontStyle2)"); return true; }
-    public void endVisit(fontStyle2 n) { unimplementedVisitor("endVisit(fontStyle2)"); }
+    public boolean visit(fontStyle__ITALIC n) { unimplementedVisitor("visit(fontStyle__ITALIC)"); return true; }
+    public void endVisit(fontStyle__ITALIC n) { unimplementedVisitor("endVisit(fontStyle__ITALIC)"); }
 
-    public boolean visit(typeOrValuesSpec0 n) { unimplementedVisitor("visit(typeOrValuesSpec0)"); return true; }
-    public void endVisit(typeOrValuesSpec0 n) { unimplementedVisitor("endVisit(typeOrValuesSpec0)"); }
+    public boolean visit(typeOrValuesSpec__TYPE_identifier_SEMICOLON n) { unimplementedVisitor("visit(typeOrValuesSpec__TYPE_identifier_SEMICOLON)"); return true; }
+    public void endVisit(typeOrValuesSpec__TYPE_identifier_SEMICOLON n) { unimplementedVisitor("endVisit(typeOrValuesSpec__TYPE_identifier_SEMICOLON)"); }
 
-    public boolean visit(typeOrValuesSpec1 n) { unimplementedVisitor("visit(typeOrValuesSpec1)"); return true; }
-    public void endVisit(typeOrValuesSpec1 n) { unimplementedVisitor("endVisit(typeOrValuesSpec1)"); }
+    public boolean visit(typeOrValuesSpec__valuesSpec_SEMICOLON n) { unimplementedVisitor("visit(typeOrValuesSpec__valuesSpec_SEMICOLON)"); return true; }
+    public void endVisit(typeOrValuesSpec__valuesSpec_SEMICOLON n) { unimplementedVisitor("endVisit(typeOrValuesSpec__valuesSpec_SEMICOLON)"); }
 
-    public boolean visit(stringEmptySpec0 n) { unimplementedVisitor("visit(stringEmptySpec0)"); return true; }
-    public void endVisit(stringEmptySpec0 n) { unimplementedVisitor("endVisit(stringEmptySpec0)"); }
+    public boolean visit(stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON n) { unimplementedVisitor("visit(stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON)"); return true; }
+    public void endVisit(stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON n) { unimplementedVisitor("endVisit(stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON)"); }
 
-    public boolean visit(stringEmptySpec1 n) { unimplementedVisitor("visit(stringEmptySpec1)"); return true; }
-    public void endVisit(stringEmptySpec1 n) { unimplementedVisitor("endVisit(stringEmptySpec1)"); }
+    public boolean visit(stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON n) { unimplementedVisitor("visit(stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON)"); return true; }
+    public void endVisit(stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON n) { unimplementedVisitor("endVisit(stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON)"); }
 
-    public boolean visit(conditionType0 n) { unimplementedVisitor("visit(conditionType0)"); return true; }
-    public void endVisit(conditionType0 n) { unimplementedVisitor("endVisit(conditionType0)"); }
+    public boolean visit(conditionType__IF n) { unimplementedVisitor("visit(conditionType__IF)"); return true; }
+    public void endVisit(conditionType__IF n) { unimplementedVisitor("endVisit(conditionType__IF)"); }
 
-    public boolean visit(conditionType1 n) { unimplementedVisitor("visit(conditionType1)"); return true; }
-    public void endVisit(conditionType1 n) { unimplementedVisitor("endVisit(conditionType1)"); }
+    public boolean visit(conditionType__UNLESS n) { unimplementedVisitor("visit(conditionType__UNLESS)"); return true; }
+    public void endVisit(conditionType__UNLESS n) { unimplementedVisitor("endVisit(conditionType__UNLESS)"); }
 
-    public boolean visit(booleanValue0 n) { unimplementedVisitor("visit(booleanValue0)"); return true; }
-    public void endVisit(booleanValue0 n) { unimplementedVisitor("endVisit(booleanValue0)"); }
+    public boolean visit(booleanValue__TRUE n) { unimplementedVisitor("visit(booleanValue__TRUE)"); return true; }
+    public void endVisit(booleanValue__TRUE n) { unimplementedVisitor("endVisit(booleanValue__TRUE)"); }
 
-    public boolean visit(booleanValue1 n) { unimplementedVisitor("visit(booleanValue1)"); return true; }
-    public void endVisit(booleanValue1 n) { unimplementedVisitor("endVisit(booleanValue1)"); }
+    public boolean visit(booleanValue__FALSE n) { unimplementedVisitor("visit(booleanValue__FALSE)"); return true; }
+    public void endVisit(booleanValue__FALSE n) { unimplementedVisitor("endVisit(booleanValue__FALSE)"); }
 
-    public boolean visit(signedNumber0 n) { unimplementedVisitor("visit(signedNumber0)"); return true; }
-    public void endVisit(signedNumber0 n) { unimplementedVisitor("endVisit(signedNumber0)"); }
+    public boolean visit(signedNumber__INTEGER n) { unimplementedVisitor("visit(signedNumber__INTEGER)"); return true; }
+    public void endVisit(signedNumber__INTEGER n) { unimplementedVisitor("endVisit(signedNumber__INTEGER)"); }
 
-    public boolean visit(signedNumber1 n) { unimplementedVisitor("visit(signedNumber1)"); return true; }
-    public void endVisit(signedNumber1 n) { unimplementedVisitor("endVisit(signedNumber1)"); }
+    public boolean visit(signedNumber__sign_INTEGER n) { unimplementedVisitor("visit(signedNumber__sign_INTEGER)"); return true; }
+    public void endVisit(signedNumber__sign_INTEGER n) { unimplementedVisitor("endVisit(signedNumber__sign_INTEGER)"); }
 
-    public boolean visit(sign0 n) { unimplementedVisitor("visit(sign0)"); return true; }
-    public void endVisit(sign0 n) { unimplementedVisitor("endVisit(sign0)"); }
+    public boolean visit(sign__PLUS n) { unimplementedVisitor("visit(sign__PLUS)"); return true; }
+    public void endVisit(sign__PLUS n) { unimplementedVisitor("endVisit(sign__PLUS)"); }
 
-    public boolean visit(sign1 n) { unimplementedVisitor("visit(sign1)"); return true; }
-    public void endVisit(sign1 n) { unimplementedVisitor("endVisit(sign1)"); }
+    public boolean visit(sign__MINUS n) { unimplementedVisitor("visit(sign__MINUS)"); return true; }
+    public void endVisit(sign__MINUS n) { unimplementedVisitor("endVisit(sign__MINUS)"); }
 
-    public boolean visit(tab0 n) { unimplementedVisitor("visit(tab0)"); return true; }
-    public void endVisit(tab0 n) { unimplementedVisitor("endVisit(tab0)"); }
+    public boolean visit(tab__DEFAULT n) { unimplementedVisitor("visit(tab__DEFAULT)"); return true; }
+    public void endVisit(tab__DEFAULT n) { unimplementedVisitor("endVisit(tab__DEFAULT)"); }
 
-    public boolean visit(tab1 n) { unimplementedVisitor("visit(tab1)"); return true; }
-    public void endVisit(tab1 n) { unimplementedVisitor("endVisit(tab1)"); }
+    public boolean visit(tab__CONFIGURATION n) { unimplementedVisitor("visit(tab__CONFIGURATION)"); return true; }
+    public void endVisit(tab__CONFIGURATION n) { unimplementedVisitor("endVisit(tab__CONFIGURATION)"); }
 
-    public boolean visit(tab2 n) { unimplementedVisitor("visit(tab2)"); return true; }
-    public void endVisit(tab2 n) { unimplementedVisitor("endVisit(tab2)"); }
+    public boolean visit(tab__INSTANCE n) { unimplementedVisitor("visit(tab__INSTANCE)"); return true; }
+    public void endVisit(tab__INSTANCE n) { unimplementedVisitor("endVisit(tab__INSTANCE)"); }
 
-    public boolean visit(tab3 n) { unimplementedVisitor("visit(tab3)"); return true; }
-    public void endVisit(tab3 n) { unimplementedVisitor("endVisit(tab3)"); }
+    public boolean visit(tab__PROJECT n) { unimplementedVisitor("visit(tab__PROJECT)"); return true; }
+    public void endVisit(tab__PROJECT n) { unimplementedVisitor("endVisit(tab__PROJECT)"); }
 
-    public boolean visit(typeCustomSpecs0 n) { unimplementedVisitor("visit(typeCustomSpecs0)"); return true; }
-    public void endVisit(typeCustomSpecs0 n) { unimplementedVisitor("endVisit(typeCustomSpecs0)"); }
+    public boolean visit(typeCustomSpecs__intRangeSpec_intSpecialSpec n) { unimplementedVisitor("visit(typeCustomSpecs__intRangeSpec_intSpecialSpec)"); return true; }
+    public void endVisit(typeCustomSpecs__intRangeSpec_intSpecialSpec n) { unimplementedVisitor("endVisit(typeCustomSpecs__intRangeSpec_intSpecialSpec)"); }
 
-    public boolean visit(typeCustomSpecs1 n) { unimplementedVisitor("visit(typeCustomSpecs1)"); return true; }
-    public void endVisit(typeCustomSpecs1 n) { unimplementedVisitor("endVisit(typeCustomSpecs1)"); }
+    public boolean visit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n) { unimplementedVisitor("visit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec)"); return true; }
+    public void endVisit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n) { unimplementedVisitor("endVisit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec)"); }
 
-    public boolean visit(conditionalSpecs0 n) { unimplementedVisitor("visit(conditionalSpecs0)"); return true; }
-    public void endVisit(conditionalSpecs0 n) { unimplementedVisitor("endVisit(conditionalSpecs0)"); }
+    public boolean visit(conditionalSpecs__conditionalSpec_SEMICOLON n) { unimplementedVisitor("visit(conditionalSpecs__conditionalSpec_SEMICOLON)"); return true; }
+    public void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON n) { unimplementedVisitor("endVisit(conditionalSpecs__conditionalSpec_SEMICOLON)"); }
 
-    public boolean visit(conditionalSpecs1 n) { unimplementedVisitor("visit(conditionalSpecs1)"); return true; }
-    public void endVisit(conditionalSpecs1 n) { unimplementedVisitor("endVisit(conditionalSpecs1)"); }
+    public boolean visit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON n) { unimplementedVisitor("visit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON)"); return true; }
+    public void endVisit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON n) { unimplementedVisitor("endVisit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON)"); }
 
-    public boolean visit(conditionalSpec0 n) { unimplementedVisitor("visit(conditionalSpec0)"); return true; }
-    public void endVisit(conditionalSpec0 n) { unimplementedVisitor("endVisit(conditionalSpec0)"); }
+    public boolean visit(conditionalSpec__identifier_WITH_identifier n) { unimplementedVisitor("visit(conditionalSpec__identifier_WITH_identifier)"); return true; }
+    public void endVisit(conditionalSpec__identifier_WITH_identifier n) { unimplementedVisitor("endVisit(conditionalSpec__identifier_WITH_identifier)"); }
 
-    public boolean visit(conditionalSpec1 n) { unimplementedVisitor("visit(conditionalSpec1)"); return true; }
-    public void endVisit(conditionalSpec1 n) { unimplementedVisitor("endVisit(conditionalSpec1)"); }
+    public boolean visit(conditionalSpec__identifier_AGAINST_identifier n) { unimplementedVisitor("visit(conditionalSpec__identifier_AGAINST_identifier)"); return true; }
+    public void endVisit(conditionalSpec__identifier_AGAINST_identifier n) { unimplementedVisitor("endVisit(conditionalSpec__identifier_AGAINST_identifier)"); }
 
 
     public boolean visit(ASTNode n)
@@ -445,35 +445,35 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof customRule) return visit((customRule) n);
         else if (n instanceof newPropertySpecs) return visit((newPropertySpecs) n);
         else if (n instanceof conditionalsSpec) return visit((conditionalsSpec) n);
-        else if (n instanceof onOff0) return visit((onOff0) n);
-        else if (n instanceof onOff1) return visit((onOff1) n);
-        else if (n instanceof inout0) return visit((inout0) n);
-        else if (n instanceof inout1) return visit((inout1) n);
-        else if (n instanceof fontStyle0) return visit((fontStyle0) n);
-        else if (n instanceof fontStyle1) return visit((fontStyle1) n);
-        else if (n instanceof fontStyle2) return visit((fontStyle2) n);
-        else if (n instanceof typeOrValuesSpec0) return visit((typeOrValuesSpec0) n);
-        else if (n instanceof typeOrValuesSpec1) return visit((typeOrValuesSpec1) n);
-        else if (n instanceof stringEmptySpec0) return visit((stringEmptySpec0) n);
-        else if (n instanceof stringEmptySpec1) return visit((stringEmptySpec1) n);
-        else if (n instanceof conditionType0) return visit((conditionType0) n);
-        else if (n instanceof conditionType1) return visit((conditionType1) n);
-        else if (n instanceof booleanValue0) return visit((booleanValue0) n);
-        else if (n instanceof booleanValue1) return visit((booleanValue1) n);
-        else if (n instanceof signedNumber0) return visit((signedNumber0) n);
-        else if (n instanceof signedNumber1) return visit((signedNumber1) n);
-        else if (n instanceof sign0) return visit((sign0) n);
-        else if (n instanceof sign1) return visit((sign1) n);
-        else if (n instanceof tab0) return visit((tab0) n);
-        else if (n instanceof tab1) return visit((tab1) n);
-        else if (n instanceof tab2) return visit((tab2) n);
-        else if (n instanceof tab3) return visit((tab3) n);
-        else if (n instanceof typeCustomSpecs0) return visit((typeCustomSpecs0) n);
-        else if (n instanceof typeCustomSpecs1) return visit((typeCustomSpecs1) n);
-        else if (n instanceof conditionalSpecs0) return visit((conditionalSpecs0) n);
-        else if (n instanceof conditionalSpecs1) return visit((conditionalSpecs1) n);
-        else if (n instanceof conditionalSpec0) return visit((conditionalSpec0) n);
-        else if (n instanceof conditionalSpec1) return visit((conditionalSpec1) n);
+        else if (n instanceof onOff__ON) return visit((onOff__ON) n);
+        else if (n instanceof onOff__OFF) return visit((onOff__OFF) n);
+        else if (n instanceof inout__IN) return visit((inout__IN) n);
+        else if (n instanceof inout__OUT) return visit((inout__OUT) n);
+        else if (n instanceof fontStyle__NORMAL) return visit((fontStyle__NORMAL) n);
+        else if (n instanceof fontStyle__BOLD) return visit((fontStyle__BOLD) n);
+        else if (n instanceof fontStyle__ITALIC) return visit((fontStyle__ITALIC) n);
+        else if (n instanceof typeOrValuesSpec__TYPE_identifier_SEMICOLON) return visit((typeOrValuesSpec__TYPE_identifier_SEMICOLON) n);
+        else if (n instanceof typeOrValuesSpec__valuesSpec_SEMICOLON) return visit((typeOrValuesSpec__valuesSpec_SEMICOLON) n);
+        else if (n instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) return visit((stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) n);
+        else if (n instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) return visit((stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) n);
+        else if (n instanceof conditionType__IF) return visit((conditionType__IF) n);
+        else if (n instanceof conditionType__UNLESS) return visit((conditionType__UNLESS) n);
+        else if (n instanceof booleanValue__TRUE) return visit((booleanValue__TRUE) n);
+        else if (n instanceof booleanValue__FALSE) return visit((booleanValue__FALSE) n);
+        else if (n instanceof signedNumber__INTEGER) return visit((signedNumber__INTEGER) n);
+        else if (n instanceof signedNumber__sign_INTEGER) return visit((signedNumber__sign_INTEGER) n);
+        else if (n instanceof sign__PLUS) return visit((sign__PLUS) n);
+        else if (n instanceof sign__MINUS) return visit((sign__MINUS) n);
+        else if (n instanceof tab__DEFAULT) return visit((tab__DEFAULT) n);
+        else if (n instanceof tab__CONFIGURATION) return visit((tab__CONFIGURATION) n);
+        else if (n instanceof tab__INSTANCE) return visit((tab__INSTANCE) n);
+        else if (n instanceof tab__PROJECT) return visit((tab__PROJECT) n);
+        else if (n instanceof typeCustomSpecs__intRangeSpec_intSpecialSpec) return visit((typeCustomSpecs__intRangeSpec_intSpecialSpec) n);
+        else if (n instanceof typeCustomSpecs__stringSpecialSpec_stringEmptySpec) return visit((typeCustomSpecs__stringSpecialSpec_stringEmptySpec) n);
+        else if (n instanceof conditionalSpecs__conditionalSpec_SEMICOLON) return visit((conditionalSpecs__conditionalSpec_SEMICOLON) n);
+        else if (n instanceof conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) return visit((conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) n);
+        else if (n instanceof conditionalSpec__identifier_WITH_identifier) return visit((conditionalSpec__identifier_WITH_identifier) n);
+        else if (n instanceof conditionalSpec__identifier_AGAINST_identifier) return visit((conditionalSpec__identifier_AGAINST_identifier) n);
         throw new UnsupportedOperationException("visit(" + n.getClass().toString() + ")");
     }
     public void endVisit(ASTNode n)
@@ -559,35 +559,35 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof customRule) endVisit((customRule) n);
         else if (n instanceof newPropertySpecs) endVisit((newPropertySpecs) n);
         else if (n instanceof conditionalsSpec) endVisit((conditionalsSpec) n);
-        else if (n instanceof onOff0) endVisit((onOff0) n);
-        else if (n instanceof onOff1) endVisit((onOff1) n);
-        else if (n instanceof inout0) endVisit((inout0) n);
-        else if (n instanceof inout1) endVisit((inout1) n);
-        else if (n instanceof fontStyle0) endVisit((fontStyle0) n);
-        else if (n instanceof fontStyle1) endVisit((fontStyle1) n);
-        else if (n instanceof fontStyle2) endVisit((fontStyle2) n);
-        else if (n instanceof typeOrValuesSpec0) endVisit((typeOrValuesSpec0) n);
-        else if (n instanceof typeOrValuesSpec1) endVisit((typeOrValuesSpec1) n);
-        else if (n instanceof stringEmptySpec0) endVisit((stringEmptySpec0) n);
-        else if (n instanceof stringEmptySpec1) endVisit((stringEmptySpec1) n);
-        else if (n instanceof conditionType0) endVisit((conditionType0) n);
-        else if (n instanceof conditionType1) endVisit((conditionType1) n);
-        else if (n instanceof booleanValue0) endVisit((booleanValue0) n);
-        else if (n instanceof booleanValue1) endVisit((booleanValue1) n);
-        else if (n instanceof signedNumber0) endVisit((signedNumber0) n);
-        else if (n instanceof signedNumber1) endVisit((signedNumber1) n);
-        else if (n instanceof sign0) endVisit((sign0) n);
-        else if (n instanceof sign1) endVisit((sign1) n);
-        else if (n instanceof tab0) endVisit((tab0) n);
-        else if (n instanceof tab1) endVisit((tab1) n);
-        else if (n instanceof tab2) endVisit((tab2) n);
-        else if (n instanceof tab3) endVisit((tab3) n);
-        else if (n instanceof typeCustomSpecs0) endVisit((typeCustomSpecs0) n);
-        else if (n instanceof typeCustomSpecs1) endVisit((typeCustomSpecs1) n);
-        else if (n instanceof conditionalSpecs0) endVisit((conditionalSpecs0) n);
-        else if (n instanceof conditionalSpecs1) endVisit((conditionalSpecs1) n);
-        else if (n instanceof conditionalSpec0) endVisit((conditionalSpec0) n);
-        else if (n instanceof conditionalSpec1) endVisit((conditionalSpec1) n);
+        else if (n instanceof onOff__ON) endVisit((onOff__ON) n);
+        else if (n instanceof onOff__OFF) endVisit((onOff__OFF) n);
+        else if (n instanceof inout__IN) endVisit((inout__IN) n);
+        else if (n instanceof inout__OUT) endVisit((inout__OUT) n);
+        else if (n instanceof fontStyle__NORMAL) endVisit((fontStyle__NORMAL) n);
+        else if (n instanceof fontStyle__BOLD) endVisit((fontStyle__BOLD) n);
+        else if (n instanceof fontStyle__ITALIC) endVisit((fontStyle__ITALIC) n);
+        else if (n instanceof typeOrValuesSpec__TYPE_identifier_SEMICOLON) endVisit((typeOrValuesSpec__TYPE_identifier_SEMICOLON) n);
+        else if (n instanceof typeOrValuesSpec__valuesSpec_SEMICOLON) endVisit((typeOrValuesSpec__valuesSpec_SEMICOLON) n);
+        else if (n instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) endVisit((stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) n);
+        else if (n instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) endVisit((stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) n);
+        else if (n instanceof conditionType__IF) endVisit((conditionType__IF) n);
+        else if (n instanceof conditionType__UNLESS) endVisit((conditionType__UNLESS) n);
+        else if (n instanceof booleanValue__TRUE) endVisit((booleanValue__TRUE) n);
+        else if (n instanceof booleanValue__FALSE) endVisit((booleanValue__FALSE) n);
+        else if (n instanceof signedNumber__INTEGER) endVisit((signedNumber__INTEGER) n);
+        else if (n instanceof signedNumber__sign_INTEGER) endVisit((signedNumber__sign_INTEGER) n);
+        else if (n instanceof sign__PLUS) endVisit((sign__PLUS) n);
+        else if (n instanceof sign__MINUS) endVisit((sign__MINUS) n);
+        else if (n instanceof tab__DEFAULT) endVisit((tab__DEFAULT) n);
+        else if (n instanceof tab__CONFIGURATION) endVisit((tab__CONFIGURATION) n);
+        else if (n instanceof tab__INSTANCE) endVisit((tab__INSTANCE) n);
+        else if (n instanceof tab__PROJECT) endVisit((tab__PROJECT) n);
+        else if (n instanceof typeCustomSpecs__intRangeSpec_intSpecialSpec) endVisit((typeCustomSpecs__intRangeSpec_intSpecialSpec) n);
+        else if (n instanceof typeCustomSpecs__stringSpecialSpec_stringEmptySpec) endVisit((typeCustomSpecs__stringSpecialSpec_stringEmptySpec) n);
+        else if (n instanceof conditionalSpecs__conditionalSpec_SEMICOLON) endVisit((conditionalSpecs__conditionalSpec_SEMICOLON) n);
+        else if (n instanceof conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) endVisit((conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) n);
+        else if (n instanceof conditionalSpec__identifier_WITH_identifier) endVisit((conditionalSpec__identifier_WITH_identifier) n);
+        else if (n instanceof conditionalSpec__identifier_AGAINST_identifier) endVisit((conditionalSpec__identifier_AGAINST_identifier) n);
         throw new UnsupportedOperationException("visit(" + n.getClass().toString() + ")");
     }
 }

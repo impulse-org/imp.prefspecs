@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 131:  fontStyle ::= ITALIC
+ *<li>Rule 130:  fontStyle ::= BOLD
  *</b>
  */
-public class fontStyle2 extends ASTNodeToken implements IfontStyle
+public class fontStyle__BOLD extends ASTNodeToken implements IfontStyle
 {
-    public IToken getITALIC() { return leftIToken; }
+    public IToken getBOLD() { return leftIToken; }
 
-    public fontStyle2(IToken token) { super(token); initialize(); }
+    public fontStyle__BOLD(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

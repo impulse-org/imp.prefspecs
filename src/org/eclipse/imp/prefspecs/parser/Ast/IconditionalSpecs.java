@@ -27,8 +27,8 @@ import java.util.HashMap;
  * is implemented by:
  *<b>
  *<ul>
- *<li>conditionalSpecs0
- *<li>conditionalSpecs1
+ *<li>conditionalSpecs__conditionalSpec_SEMICOLON
+ *<li>conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON
  *</ul>
  *</b>
  */

@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 204:  typeCustomSpecs ::= stringCustomSpec
+ *<li>Rule 187:  tab ::= CONFIGURATION
  *</b>
  */
-public class typeCustomSpecs3 extends ASTNodeToken implements ItypeCustomSpecs
+public class tab__CONFIGURATION extends ASTNodeToken implements Itab
 {
-    public IToken getstringCustomSpec() { return leftIToken; }
+    public IToken getCONFIGURATION() { return leftIToken; }
 
-    public typeCustomSpecs3(IToken token) { super(token); initialize(); }
+    public tab__CONFIGURATION(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 188:  tab ::= INSTANCE
+ *<li>Rule 173:  conditionType ::= UNLESS
  *</b>
  */
-public class tab2 extends ASTNodeToken implements Itab
+public class conditionType__UNLESS extends ASTNodeToken implements IconditionType
 {
-    public IToken getINSTANCE() { return leftIToken; }
+    public IToken getUNLESS() { return leftIToken; }
 
-    public tab2(IToken token) { super(token); initialize(); }
+    public conditionType__UNLESS(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

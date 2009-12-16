@@ -17,8 +17,8 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  * is always implemented by <b>ASTNodeToken</b>. It is also implemented by:
  *<b>
  *<ul>
- *<li>sign0
- *<li>sign1
+ *<li>sign__PLUS
+ *<li>sign__MINUS
  *</ul>
  *</b>
  */

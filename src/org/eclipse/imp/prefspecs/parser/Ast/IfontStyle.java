@@ -17,9 +17,9 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  * is always implemented by <b>ASTNodeToken</b>. It is also implemented by:
  *<b>
  *<ul>
- *<li>fontStyle0
- *<li>fontStyle1
- *<li>fontStyle2
+ *<li>fontStyle__NORMAL
+ *<li>fontStyle__BOLD
+ *<li>fontStyle__ITALIC
  *</ul>
  *</b>
  */

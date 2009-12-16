@@ -25,27 +25,22 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 167:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
+ *<li>Rule 148:  typeOrValuesSpec ::= valuesSpec ;$
  *</b>
  */
-public class stringEmptySpec1 extends ASTNode implements IstringEmptySpec
+public class typeOrValuesSpec__valuesSpec_SEMICOLON extends ASTNode implements ItypeOrValuesSpec
 {
-    private ASTNodeToken _TRUE;
-    private stringValue _stringValue;
+    private valuesSpec _valuesSpec;
 
-    public ASTNodeToken getTRUE() { return _TRUE; }
-    public stringValue getstringValue() { return _stringValue; }
+    public valuesSpec getvaluesSpec() { return _valuesSpec; }
 
-    public stringEmptySpec1(IToken leftIToken, IToken rightIToken,
-                            ASTNodeToken _TRUE,
-                            stringValue _stringValue)
+    public typeOrValuesSpec__valuesSpec_SEMICOLON(IToken leftIToken, IToken rightIToken,
+                                                  valuesSpec _valuesSpec)
     {
         super(leftIToken, rightIToken);
 
-        this._TRUE = _TRUE;
-        ((ASTNode) _TRUE).setParent(this);
-        this._stringValue = _stringValue;
-        ((ASTNode) _stringValue).setParent(this);
+        this._valuesSpec = _valuesSpec;
+        ((ASTNode) _valuesSpec).setParent(this);
         initialize();
     }
 
@@ -55,27 +50,24 @@ public class stringEmptySpec1 extends ASTNode implements IstringEmptySpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_TRUE);
-        list.add(_stringValue);
+        list.add(_valuesSpec);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof stringEmptySpec1)) return false;
+        if (! (o instanceof typeOrValuesSpec__valuesSpec_SEMICOLON)) return false;
         if (! super.equals(o)) return false;
-        stringEmptySpec1 other = (stringEmptySpec1) o;
-        if (! _TRUE.equals(other._TRUE)) return false;
-        if (! _stringValue.equals(other._stringValue)) return false;
+        typeOrValuesSpec__valuesSpec_SEMICOLON other = (typeOrValuesSpec__valuesSpec_SEMICOLON) o;
+        if (! _valuesSpec.equals(other._valuesSpec)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_TRUE.hashCode());
-        hash = hash * 31 + (_stringValue.hashCode());
+        hash = hash * 31 + (_valuesSpec.hashCode());
         return hash;
     }
 
@@ -90,10 +82,7 @@ public class stringEmptySpec1 extends ASTNode implements IstringEmptySpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _TRUE.accept(v);
-            _stringValue.accept(v);
-        }
+            _valuesSpec.accept(v);
         v.endVisit(this);
     }
 }

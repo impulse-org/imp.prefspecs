@@ -25,22 +25,22 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 148:  typeOrValuesSpec ::= valuesSpec ;$
+ *<li>Rule 166:  stringEmptySpec ::= EMPTYALLOWED$ FALSE ;$
  *</b>
  */
-public class typeOrValuesSpec1 extends ASTNode implements ItypeOrValuesSpec
+public class stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON extends ASTNode implements IstringEmptySpec
 {
-    private valuesSpec _valuesSpec;
+    private ASTNodeToken _FALSE;
 
-    public valuesSpec getvaluesSpec() { return _valuesSpec; }
+    public ASTNodeToken getFALSE() { return _FALSE; }
 
-    public typeOrValuesSpec1(IToken leftIToken, IToken rightIToken,
-                             valuesSpec _valuesSpec)
+    public stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON(IToken leftIToken, IToken rightIToken,
+                                                         ASTNodeToken _FALSE)
     {
         super(leftIToken, rightIToken);
 
-        this._valuesSpec = _valuesSpec;
-        ((ASTNode) _valuesSpec).setParent(this);
+        this._FALSE = _FALSE;
+        ((ASTNode) _FALSE).setParent(this);
         initialize();
     }
 
@@ -50,24 +50,24 @@ public class typeOrValuesSpec1 extends ASTNode implements ItypeOrValuesSpec
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_valuesSpec);
+        list.add(_FALSE);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof typeOrValuesSpec1)) return false;
+        if (! (o instanceof stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON)) return false;
         if (! super.equals(o)) return false;
-        typeOrValuesSpec1 other = (typeOrValuesSpec1) o;
-        if (! _valuesSpec.equals(other._valuesSpec)) return false;
+        stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON other = (stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON) o;
+        if (! _FALSE.equals(other._FALSE)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_valuesSpec.hashCode());
+        hash = hash * 31 + (_FALSE.hashCode());
         return hash;
     }
 
@@ -82,7 +82,7 @@ public class typeOrValuesSpec1 extends ASTNode implements ItypeOrValuesSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            _valuesSpec.accept(v);
+            _FALSE.accept(v);
         v.endVisit(this);
     }
 }

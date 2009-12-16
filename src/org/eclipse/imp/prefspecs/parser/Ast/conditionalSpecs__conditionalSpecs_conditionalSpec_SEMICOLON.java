@@ -28,7 +28,7 @@ import java.util.HashMap;
  *<li>Rule 199:  conditionalSpecs ::= conditionalSpecs conditionalSpec ;
  *</b>
  */
-public class conditionalSpecs1 extends ASTNode implements IconditionalSpecs
+public class conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON extends ASTNode implements IconditionalSpecs
 {
     private IconditionalSpecs _conditionalSpecs;
     private IconditionalSpec _conditionalSpec;
@@ -41,10 +41,10 @@ public class conditionalSpecs1 extends ASTNode implements IconditionalSpecs
     public IconditionalSpec getconditionalSpec() { return _conditionalSpec; }
     public ASTNodeToken getSEMICOLON() { return _SEMICOLON; }
 
-    public conditionalSpecs1(IToken leftIToken, IToken rightIToken,
-                             IconditionalSpecs _conditionalSpecs,
-                             IconditionalSpec _conditionalSpec,
-                             ASTNodeToken _SEMICOLON)
+    public conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON(IToken leftIToken, IToken rightIToken,
+                                                                        IconditionalSpecs _conditionalSpecs,
+                                                                        IconditionalSpec _conditionalSpec,
+                                                                        ASTNodeToken _SEMICOLON)
     {
         super(leftIToken, rightIToken);
 
@@ -72,9 +72,9 @@ public class conditionalSpecs1 extends ASTNode implements IconditionalSpecs
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof conditionalSpecs1)) return false;
+        if (! (o instanceof conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON)) return false;
         if (! super.equals(o)) return false;
-        conditionalSpecs1 other = (conditionalSpecs1) o;
+        conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON other = (conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) o;
         if (_conditionalSpecs == null)
             if (other._conditionalSpecs != null) return false;
             else; // continue

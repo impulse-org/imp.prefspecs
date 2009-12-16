@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 180:  sign ::= PLUS
+ *<li>Rule 172:  conditionType ::= IF
  *</b>
  */
-public class sign0 extends ASTNodeToken implements Isign
+public class conditionType__IF extends ASTNodeToken implements IconditionType
 {
-    public IToken getPLUS() { return leftIToken; }
+    public IToken getIF() { return leftIToken; }
 
-    public sign0(IToken token) { super(token); initialize(); }
+    public conditionType__IF(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

@@ -25,22 +25,32 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 147:  typeOrValuesSpec ::= TYPE$ identifier ;$
+ *<li>Rule 200:  conditionalSpec ::= identifier WITH identifier
  *</b>
  */
-public class typeOrValuesSpec0 extends ASTNode implements ItypeOrValuesSpec
+public class conditionalSpec__identifier_WITH_identifier extends ASTNode implements IconditionalSpec
 {
     private identifier _identifier;
+    private ASTNodeToken _WITH;
+    private identifier _identifier3;
 
     public identifier getidentifier() { return _identifier; }
+    public ASTNodeToken getWITH() { return _WITH; }
+    public identifier getidentifier3() { return _identifier3; }
 
-    public typeOrValuesSpec0(IToken leftIToken, IToken rightIToken,
-                             identifier _identifier)
+    public conditionalSpec__identifier_WITH_identifier(IToken leftIToken, IToken rightIToken,
+                                                       identifier _identifier,
+                                                       ASTNodeToken _WITH,
+                                                       identifier _identifier3)
     {
         super(leftIToken, rightIToken);
 
         this._identifier = _identifier;
         ((ASTNode) _identifier).setParent(this);
+        this._WITH = _WITH;
+        ((ASTNode) _WITH).setParent(this);
+        this._identifier3 = _identifier3;
+        ((ASTNode) _identifier3).setParent(this);
         initialize();
     }
 
@@ -51,16 +61,20 @@ public class typeOrValuesSpec0 extends ASTNode implements ItypeOrValuesSpec
     {
         java.util.ArrayList list = new java.util.ArrayList();
         list.add(_identifier);
+        list.add(_WITH);
+        list.add(_identifier3);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof typeOrValuesSpec0)) return false;
+        if (! (o instanceof conditionalSpec__identifier_WITH_identifier)) return false;
         if (! super.equals(o)) return false;
-        typeOrValuesSpec0 other = (typeOrValuesSpec0) o;
+        conditionalSpec__identifier_WITH_identifier other = (conditionalSpec__identifier_WITH_identifier) o;
         if (! _identifier.equals(other._identifier)) return false;
+        if (! _WITH.equals(other._WITH)) return false;
+        if (! _identifier3.equals(other._identifier3)) return false;
         return true;
     }
 
@@ -68,6 +82,8 @@ public class typeOrValuesSpec0 extends ASTNode implements ItypeOrValuesSpec
     {
         int hash = super.hashCode();
         hash = hash * 31 + (_identifier.hashCode());
+        hash = hash * 31 + (_WITH.hashCode());
+        hash = hash * 31 + (_identifier3.hashCode());
         return hash;
     }
 
@@ -82,7 +98,11 @@ public class typeOrValuesSpec0 extends ASTNode implements ItypeOrValuesSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
+        {
             _identifier.accept(v);
+            _WITH.accept(v);
+            _identifier3.accept(v);
+        }
         v.endVisit(this);
     }
 }

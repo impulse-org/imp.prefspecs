@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 173:  conditionType ::= UNLESS
+ *<li>Rule 181:  sign ::= MINUS
  *</b>
  */
-public class conditionType1 extends ASTNodeToken implements IconditionType
+public class sign__MINUS extends ASTNodeToken implements Isign
 {
-    public IToken getUNLESS() { return leftIToken; }
+    public IToken getMINUS() { return leftIToken; }
 
-    public conditionType1(IToken token) { super(token); initialize(); }
+    public sign__MINUS(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

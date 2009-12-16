@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 178:  signedNumber ::= INTEGER
+ *<li>Rule 186:  tab ::= DEFAULT
  *</b>
  */
-public class signedNumber0 extends ASTNodeToken implements IsignedNumber
+public class tab__DEFAULT extends ASTNodeToken implements Itab
 {
-    public IToken getINTEGER() { return leftIToken; }
+    public IToken getDEFAULT() { return leftIToken; }
 
-    public signedNumber0(IToken token) { super(token); initialize(); }
+    public tab__DEFAULT(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

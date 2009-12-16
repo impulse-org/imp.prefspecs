@@ -17,10 +17,10 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  * is always implemented by <b>ASTNodeToken</b>. It is also implemented by:
  *<b>
  *<ul>
- *<li>tab0
- *<li>tab1
- *<li>tab2
- *<li>tab3
+ *<li>tab__DEFAULT
+ *<li>tab__CONFIGURATION
+ *<li>tab__INSTANCE
+ *<li>tab__PROJECT
  *</ul>
  *</b>
  */

@@ -271,92 +271,92 @@ public interface Visitor extends IAstVisitor
     boolean visit(conditionalsSpec n);
     void endVisit(conditionalsSpec n);
 
-    boolean visit(onOff0 n);
-    void endVisit(onOff0 n);
+    boolean visit(onOff__ON n);
+    void endVisit(onOff__ON n);
 
-    boolean visit(onOff1 n);
-    void endVisit(onOff1 n);
+    boolean visit(onOff__OFF n);
+    void endVisit(onOff__OFF n);
 
-    boolean visit(inout0 n);
-    void endVisit(inout0 n);
+    boolean visit(inout__IN n);
+    void endVisit(inout__IN n);
 
-    boolean visit(inout1 n);
-    void endVisit(inout1 n);
+    boolean visit(inout__OUT n);
+    void endVisit(inout__OUT n);
 
-    boolean visit(fontStyle0 n);
-    void endVisit(fontStyle0 n);
+    boolean visit(fontStyle__NORMAL n);
+    void endVisit(fontStyle__NORMAL n);
 
-    boolean visit(fontStyle1 n);
-    void endVisit(fontStyle1 n);
+    boolean visit(fontStyle__BOLD n);
+    void endVisit(fontStyle__BOLD n);
 
-    boolean visit(fontStyle2 n);
-    void endVisit(fontStyle2 n);
+    boolean visit(fontStyle__ITALIC n);
+    void endVisit(fontStyle__ITALIC n);
 
-    boolean visit(typeOrValuesSpec0 n);
-    void endVisit(typeOrValuesSpec0 n);
+    boolean visit(typeOrValuesSpec__TYPE_identifier_SEMICOLON n);
+    void endVisit(typeOrValuesSpec__TYPE_identifier_SEMICOLON n);
 
-    boolean visit(typeOrValuesSpec1 n);
-    void endVisit(typeOrValuesSpec1 n);
+    boolean visit(typeOrValuesSpec__valuesSpec_SEMICOLON n);
+    void endVisit(typeOrValuesSpec__valuesSpec_SEMICOLON n);
 
-    boolean visit(stringEmptySpec0 n);
-    void endVisit(stringEmptySpec0 n);
+    boolean visit(stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON n);
+    void endVisit(stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON n);
 
-    boolean visit(stringEmptySpec1 n);
-    void endVisit(stringEmptySpec1 n);
+    boolean visit(stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON n);
+    void endVisit(stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON n);
 
-    boolean visit(conditionType0 n);
-    void endVisit(conditionType0 n);
+    boolean visit(conditionType__IF n);
+    void endVisit(conditionType__IF n);
 
-    boolean visit(conditionType1 n);
-    void endVisit(conditionType1 n);
+    boolean visit(conditionType__UNLESS n);
+    void endVisit(conditionType__UNLESS n);
 
-    boolean visit(booleanValue0 n);
-    void endVisit(booleanValue0 n);
+    boolean visit(booleanValue__TRUE n);
+    void endVisit(booleanValue__TRUE n);
 
-    boolean visit(booleanValue1 n);
-    void endVisit(booleanValue1 n);
+    boolean visit(booleanValue__FALSE n);
+    void endVisit(booleanValue__FALSE n);
 
-    boolean visit(signedNumber0 n);
-    void endVisit(signedNumber0 n);
+    boolean visit(signedNumber__INTEGER n);
+    void endVisit(signedNumber__INTEGER n);
 
-    boolean visit(signedNumber1 n);
-    void endVisit(signedNumber1 n);
+    boolean visit(signedNumber__sign_INTEGER n);
+    void endVisit(signedNumber__sign_INTEGER n);
 
-    boolean visit(sign0 n);
-    void endVisit(sign0 n);
+    boolean visit(sign__PLUS n);
+    void endVisit(sign__PLUS n);
 
-    boolean visit(sign1 n);
-    void endVisit(sign1 n);
+    boolean visit(sign__MINUS n);
+    void endVisit(sign__MINUS n);
 
-    boolean visit(tab0 n);
-    void endVisit(tab0 n);
+    boolean visit(tab__DEFAULT n);
+    void endVisit(tab__DEFAULT n);
 
-    boolean visit(tab1 n);
-    void endVisit(tab1 n);
+    boolean visit(tab__CONFIGURATION n);
+    void endVisit(tab__CONFIGURATION n);
 
-    boolean visit(tab2 n);
-    void endVisit(tab2 n);
+    boolean visit(tab__INSTANCE n);
+    void endVisit(tab__INSTANCE n);
 
-    boolean visit(tab3 n);
-    void endVisit(tab3 n);
+    boolean visit(tab__PROJECT n);
+    void endVisit(tab__PROJECT n);
 
-    boolean visit(typeCustomSpecs0 n);
-    void endVisit(typeCustomSpecs0 n);
+    boolean visit(typeCustomSpecs__intRangeSpec_intSpecialSpec n);
+    void endVisit(typeCustomSpecs__intRangeSpec_intSpecialSpec n);
 
-    boolean visit(typeCustomSpecs1 n);
-    void endVisit(typeCustomSpecs1 n);
+    boolean visit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n);
+    void endVisit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n);
 
-    boolean visit(conditionalSpecs0 n);
-    void endVisit(conditionalSpecs0 n);
+    boolean visit(conditionalSpecs__conditionalSpec_SEMICOLON n);
+    void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON n);
 
-    boolean visit(conditionalSpecs1 n);
-    void endVisit(conditionalSpecs1 n);
+    boolean visit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON n);
+    void endVisit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON n);
 
-    boolean visit(conditionalSpec0 n);
-    void endVisit(conditionalSpec0 n);
+    boolean visit(conditionalSpec__identifier_WITH_identifier n);
+    void endVisit(conditionalSpec__identifier_WITH_identifier n);
 
-    boolean visit(conditionalSpec1 n);
-    void endVisit(conditionalSpec1 n);
+    boolean visit(conditionalSpec__identifier_AGAINST_identifier n);
+    void endVisit(conditionalSpec__identifier_AGAINST_identifier n);
 
 }
 

@@ -25,27 +25,27 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 179:  signedNumber ::= sign INTEGER
+ *<li>Rule 194:  typeCustomSpecs ::= intRangeSpec intSpecialSpec
  *</b>
  */
-public class signedNumber1 extends ASTNode implements IsignedNumber
+public class typeCustomSpecs__intRangeSpec_intSpecialSpec extends ASTNode implements ItypeCustomSpecs
 {
-    private Isign _sign;
-    private ASTNodeToken _INTEGER;
+    private intRangeSpec _intRangeSpec;
+    private intSpecialSpec _intSpecialSpec;
 
-    public Isign getsign() { return _sign; }
-    public ASTNodeToken getINTEGER() { return _INTEGER; }
+    public intRangeSpec getintRangeSpec() { return _intRangeSpec; }
+    public intSpecialSpec getintSpecialSpec() { return _intSpecialSpec; }
 
-    public signedNumber1(IToken leftIToken, IToken rightIToken,
-                         Isign _sign,
-                         ASTNodeToken _INTEGER)
+    public typeCustomSpecs__intRangeSpec_intSpecialSpec(IToken leftIToken, IToken rightIToken,
+                                                        intRangeSpec _intRangeSpec,
+                                                        intSpecialSpec _intSpecialSpec)
     {
         super(leftIToken, rightIToken);
 
-        this._sign = _sign;
-        ((ASTNode) _sign).setParent(this);
-        this._INTEGER = _INTEGER;
-        ((ASTNode) _INTEGER).setParent(this);
+        this._intRangeSpec = _intRangeSpec;
+        ((ASTNode) _intRangeSpec).setParent(this);
+        this._intSpecialSpec = _intSpecialSpec;
+        ((ASTNode) _intSpecialSpec).setParent(this);
         initialize();
     }
 
@@ -55,27 +55,27 @@ public class signedNumber1 extends ASTNode implements IsignedNumber
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_sign);
-        list.add(_INTEGER);
+        list.add(_intRangeSpec);
+        list.add(_intSpecialSpec);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof signedNumber1)) return false;
+        if (! (o instanceof typeCustomSpecs__intRangeSpec_intSpecialSpec)) return false;
         if (! super.equals(o)) return false;
-        signedNumber1 other = (signedNumber1) o;
-        if (! _sign.equals(other._sign)) return false;
-        if (! _INTEGER.equals(other._INTEGER)) return false;
+        typeCustomSpecs__intRangeSpec_intSpecialSpec other = (typeCustomSpecs__intRangeSpec_intSpecialSpec) o;
+        if (! _intRangeSpec.equals(other._intRangeSpec)) return false;
+        if (! _intSpecialSpec.equals(other._intSpecialSpec)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_sign.hashCode());
-        hash = hash * 31 + (_INTEGER.hashCode());
+        hash = hash * 31 + (_intRangeSpec.hashCode());
+        hash = hash * 31 + (_intSpecialSpec.hashCode());
         return hash;
     }
 
@@ -91,8 +91,8 @@ public class signedNumber1 extends ASTNode implements IsignedNumber
         boolean checkChildren = v.visit(this);
         if (checkChildren)
         {
-            _sign.accept(v);
-            _INTEGER.accept(v);
+            _intRangeSpec.accept(v);
+            _intSpecialSpec.accept(v);
         }
         v.endVisit(this);
     }

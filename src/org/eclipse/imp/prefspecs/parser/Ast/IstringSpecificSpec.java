@@ -34,8 +34,8 @@ import java.util.HashMap;
  *<li>stringSpecialSpec
  *<li>stringDefValueSpec
  *<li>stringValidatorSpec
- *<li>stringEmptySpec0
- *<li>stringEmptySpec1
+ *<li>stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON
+ *<li>stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON
  *</ul>
  *</b>
  */

@@ -25,30 +25,30 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 200:  conditionalSpec ::= identifier WITH identifier
+ *<li>Rule 201:  conditionalSpec ::= identifier AGAINST identifier
  *</b>
  */
-public class conditionalSpec0 extends ASTNode implements IconditionalSpec
+public class conditionalSpec__identifier_AGAINST_identifier extends ASTNode implements IconditionalSpec
 {
     private identifier _identifier;
-    private ASTNodeToken _WITH;
+    private ASTNodeToken _AGAINST;
     private identifier _identifier3;
 
     public identifier getidentifier() { return _identifier; }
-    public ASTNodeToken getWITH() { return _WITH; }
+    public ASTNodeToken getAGAINST() { return _AGAINST; }
     public identifier getidentifier3() { return _identifier3; }
 
-    public conditionalSpec0(IToken leftIToken, IToken rightIToken,
-                            identifier _identifier,
-                            ASTNodeToken _WITH,
-                            identifier _identifier3)
+    public conditionalSpec__identifier_AGAINST_identifier(IToken leftIToken, IToken rightIToken,
+                                                          identifier _identifier,
+                                                          ASTNodeToken _AGAINST,
+                                                          identifier _identifier3)
     {
         super(leftIToken, rightIToken);
 
         this._identifier = _identifier;
         ((ASTNode) _identifier).setParent(this);
-        this._WITH = _WITH;
-        ((ASTNode) _WITH).setParent(this);
+        this._AGAINST = _AGAINST;
+        ((ASTNode) _AGAINST).setParent(this);
         this._identifier3 = _identifier3;
         ((ASTNode) _identifier3).setParent(this);
         initialize();
@@ -61,7 +61,7 @@ public class conditionalSpec0 extends ASTNode implements IconditionalSpec
     {
         java.util.ArrayList list = new java.util.ArrayList();
         list.add(_identifier);
-        list.add(_WITH);
+        list.add(_AGAINST);
         list.add(_identifier3);
         return list;
     }
@@ -69,11 +69,11 @@ public class conditionalSpec0 extends ASTNode implements IconditionalSpec
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof conditionalSpec0)) return false;
+        if (! (o instanceof conditionalSpec__identifier_AGAINST_identifier)) return false;
         if (! super.equals(o)) return false;
-        conditionalSpec0 other = (conditionalSpec0) o;
+        conditionalSpec__identifier_AGAINST_identifier other = (conditionalSpec__identifier_AGAINST_identifier) o;
         if (! _identifier.equals(other._identifier)) return false;
-        if (! _WITH.equals(other._WITH)) return false;
+        if (! _AGAINST.equals(other._AGAINST)) return false;
         if (! _identifier3.equals(other._identifier3)) return false;
         return true;
     }
@@ -82,7 +82,7 @@ public class conditionalSpec0 extends ASTNode implements IconditionalSpec
     {
         int hash = super.hashCode();
         hash = hash * 31 + (_identifier.hashCode());
-        hash = hash * 31 + (_WITH.hashCode());
+        hash = hash * 31 + (_AGAINST.hashCode());
         hash = hash * 31 + (_identifier3.hashCode());
         return hash;
     }
@@ -100,7 +100,7 @@ public class conditionalSpec0 extends ASTNode implements IconditionalSpec
         if (checkChildren)
         {
             _identifier.accept(v);
-            _WITH.accept(v);
+            _AGAINST.accept(v);
             _identifier3.accept(v);
         }
         v.endVisit(this);

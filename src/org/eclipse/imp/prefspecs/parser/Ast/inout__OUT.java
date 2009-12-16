@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 38:  inout ::= IN
+ *<li>Rule 39:  inout ::= OUT
  *</b>
  */
-public class inout0 extends ASTNodeToken implements Iinout
+public class inout__OUT extends ASTNodeToken implements Iinout
 {
-    public IToken getIN() { return leftIToken; }
+    public IToken getOUT() { return leftIToken; }
 
-    public inout0(IToken token) { super(token); initialize(); }
+    public inout__OUT(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

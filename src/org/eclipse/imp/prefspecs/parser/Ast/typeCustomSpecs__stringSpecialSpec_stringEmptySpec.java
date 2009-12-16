@@ -28,7 +28,7 @@ import java.util.HashMap;
  *<li>Rule 195:  typeCustomSpecs ::= stringSpecialSpec stringEmptySpec
  *</b>
  */
-public class typeCustomSpecs1 extends ASTNode implements ItypeCustomSpecs
+public class typeCustomSpecs__stringSpecialSpec_stringEmptySpec extends ASTNode implements ItypeCustomSpecs
 {
     private stringSpecialSpec _stringSpecialSpec;
     private IstringEmptySpec _stringEmptySpec;
@@ -36,9 +36,9 @@ public class typeCustomSpecs1 extends ASTNode implements ItypeCustomSpecs
     public stringSpecialSpec getstringSpecialSpec() { return _stringSpecialSpec; }
     public IstringEmptySpec getstringEmptySpec() { return _stringEmptySpec; }
 
-    public typeCustomSpecs1(IToken leftIToken, IToken rightIToken,
-                            stringSpecialSpec _stringSpecialSpec,
-                            IstringEmptySpec _stringEmptySpec)
+    public typeCustomSpecs__stringSpecialSpec_stringEmptySpec(IToken leftIToken, IToken rightIToken,
+                                                              stringSpecialSpec _stringSpecialSpec,
+                                                              IstringEmptySpec _stringEmptySpec)
     {
         super(leftIToken, rightIToken);
 
@@ -63,9 +63,9 @@ public class typeCustomSpecs1 extends ASTNode implements ItypeCustomSpecs
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof typeCustomSpecs1)) return false;
+        if (! (o instanceof typeCustomSpecs__stringSpecialSpec_stringEmptySpec)) return false;
         if (! super.equals(o)) return false;
-        typeCustomSpecs1 other = (typeCustomSpecs1) o;
+        typeCustomSpecs__stringSpecialSpec_stringEmptySpec other = (typeCustomSpecs__stringSpecialSpec_stringEmptySpec) o;
         if (! _stringSpecialSpec.equals(other._stringSpecialSpec)) return false;
         if (! _stringEmptySpec.equals(other._stringEmptySpec)) return false;
         return true;

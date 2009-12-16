@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 176:  booleanValue ::= FALSE
+ *<li>Rule 175:  booleanValue ::= TRUE
  *</b>
  */
-public class booleanValue1 extends ASTNodeToken implements IbooleanValue
+public class booleanValue__TRUE extends ASTNodeToken implements IbooleanValue
 {
-    public IToken getFALSE() { return leftIToken; }
+    public IToken getTRUE() { return leftIToken; }
 
-    public booleanValue1(IToken token) { super(token); initialize(); }
+    public booleanValue__TRUE(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

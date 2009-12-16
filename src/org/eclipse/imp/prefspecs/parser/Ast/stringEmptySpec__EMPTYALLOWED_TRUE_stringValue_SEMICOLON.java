@@ -25,27 +25,27 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 198:  conditionalSpecs ::= conditionalSpec ;
+ *<li>Rule 167:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
  *</b>
  */
-public class conditionalSpecs0 extends ASTNode implements IconditionalSpecs
+public class stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON extends ASTNode implements IstringEmptySpec
 {
-    private IconditionalSpec _conditionalSpec;
-    private ASTNodeToken _SEMICOLON;
+    private ASTNodeToken _TRUE;
+    private stringValue _stringValue;
 
-    public IconditionalSpec getconditionalSpec() { return _conditionalSpec; }
-    public ASTNodeToken getSEMICOLON() { return _SEMICOLON; }
+    public ASTNodeToken getTRUE() { return _TRUE; }
+    public stringValue getstringValue() { return _stringValue; }
 
-    public conditionalSpecs0(IToken leftIToken, IToken rightIToken,
-                             IconditionalSpec _conditionalSpec,
-                             ASTNodeToken _SEMICOLON)
+    public stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON(IToken leftIToken, IToken rightIToken,
+                                                                    ASTNodeToken _TRUE,
+                                                                    stringValue _stringValue)
     {
         super(leftIToken, rightIToken);
 
-        this._conditionalSpec = _conditionalSpec;
-        ((ASTNode) _conditionalSpec).setParent(this);
-        this._SEMICOLON = _SEMICOLON;
-        ((ASTNode) _SEMICOLON).setParent(this);
+        this._TRUE = _TRUE;
+        ((ASTNode) _TRUE).setParent(this);
+        this._stringValue = _stringValue;
+        ((ASTNode) _stringValue).setParent(this);
         initialize();
     }
 
@@ -55,27 +55,27 @@ public class conditionalSpecs0 extends ASTNode implements IconditionalSpecs
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_conditionalSpec);
-        list.add(_SEMICOLON);
+        list.add(_TRUE);
+        list.add(_stringValue);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof conditionalSpecs0)) return false;
+        if (! (o instanceof stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON)) return false;
         if (! super.equals(o)) return false;
-        conditionalSpecs0 other = (conditionalSpecs0) o;
-        if (! _conditionalSpec.equals(other._conditionalSpec)) return false;
-        if (! _SEMICOLON.equals(other._SEMICOLON)) return false;
+        stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON other = (stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON) o;
+        if (! _TRUE.equals(other._TRUE)) return false;
+        if (! _stringValue.equals(other._stringValue)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_conditionalSpec.hashCode());
-        hash = hash * 31 + (_SEMICOLON.hashCode());
+        hash = hash * 31 + (_TRUE.hashCode());
+        hash = hash * 31 + (_stringValue.hashCode());
         return hash;
     }
 
@@ -91,8 +91,8 @@ public class conditionalSpecs0 extends ASTNode implements IconditionalSpecs
         boolean checkChildren = v.visit(this);
         if (checkChildren)
         {
-            _conditionalSpec.accept(v);
-            _SEMICOLON.accept(v);
+            _TRUE.accept(v);
+            _stringValue.accept(v);
         }
         v.endVisit(this);
     }

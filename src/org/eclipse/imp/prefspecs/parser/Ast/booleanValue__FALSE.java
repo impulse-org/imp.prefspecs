@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 129:  fontStyle ::= NORMAL
+ *<li>Rule 176:  booleanValue ::= FALSE
  *</b>
  */
-public class fontStyle0 extends ASTNodeToken implements IfontStyle
+public class booleanValue__FALSE extends ASTNodeToken implements IbooleanValue
 {
-    public IToken getNORMAL() { return leftIToken; }
+    public IToken getFALSE() { return leftIToken; }
 
-    public fontStyle0(IToken token) { super(token); initialize(); }
+    public booleanValue__FALSE(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

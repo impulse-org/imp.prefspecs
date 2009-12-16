@@ -25,27 +25,22 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 194:  typeCustomSpecs ::= intRangeSpec intSpecialSpec
+ *<li>Rule 147:  typeOrValuesSpec ::= TYPE$ identifier ;$
  *</b>
  */
-public class typeCustomSpecs0 extends ASTNode implements ItypeCustomSpecs
+public class typeOrValuesSpec__TYPE_identifier_SEMICOLON extends ASTNode implements ItypeOrValuesSpec
 {
-    private intRangeSpec _intRangeSpec;
-    private intSpecialSpec _intSpecialSpec;
+    private identifier _identifier;
 
-    public intRangeSpec getintRangeSpec() { return _intRangeSpec; }
-    public intSpecialSpec getintSpecialSpec() { return _intSpecialSpec; }
+    public identifier getidentifier() { return _identifier; }
 
-    public typeCustomSpecs0(IToken leftIToken, IToken rightIToken,
-                            intRangeSpec _intRangeSpec,
-                            intSpecialSpec _intSpecialSpec)
+    public typeOrValuesSpec__TYPE_identifier_SEMICOLON(IToken leftIToken, IToken rightIToken,
+                                                       identifier _identifier)
     {
         super(leftIToken, rightIToken);
 
-        this._intRangeSpec = _intRangeSpec;
-        ((ASTNode) _intRangeSpec).setParent(this);
-        this._intSpecialSpec = _intSpecialSpec;
-        ((ASTNode) _intSpecialSpec).setParent(this);
+        this._identifier = _identifier;
+        ((ASTNode) _identifier).setParent(this);
         initialize();
     }
 
@@ -55,27 +50,24 @@ public class typeCustomSpecs0 extends ASTNode implements ItypeCustomSpecs
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_intRangeSpec);
-        list.add(_intSpecialSpec);
+        list.add(_identifier);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof typeCustomSpecs0)) return false;
+        if (! (o instanceof typeOrValuesSpec__TYPE_identifier_SEMICOLON)) return false;
         if (! super.equals(o)) return false;
-        typeCustomSpecs0 other = (typeCustomSpecs0) o;
-        if (! _intRangeSpec.equals(other._intRangeSpec)) return false;
-        if (! _intSpecialSpec.equals(other._intSpecialSpec)) return false;
+        typeOrValuesSpec__TYPE_identifier_SEMICOLON other = (typeOrValuesSpec__TYPE_identifier_SEMICOLON) o;
+        if (! _identifier.equals(other._identifier)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_intRangeSpec.hashCode());
-        hash = hash * 31 + (_intSpecialSpec.hashCode());
+        hash = hash * 31 + (_identifier.hashCode());
         return hash;
     }
 
@@ -90,10 +82,7 @@ public class typeCustomSpecs0 extends ASTNode implements ItypeCustomSpecs
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
-            _intRangeSpec.accept(v);
-            _intSpecialSpec.accept(v);
-        }
+            _identifier.accept(v);
         v.endVisit(this);
     }
 }

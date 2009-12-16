@@ -17,8 +17,8 @@ package org.eclipse.imp.prefspecs.parser.Ast;
  * is implemented by:
  *<b>
  *<ul>
- *<li>stringEmptySpec0
- *<li>stringEmptySpec1
+ *<li>stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON
+ *<li>stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON
  *</ul>
  *</b>
  */

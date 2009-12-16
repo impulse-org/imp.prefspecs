@@ -28,11 +28,11 @@ import java.util.HashMap;
  *<li>Rule 189:  tab ::= PROJECT
  *</b>
  */
-public class tab3 extends ASTNodeToken implements Itab
+public class tab__PROJECT extends ASTNodeToken implements Itab
 {
     public IToken getPROJECT() { return leftIToken; }
 
-    public tab3(IToken token) { super(token); initialize(); }
+    public tab__PROJECT(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

@@ -33,8 +33,8 @@ import java.util.HashMap;
  *<li>optToolTipSpec
  *<li>enumDefValueSpec
  *<li>columnsSpec
- *<li>typeOrValuesSpec0
- *<li>typeOrValuesSpec1
+ *<li>typeOrValuesSpec__TYPE_identifier_SEMICOLON
+ *<li>typeOrValuesSpec__valuesSpec_SEMICOLON
  *</ul>
  *</b>
  */

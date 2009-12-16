@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 172:  conditionType ::= IF
+ *<li>Rule 129:  fontStyle ::= NORMAL
  *</b>
  */
-public class conditionType0 extends ASTNodeToken implements IconditionType
+public class fontStyle__NORMAL extends ASTNodeToken implements IfontStyle
 {
-    public IToken getIF() { return leftIToken; }
+    public IToken getNORMAL() { return leftIToken; }
 
-    public conditionType0(IToken token) { super(token); initialize(); }
+    public fontStyle__NORMAL(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 130:  fontStyle ::= BOLD
+ *<li>Rule 180:  sign ::= PLUS
  *</b>
  */
-public class fontStyle1 extends ASTNodeToken implements IfontStyle
+public class sign__PLUS extends ASTNodeToken implements Isign
 {
-    public IToken getBOLD() { return leftIToken; }
+    public IToken getPLUS() { return leftIToken; }
 
-    public fontStyle1(IToken token) { super(token); initialize(); }
+    public sign__PLUS(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 9:  onOff ::= OFF
+ *<li>Rule 178:  signedNumber ::= INTEGER
  *</b>
  */
-public class onOff1 extends ASTNodeToken implements IonOff
+public class signedNumber__INTEGER extends ASTNodeToken implements IsignedNumber
 {
-    public IToken getOFF() { return leftIToken; }
+    public IToken getINTEGER() { return leftIToken; }
 
-    public onOff1(IToken token) { super(token); initialize(); }
+    public signedNumber__INTEGER(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {

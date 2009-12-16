@@ -29,25 +29,25 @@ import java.util.HashMap;
  *<ul>
  *<li>identifier
  *<li>stringValue
- *<li>onOff0
- *<li>onOff1
- *<li>inout0
- *<li>inout1
- *<li>fontStyle0
- *<li>fontStyle1
- *<li>fontStyle2
- *<li>conditionType0
- *<li>conditionType1
- *<li>booleanValue0
- *<li>booleanValue1
- *<li>signedNumber0
- *<li>signedNumber1
- *<li>sign0
- *<li>sign1
- *<li>tab0
- *<li>tab1
- *<li>tab2
- *<li>tab3
+ *<li>onOff__ON
+ *<li>onOff__OFF
+ *<li>inout__IN
+ *<li>inout__OUT
+ *<li>fontStyle__NORMAL
+ *<li>fontStyle__BOLD
+ *<li>fontStyle__ITALIC
+ *<li>conditionType__IF
+ *<li>conditionType__UNLESS
+ *<li>booleanValue__TRUE
+ *<li>booleanValue__FALSE
+ *<li>signedNumber__INTEGER
+ *<li>signedNumber__sign_INTEGER
+ *<li>sign__PLUS
+ *<li>sign__MINUS
+ *<li>tab__DEFAULT
+ *<li>tab__CONFIGURATION
+ *<li>tab__INSTANCE
+ *<li>tab__PROJECT
  *</ul>
  *</b>
  */

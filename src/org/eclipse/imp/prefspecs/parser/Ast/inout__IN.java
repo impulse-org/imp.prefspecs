@@ -25,14 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 181:  sign ::= MINUS
+ *<li>Rule 38:  inout ::= IN
  *</b>
  */
-public class sign1 extends ASTNodeToken implements Isign
+public class inout__IN extends ASTNodeToken implements Iinout
 {
-    public IToken getMINUS() { return leftIToken; }
+    public IToken getIN() { return leftIToken; }
 
-    public sign1(IToken token) { super(token); initialize(); }
+    public inout__IN(IToken token) { super(token); initialize(); }
 
     public void accept(IAstVisitor v)
     {
