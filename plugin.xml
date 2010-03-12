@@ -129,4 +129,24 @@
             primary="true">
       </toc>
    </extension>
+   <extension
+         point="org.eclipse.compare.structureCreators">
+      <structureCreator
+            class="org.eclipse.imp.compare.ModelStructureCreator"
+            extensions="pfsp"
+            id="org.eclipse.imp.prefspecs.structureCreator">
+      </structureCreator>
+   </extension>
+   <extension
+         point="org.eclipse.imp.runtime.compareNodeIdentifier">
+         <compareNodeIdentifier
+             language="prefspecs"
+             class="org.eclipse.imp.prefspecs.compare.CompareNodeIdentifier"/>
+   </extension>
+   <extension
+         point="org.eclipse.imp.runtime.entityNameLocator">
+         <entityNameLocator
+             language="prefspecs"
+             class="org.eclipse.imp.prefspecs.referenceResolvers.EntityNameLocator"/>
+   </extension>
 </plugin>
