@@ -267,9 +267,13 @@ public class PrefspecsContentProposer implements IContentProposer
     	if (fieldTypeNames == null) {
     		fieldTypeNames = new ArrayList<String>();
 	    	fieldTypeNames.add("boolean");
+            fieldTypeNames.add("color");
 	    	fieldTypeNames.add("combo");
+            fieldTypeNames.add("directory");
 	    	fieldTypeNames.add("dirlist");
+            fieldTypeNames.add("double");
 	    	fieldTypeNames.add("file");
+	    	fieldTypeNames.add("font");
 	    	fieldTypeNames.add("int");
 	    	fieldTypeNames.add("radio");
 	    	fieldTypeNames.add("string");
