@@ -130,6 +130,13 @@
       </toc>
    </extension>
    <extension
+         point="org.eclipse.imp.runtime.navigationTargetFinder">
+      <navigationTargetFinder
+            class="org.eclipse.imp.prefspecs.navigation.NavigationTargetFinder"
+            language="prefspecs">
+      </navigationTargetFinder>
+   </extension>
+   <extension
          point="org.eclipse.compare.structureCreators">
       <structureCreator
             class="org.eclipse.imp.compare.ModelStructureCreator"
