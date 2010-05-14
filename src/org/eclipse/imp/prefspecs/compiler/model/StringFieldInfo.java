@@ -11,6 +11,8 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.StringFieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class StringFieldInfo extends FieldInfo {
@@ -46,6 +48,11 @@ public class StringFieldInfo extends FieldInfo {
 		this(parentPage, name);
 		this.defaultValue = defValue;
 	}
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new StringFieldCodeGenerator(this);
+    }
 
 	public void setDefaultValue(String s) {
 		defaultValue = s;

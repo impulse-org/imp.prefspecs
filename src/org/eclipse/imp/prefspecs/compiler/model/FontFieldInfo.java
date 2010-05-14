@@ -11,14 +11,14 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FontFieldCodeGenerator;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class FontFieldInfo extends FieldInfo {
 	/**
 	 * The default value associated with this field
-	 * (used to set the value of the concrete instance of
-	 * this field on the default level)
 	 */
 	protected String defaultName= "courier";
 
@@ -36,6 +36,11 @@ public class FontFieldInfo extends FieldInfo {
 		this.defaultHeight= defHeight;
 		this.defaultStyle= defStyle;
 	}
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new FontFieldCodeGenerator(this);
+    }
 
 	public void setDefaultName(String nm) {
 		defaultName= nm;

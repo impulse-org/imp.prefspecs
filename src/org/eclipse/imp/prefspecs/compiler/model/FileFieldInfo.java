@@ -11,6 +11,9 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FileFieldCodeGenerator;
+
 /**
  * @author sutton
  */
@@ -21,5 +24,10 @@ public class FileFieldInfo extends StringFieldInfo {
 
     public FileFieldInfo(PreferencesPageInfo parentPage, String name, String defValue) {
         super(parentPage, name, defValue);
+    }
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new FileFieldCodeGenerator(this);
     }
 }

@@ -56,7 +56,7 @@ public class PreferencesPageInfo extends PreferenceTabContainerBase {
 		virtualFields.remove(vField);
 	}
 
-	public Iterator<FieldInfo> getVirtualFieldInfos() {
+	public Iterator<FieldInfo> getFieldInfos() {
 		return virtualFields.iterator(); 
 	}
 

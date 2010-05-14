@@ -12,6 +12,8 @@
 package org.eclipse.imp.prefspecs.compiler.model;
 
 import org.eclipse.imp.preferences.fields.ColorFieldEditor;
+import org.eclipse.imp.prefspecs.compiler.codegen.ColorFieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class ColorFieldInfo extends FieldInfo {
@@ -31,6 +33,11 @@ public class ColorFieldInfo extends FieldInfo {
 		this(parentPage, name);
 		this.defaultColor= defColor;
 	}
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new ColorFieldCodeGenerator(this);
+    }
 
 	public void setDefaultColor(String nm) {
 		defaultColor= nm;

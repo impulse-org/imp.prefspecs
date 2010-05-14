@@ -12,6 +12,8 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.BooleanFieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class BooleanFieldInfo extends FieldInfo {
@@ -37,6 +39,11 @@ public class BooleanFieldInfo extends FieldInfo {
 		this(parentPage, name, defValue);
 	}
 
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new BooleanFieldCodeGenerator(this);
+    }
+
 	public void setDefaultValue(boolean b) {
 		defaultValue = b;
 	}
@@ -48,6 +55,7 @@ public class BooleanFieldInfo extends FieldInfo {
 	/*
 	 * For reporting on the contents of the virtual field
 	 */
+    @Override
 	public void dump(String prefix, MessageConsoleStream out) {
 		super.dump(prefix, out);
 		String indent = prefix + "  ";

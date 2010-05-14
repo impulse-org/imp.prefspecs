@@ -468,7 +468,7 @@ public class PrefspecsCompiler {
 
 	    private BooleanFieldInfo findConditionalField(optConditionalSpec condSpec, String depFieldName) {
 	        String name = condSpec.getidentifier().getIDENTIFIER().toString();
-            Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();    
+            Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getFieldInfos();    
             while (virtualFieldInfos.hasNext()) {
                 FieldInfo next = virtualFieldInfos.next();
                 String nextName = next.getName();
@@ -1089,7 +1089,7 @@ public class PrefspecsCompiler {
         	FieldInfo conditionalFieldInfo = null;
         	FieldInfo conditionFieldInfo = null;
         	
-        	Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
+        	Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getFieldInfos();	
         	while (virtualFieldInfos.hasNext()) {
         		FieldInfo next = virtualFieldInfos.next();
         		String nextName = next.getName();
@@ -1121,7 +1121,7 @@ public class PrefspecsCompiler {
         	FieldInfo conditionalFieldInfo = null;
         	FieldInfo conditionFieldInfo = null;
         	
-        	Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
+        	Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getFieldInfos();	
         	while (virtualFieldInfos.hasNext()) {
         		FieldInfo next = virtualFieldInfos.next();
         		String nextName = next.getName();

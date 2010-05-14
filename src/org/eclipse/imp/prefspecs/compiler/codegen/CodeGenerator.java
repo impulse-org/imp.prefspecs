@@ -22,27 +22,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.preferences.PreferencesService;
-import org.eclipse.imp.prefspecs.compiler.DynamicEnumValueSource;
-import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
-import org.eclipse.imp.prefspecs.compiler.LiteralEnumValueSource;
-import org.eclipse.imp.prefspecs.compiler.model.BooleanFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.ColorFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.ComboFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.DirListFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.DirectoryFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.DoubleFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.EnumFieldInfo;
 import org.eclipse.imp.prefspecs.compiler.model.FieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.FileFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.FontFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.IntFieldInfo;
 import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
 import org.eclipse.imp.prefspecs.compiler.model.PreferencesTabInfo;
-import org.eclipse.imp.prefspecs.compiler.model.RadioFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.StringFieldInfo;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class CodeGenerator {
+	private static final String GEN_FILE_WARNING=
+	    "/******************************************/\n" +
+	    "/* WARNING: GENERATED FILE - DO NOT EDIT! */\n" +
+	    "/******************************************/\n";
+
 	private final MessageConsoleStream fConsoleStream;
 
     public CodeGenerator(MessageConsoleStream consoleStream) {
@@ -54,6 +44,8 @@ public class CodeGenerator {
 	                                              IProgressMonitor mon)
 	{
 		StringBuilder srcBuilder= new StringBuilder();
+
+		srcBuilder.append(GEN_FILE_WARNING);
 		generateConstantsPartBeforeFields(srcBuilder, packageName, className);
 		generateConstantsFields(srcBuilder, pageInfos);
 		generateConstantsAfterFields(srcBuilder);
@@ -68,6 +60,8 @@ public class CodeGenerator {
 	                                                String packageName, String className, IProgressMonitor mon)
 	{
 		StringBuilder srcBuilder = new StringBuilder();
+
+		srcBuilder.append(GEN_FILE_WARNING);
 		generateInitializersPartBeforeFields(srcBuilder, pluginPkgName, pluginClassName, packageName, className);
 		generateInitializersFields(srcBuilder, pageInfos, constantsClassName);
 		generateInitializersAfterFields(srcBuilder, pluginClassName);
@@ -84,6 +78,7 @@ public class CodeGenerator {
 	{
 	    StringBuilder sb= new StringBuilder();
 
+        sb.append(GEN_FILE_WARNING);
 	    generatePageBeforeTabs(sb, pluginPkgName, pluginClassName, packageName, className);
 	    generateTabs(sb, pageInfo);
 	    generatePageAfterTabs(sb, initializerClassName);
@@ -195,6 +190,8 @@ public class CodeGenerator {
 //        }
 
         StringBuilder srcText = new StringBuilder();
+
+        srcText.append(GEN_FILE_WARNING);
         generateTabBeforeFields(srcText, pageInfo, pluginPkgName, pluginClassName, packageName, className, initializerClassName, pageLevel);
         generateTabFields(pageInfo, constantsClassName, srcText, pageLevel);
         generateTabAfterFields(srcText);
@@ -211,6 +208,8 @@ public class CodeGenerator {
 //	    }
 
 	    StringBuilder srcText = new StringBuilder();
+
+	    srcText.append(GEN_FILE_WARNING);
 	    generateTabBeforeFields(srcText, pageInfo, pluginPkgName, pluginClassName, packageName, className, null, IPreferencesService.PROJECT_LEVEL);
 	    generateTabFields(pageInfo, constantsClassName, srcText, IPreferencesService.PROJECT_LEVEL);
 	    generateTabAfterFields(srcText);
@@ -232,26 +231,24 @@ public class CodeGenerator {
 		srcText.append(" * The preferences service uses Strings as keys for preference values,\n");
 		srcText.append(" * so Strings defined here are used here to designate preference fields.\n");
 		srcText.append(" * These strings are generated automatically from a preferences specification.\n");
-		srcText.append(" * Other constants may be defined here manually.\n");
-		srcText.append(" *\n");
 		srcText.append(" */\n");
-		srcText.append("\n\n");
 		srcText.append("public class " + className + " {\n");
 	}
 
 	protected static void generateConstantsFields(StringBuilder srcText, List<PreferencesPageInfo> pageInfos) {
 	    for(PreferencesPageInfo pageInfo: pageInfos) {
-	        Iterator<FieldInfo> vFields = pageInfo.getVirtualFieldInfos();
-    		while (vFields.hasNext()) {
-    			FieldInfo vField = vFields.next();
-    			srcText.append("\n\tpublic static final String P_" +
-    				vField.getName().toUpperCase() + " = \"" + vField.getName() + "\""+ ";\n");
+	        Iterator<FieldInfo> fields = pageInfo.getFieldInfos();
+    		while (fields.hasNext()) {
+    			FieldInfo field = fields.next();
+    			FieldCodeGenerator fcg = field.getCodeGenerator();
+
+    			srcText.append("\tpublic static final String " + fcg.getPreferenceKey() + " = \"" + field.getName() + "\""+ ";\n");
     		}
 	    }
 	}
 
 	protected static void generateConstantsAfterFields(StringBuilder srcText) {
-		srcText.append("\n}\n");
+		srcText.append("}\n");
 	}
 	
 	
@@ -284,79 +281,18 @@ public class CodeGenerator {
 		srcText.append("\t\tIPreferencesService service = " + pluginClassName + ".getInstance().getPreferencesService();\n\n");
 	}
 
-	// Examples:
-	//service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, PreferenceConstants.P_EMIT_MESSAGES, getDefaultEmitMessages());
-
 	protected static void generateInitializersFields(StringBuilder srcText, List<PreferencesPageInfo> pageInfos, String constantsClassName) {
 	    for(PreferencesPageInfo pageInfo: pageInfos) {
-	        Iterator<FieldInfo> vFields = pageInfo.getVirtualFieldInfos();
-    		while (vFields.hasNext()) {
-    			FieldInfo vField = vFields.next();
-    			if (vField instanceof BooleanFieldInfo) {
-    				BooleanFieldInfo vBool = (BooleanFieldInfo) vField;
-    				srcText.append("\t\tservice.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, " +
-    										constantsClassName + "." + preferenceConstantForName(vBool.getName()) + ", " +
-    										vBool.getDefaultValue() + ");\n");
-    			} else if (vField instanceof IntFieldInfo) {
-    				// Int fields are a subtype of String fields, but int values are stored
-    				// separately in the preferences service
-    				IntFieldInfo vInt = (IntFieldInfo) vField;
-    				srcText.append("\t\tservice.setIntPreference(IPreferencesService.DEFAULT_LEVEL, " +
-    									constantsClassName + "." + preferenceConstantForName(vInt.getName()) + ", " +
-    									vInt.getDefaultValue() + ");\n");
-                } else if (vField instanceof DoubleFieldInfo) {
-                    // Double fields are a subtype of String fields, but double values are stored
-                    // separately in the preferences service
-                    DoubleFieldInfo vDouble = (DoubleFieldInfo) vField;
-                    srcText.append("\t\tservice.setDoublePreference(IPreferencesService.DEFAULT_LEVEL, " +
-                                        constantsClassName + "." + preferenceConstantForName(vDouble.getName()) + ", " +
-                                        vDouble.getDefaultValue() + ");\n");
-                } else if (vField instanceof FontFieldInfo) {
-                    FontFieldInfo vFont = (FontFieldInfo) vField;
-                    srcText.append("\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                                        constantsClassName + "." + preferenceConstantForName(vFont.getName()) + ", " +
-                                        vFont.getDefaultName() + ");\n");
-                } else if (vField instanceof ColorFieldInfo) {
-                    ColorFieldInfo vFont = (ColorFieldInfo) vField;
-                    srcText.append("\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                                        constantsClassName + "." + preferenceConstantForName(vFont.getName()) + ", \"" +
-                                        vFont.getDefaultColor() + "\");\n");
-    			} else if (vField instanceof StringFieldInfo) {
-    				// Subsumes subtypes of VirtualStringFieldInfo
-    				StringFieldInfo vString = (StringFieldInfo) vField;
-    				srcText.append("\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-    									constantsClassName + "." + preferenceConstantForName(vString.getName()) + ", " +
-    									vString.getDefaultValue() + ");\n");
-    			} else if (vField instanceof ComboFieldInfo) {
-                    ComboFieldInfo vCombo= (ComboFieldInfo) vField;
+	        Iterator<FieldInfo> fields = pageInfo.getFieldInfos();
+    		while (fields.hasNext()) {
+    			FieldInfo vField = fields.next();
+    			FieldCodeGenerator fcg = vField.getCodeGenerator();
 
-                    srcText.append("\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                    constantsClassName + "." + preferenceConstantForName(vCombo.getName()) + ", " +
-                    getEnumDefaultValueExpr(vCombo.getValueSource()) + ");\n");
-                } else if (vField instanceof RadioFieldInfo) {
-                    RadioFieldInfo vRadio= (RadioFieldInfo) vField;
-
-                    srcText.append("\t\tservice.setStringPreference(IPreferencesService.DEFAULT_LEVEL, " +
-                    constantsClassName + "." + preferenceConstantForName(vRadio.getName()) + ", " +
-                    getEnumDefaultValueExpr(vRadio.getValueSource()) + ");\n");
-    			} else {
-    				srcText.append("\t\t//Encountered unimplemented initialization for field = " + vField.getName() + "\n");
-    			}
+    			fcg.genPreferenceInitializer(srcText, constantsClassName);
     		}
 	    }
 	}
 
-	private static String getEnumDefaultValueExpr(IEnumValueSource vs) {
-	    if (vs instanceof LiteralEnumValueSource) {
-            LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
-	        return "\"" + levs.getDefaultKey() + "\"";
-	    } else if (vs instanceof DynamicEnumValueSource) {
-            DynamicEnumValueSource devs= (DynamicEnumValueSource) vs;
-	        return "new " + devs.getQualClassName() + "().getDefaultLabel()";
-	    }
-	    return "";
-	}
-	
 	protected static void generateInitializersAfterFields(StringBuilder srcText, String pluginClassName) {
 		// Note:  first closing brace in text is for the initializeDefaultPreferences method
 	    srcText.append("\t}\n\n");	// closing brace for initializeDefaultPreferences
@@ -386,7 +322,6 @@ public class CodeGenerator {
 		srcText.append("package " + packageName + ";\n\n");
 		srcText.append("import java.util.List;\n");
 		srcText.append("import java.util.ArrayList;\n");
-		srcText.append("import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;\n");
 		srcText.append("import org.eclipse.core.runtime.preferences.IEclipsePreferences;\n");
 		srcText.append("import org.eclipse.swt.widgets.Composite;\n");
 		srcText.append("import org.eclipse.swt.widgets.Link;\n");
@@ -431,31 +366,14 @@ public class CodeGenerator {
 
 	protected static void generateTabFields(PreferencesPageInfo pageInfo, String constantsClassName, StringBuilder srcText, String tabLevel) {
 		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(tabLevel);
-		Iterator<FieldInfo> fields = pageInfo.getVirtualFieldInfos();
+		Iterator<FieldInfo> fields = pageInfo.getFieldInfos();
 
 		while (fields.hasNext()) {
 			FieldInfo fieldInfo = (FieldInfo) fields.next();
+			FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 
-			if (fieldInfo instanceof BooleanFieldInfo) {	
-				getTextToCreateBooleanField(srcText, pageInfo, (BooleanFieldInfo) fieldInfo, tabLevel);
-			} else if (fieldInfo instanceof IntFieldInfo) {
-				getTextToCreateIntegerField(srcText, pageInfo, (IntFieldInfo) fieldInfo, tabLevel);	
-            } else if (fieldInfo instanceof DoubleFieldInfo) {
-                getTextToCreateDoubleField(srcText, pageInfo, (DoubleFieldInfo) fieldInfo, tabLevel);   
-			} else if (fieldInfo instanceof StringFieldInfo) {
-				getTextToCreateStringField(srcText, pageInfo, (StringFieldInfo) fieldInfo, tabLevel);
-			} else if (fieldInfo instanceof FontFieldInfo) {
-                getTextToCreateFontField(srcText, pageInfo, (FontFieldInfo) fieldInfo, tabLevel);
-            } else if (fieldInfo instanceof ColorFieldInfo) {
-                getTextToCreateColorField(srcText, pageInfo, (ColorFieldInfo) fieldInfo, tabLevel);
-			} else if (fieldInfo instanceof ComboFieldInfo) {
-                getTextToCreateComboField(srcText, pageInfo, (ComboFieldInfo) fieldInfo, tabLevel);
-            } else if (fieldInfo instanceof RadioFieldInfo) {
-                getTextToCreateRadioField(srcText, pageInfo, (RadioFieldInfo) fieldInfo, tabLevel);
-			} else {
-				srcText.append("\t\t//Encountered unimplemented initialization for field = " + fieldInfo.getName() + "\n\n");
-			}
-			// SMS 16 Aug 2007
+			fcg.genTextToCreateField(srcText, pageInfo, tabLevel);
+
 			if (fieldInfo.getIsConditional()) {
 				generateFieldToggleText(fieldInfo, srcText, tabLevel);
 			}
@@ -464,8 +382,8 @@ public class CodeGenerator {
 
 	protected static void generateFieldToggleText(FieldInfo fieldInfo, StringBuilder srcText, String levelName) {
 		boolean onProjectLevel = levelName.equals(PreferencesService.PROJECT_LEVEL);
-
 		String condFieldName = fieldInfo.getConditionField().getName();
+		FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 
 		srcText.append("\n");
 		// Initialize the sense of the toggle-field listener
@@ -483,19 +401,12 @@ public class CodeGenerator {
 		} else {
 			enabledValueString = "!" + condFieldName + ".getBooleanValue();\n";
 		}
-		
+
 		String enabledFieldName = "isEnabled" + fieldInfo.getName();
 		
 		srcText.append("\t\tboolean " + enabledFieldName + " = " + enabledValueString);
-		if (fieldInfo instanceof StringFieldInfo) {
-			srcText.append("\t\t" + fieldInfo.getName() + ".getTextControl().setEditable(" + enabledFieldName +  ");\n");
-			srcText.append("\t\t" + fieldInfo.getName() + ".getTextControl().setEnabled(" + enabledFieldName +  ");\n");
-			srcText.append("\t\t" + fieldInfo.getName() + ".setEnabled(" + enabledFieldName + ", " + fieldInfo.getName() + ".getParent());\n\n");
-		} else if (fieldInfo instanceof BooleanFieldInfo) {
-			srcText.append("\t\t" + fieldInfo.getName() + ".getChangeControl().setEnabled(" + enabledFieldName +  ");\n");
-			srcText.append("\t\t" + fieldInfo.getName() + ".setEnabled(" + enabledFieldName + ", " + fieldInfo.getName() + ".getParent());\n\n");
-		}
-		// TODO:  May need to address other filed types if and when they're added
+
+		fcg.genTextToEnableField(srcText, enabledFieldName);
 
 		/*
 		 * Example target code:	
@@ -551,241 +462,6 @@ public class CodeGenerator {
         sb.append(s.substring(from+1, to));
     }
 
-    protected static void getTextToCreateSimpleField(StringBuilder srcText,
-            PreferencesPageInfo pageInfo, FieldInfo fieldInfo, String tabLevel, String emptyValue, String fieldEditorTypeName, String fieldHolderExpr)
-    {
-        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; // fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
-        String toolTip = fieldInfo.getToolTipText();
-
-        srcText.append("\n");
-        srcText.append("\t\t" + fieldEditorTypeName + "Editor " + fieldInfo.getName() + " = fPrefUtils.makeNew" + fieldEditorTypeName + "(\n");
-        srcText.append("\t\t\tpage, this, fPrefService,\n");
-        srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n");
-        srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\tparent,\n");
-        srcText.append("\t\t\t" + editable + ", " + editable + ",\n"); // enabled, editable
-        srcText.append("\t\t\t" + (emptyValue != null) + ", " + (emptyValue != null ? emptyValue : "") + ",\n");
-        srcText.append("\t\t\t" + fieldInfo.getIsRemovable() + ");\n"); // false for default tab but not necessarily any others\n";
-        srcText.append("\t\tfields.add(" + fieldInfo.getName() + ");\n\n");
-
-        if (!pageInfo.getNoDetails()) {
-            String linkName = fieldInfo.getName() + "DetailsLink";
-            srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-                                fieldInfo.getName() + ", " + fieldInfo.getName() + fieldHolderExpr + ", \"Details ...\");\n\n");
-            srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
-            srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");
-        }
-    }
-
-	protected static void getTextToCreateBooleanField(StringBuilder srcText,
-		PreferencesPageInfo pageInfo, BooleanFieldInfo fieldInfo, String tabLevel)
-	{
-	    getTextToCreateSimpleField(srcText, pageInfo, fieldInfo, tabLevel, "false", "BooleanField", ".getChangeControl().getParent()");
-	}
-
-    protected static void getTextToCreateIntegerField(StringBuilder srcText,
-			PreferencesPageInfo pageInfo, IntFieldInfo fieldInfo, String tabLevel)
-    {
-        getTextToCreateSimpleField(srcText, pageInfo, fieldInfo, tabLevel, "\"0\"", "IntegerField", ".getTextControl().getParent()");
-	}
-
-    protected static void getTextToCreateDoubleField(StringBuilder srcText,
-            PreferencesPageInfo pageInfo, DoubleFieldInfo fieldInfo, String tabLevel)
-    {
-        getTextToCreateSimpleField(srcText, pageInfo, fieldInfo, tabLevel, "\"0\"", "DoubleField", ".getTextControl().getParent()");
-    }
-
-	/**
-	 * Returns the text needed to create a field of type String or one of the
-	 * supported subtypes of type String
-	 */
-	protected static void getTextToCreateStringField(StringBuilder srcText, PreferencesPageInfo pageInfo, StringFieldInfo fieldInfo, String tabLevel) {
-	    boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true; 	//fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
-        String toolTip = fieldInfo.getToolTipText();
-
-		srcText.append("\n");
-
-		if (fieldInfo instanceof DirListFieldInfo) {
-			srcText.append("\t\tDirectoryListFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewDirectoryListField(\n");
-		} else if (fieldInfo instanceof FileFieldInfo) {
-			srcText.append("\t\tFileFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFileField(\n");
-        } else if (fieldInfo instanceof DirectoryFieldInfo) {
-            srcText.append("\t\tDirectoryFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewDirectoryField(\n");
-		} else if (fieldInfo instanceof StringFieldInfo) {
-			srcText.append("\t\tStringFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewStringField(\n");
-		}
-		srcText.append("\t\t\tpage, this, fPrefService,\n");
-		srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n");
-        srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-		srcText.append("\t\t\tparent,\n");
-		srcText.append("\t\t\t" + editable + ", " + editable + ",\n");
-		srcText.append("\t\t\t" + fieldInfo.getEmptyValueAllowed() + ", \"" + stripQuotes(fieldInfo.getEmptyValue()) + "\",\n"); // empty allowed, empty value
-		srcText.append("\t\t\t" + fieldInfo.getIsRemovable() + ");\n");	// false for default tab but not necessarily any others
-
-		if (fieldInfo.getValidatorQualClass() != null && fieldInfo.getValidatorQualClass().length() > 0) {
-		    srcText.append("\t\t" + fieldInfo.getName() + ".setValidator(new " + fieldInfo.getValidatorQualClass() + "());\n");
-		}
-		srcText.append("\t\tfields.add(" + fieldInfo.getName() + ");\n\n");
-		
-        if (!pageInfo.getNoDetails()) {
-    		String linkName = fieldInfo.getName() + "DetailsLink";
-    		srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-    			fieldInfo.getName() + ", " + fieldInfo.getName() + ".getTextControl().getParent()" + ", \"Details ...\");\n\n");
-    		srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
-    		srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");
-        }
-	}
-
-    /**
-     * Returns the text needed to create a field of type Font
-     */
-    protected static void getTextToCreateFontField(StringBuilder srcText, PreferencesPageInfo pageInfo, FontFieldInfo fieldInfo, String tabLevel) {
-        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
-        String toolTip = fieldInfo.getToolTipText();
-        
-        srcText.append("\n");
-        srcText.append("\t\tFontFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewFontField(\n");
-
-        srcText.append("\t\t\tpage, this, fPrefService,\n");
-        srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n");
-        srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\tparent,\n");
-        srcText.append("\t\t\t" + editable + ", " + editable + ",\n");
-        srcText.append("\t\t\t" + fieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
-
-        srcText.append("\t\tfields.add(" + fieldInfo.getName() + ");\n\n");
-        
-        if (!pageInfo.getNoDetails()) {
-            String linkName = fieldInfo.getName() + "DetailsLink";
-            srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n");
-            srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
-            srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");
-        }
-    }
-
-    /**
-     * Returns the text needed to create a field of type Color
-     */
-    protected static void getTextToCreateColorField(StringBuilder srcText,
-        PreferencesPageInfo pageInfo, ColorFieldInfo fieldInfo, String tabLevel)
-    {
-        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
-        String toolTip = fieldInfo.getToolTipText();
-        
-        String result = "\n";
-        srcText.append("\t\tColorFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewColorField(\n");
-
-        srcText.append("\t\t\tpage, this, fPrefService,\n");
-        srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n");
-        srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\tparent,\n");
-        srcText.append("\t\t\t" + editable + ", " + editable + ",\n");
-        srcText.append("\t\t\t" + fieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
-
-        srcText.append("\t\tfields.add(" + fieldInfo.getName() + ");\n\n");
-        
-        if (!pageInfo.getNoDetails()) {
-            String linkName = fieldInfo.getName() + "DetailsLink";
-            result = result + "\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n";
-            srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
-            srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");
-        }
-    }
-
-    /**
-     * Returns the text needed to create a field of type combo
-     * 
-     * @param pageInfo
-     * @param fieldInfo
-     * @param tabLevel
-     * @return
-     */
-    protected static void getTextToCreateComboField(StringBuilder srcText, PreferencesPageInfo pageInfo, ComboFieldInfo fieldInfo, String tabLevel) {
-        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
-        String toolTip = fieldInfo.getToolTipText();
-
-        srcText.append("\n");
-
-        if (fieldInfo.getValueSource() instanceof DynamicEnumValueSource) {
-            DynamicEnumValueSource evs= (DynamicEnumValueSource) fieldInfo.getValueSource();
-            srcText.append("\t\tIEnumValueProvider evp = new " + evs.getQualClassName() + "();\n");
-        }
-
-        srcText.append("\t\tComboFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewComboField(\n");
-        srcText.append("\t\t\tpage, this, fPrefService,\n");
-        srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n");
-        srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\t" + fieldInfo.getNumColumns() + ",\n");
-        srcText.append("\t\t\t" + getValueStringsExpr(fieldInfo.getValueSource()) + ",\n"); // values
-        srcText.append("\t\t\t" + getLabelStringsExpr(fieldInfo.getValueSource()) + ",\n"); // labels
-        srcText.append("\t\t\tparent,\n");
-        srcText.append("\t\t\t" + editable + ",\n");
-        srcText.append("\t\t\t" + fieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
-        srcText.append("\t\tfields.add(" + fieldInfo.getName() + ");\n\n");
-        
-        if (!pageInfo.getNoDetails()) {
-            String linkName = fieldInfo.getName() + "DetailsLink";
-            srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getComboBoxControl().getParent()" + ", \"Details ...\");\n\n");
-            srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
-            srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");
-        }
-    }
-
-
-    /**
-     * Returns the text needed to create a field of type combo
-     * 
-     * @param pageInfo
-     * @param fieldInfo
-     * @param tabLevel
-     * @return
-     */
-    protected static void getTextToCreateRadioField(StringBuilder srcText,
-        PreferencesPageInfo pageInfo, RadioFieldInfo fieldInfo, String tabLevel)
-    {
-        boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
-        String label = (fieldInfo.getLabel() != null) ? fieldInfo.getLabel() : createLabelFor(fieldInfo.getName());
-        String toolTip = fieldInfo.getToolTipText();
-        
-        srcText.append("\n");
-
-        if (fieldInfo.getValueSource() instanceof DynamicEnumValueSource) {
-            DynamicEnumValueSource evs= (DynamicEnumValueSource) fieldInfo.getValueSource();
-            srcText.append("\t\tIEnumValueProvider evp = new " + evs.getQualClassName() + "();\n");
-        }
-
-        srcText.append("\t\tRadioGroupFieldEditor " + fieldInfo.getName() + " = fPrefUtils.makeNewRadioGroupField(\n");
-        srcText.append("\t\t\tpage, this, fPrefService,\n");
-        srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fieldInfo.getName() + "\", \"" + label + "\",\n");
-        srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\t" + fieldInfo.getNumColumns() + ",\n");
-        srcText.append("\t\t\t" + getValueStringsExpr(fieldInfo.getValueSource()) + ",\n");
-        srcText.append("\t\t\t" + getLabelStringsExpr(fieldInfo.getValueSource()) + ",\n");
-        srcText.append("\t\t\tparent,\n");
-        srcText.append("\t\t\ttrue,\n");
-        srcText.append("\t\t\t" + editable + ",\n");
-        srcText.append("\t\t\t" + fieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
-
-        srcText.append("\t\tfields.add(" + fieldInfo.getName() + ");\n\n");
-        
-        if (!pageInfo.getNoDetails()) {
-            String linkName = fieldInfo.getName() + "DetailsLink";
-            srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
-                fieldInfo.getName() + ", " + fieldInfo.getName() + ".getRadioBoxControl().getParent()" + ", \"Details ...\");\n\n");
-            srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
-            srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");
-        }
-    }
-
-
 	protected static void generateTabAfterFields(StringBuilder srcText) {
 		srcText.append("\t\treturn fields.toArray(new FieldEditor[fields.size()]);\n");
 		
@@ -812,7 +488,7 @@ public class CodeGenerator {
 		srcText.append("\t\t\treturn;\n");
 		srcText.append("\t\t}\n\n");
 		
-		srcText.append("\t\t// If oldeNode is not null, we want to remove any preference-change listeners from it\n");
+		srcText.append("\t\t// If oldNode is not null, we want to remove any preference-change listeners from it\n");
 		srcText.append("\t\tif (oldNode != null && oldNode instanceof IEclipsePreferences && haveCurrentListeners) {\n");
 		srcText.append("\t\t\tremoveProjectPreferenceChangeListeners();\n");
 		srcText.append("\t\t\thaveCurrentListeners = false;\n");
@@ -825,44 +501,18 @@ public class CodeGenerator {
 		
 		srcText.append("\t\t// Declare local references to the fields\n");
 		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		Iterator fields = pageInfo.getVirtualFieldInfos();
+		Iterator fields = pageInfo.getFieldInfos();
 		int i = 0;
 		while (fields.hasNext()) {
-		    FieldInfo cFieldInfo = (FieldInfo) fields.next();
-			String fieldTypeName = null;
-			if (cFieldInfo instanceof BooleanFieldInfo) {
-				fieldTypeName = "BooleanFieldEditor";
-			} else if (cFieldInfo instanceof DirListFieldInfo) {
-				fieldTypeName = "DirectoryListFieldEditor";
-			} else if (cFieldInfo instanceof FileFieldInfo) {
-				fieldTypeName = "FileFieldEditor";
-            } else if (cFieldInfo instanceof IntFieldInfo) {
-                fieldTypeName = "IntegerFieldEditor";
-            } else if (cFieldInfo instanceof DoubleFieldInfo) {
-                fieldTypeName = "DoubleFieldEditor";
-			} else if (cFieldInfo instanceof StringFieldInfo) {
-				fieldTypeName = "StringFieldEditor";
-			} else if (cFieldInfo instanceof FontFieldInfo) {
-			    fieldTypeName = "FontFieldEditor";
-            } else if (cFieldInfo instanceof ColorFieldInfo) {
-                fieldTypeName = "ColorFieldEditor";
-			} else if (cFieldInfo instanceof ComboFieldInfo) {
-			    fieldTypeName = "ComboFieldEditor";
-            } else if (cFieldInfo instanceof RadioFieldInfo) {
-                fieldTypeName = "RadioGroupFieldEditor";
-			} else {
-				fieldTypeName = "UnrecognizedFieldType";
-			}
-			srcText.append("\t\t" + fieldTypeName + " " + cFieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + i + "];\n");
-			srcText.append("\t\tLink " +  cFieldInfo.getName() + "DetailsLink" + " = (Link) fDetailsLinks.get(" + i + ");\n");
+		    FieldInfo fieldInfo = (FieldInfo) fields.next();
+		    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
+			String fieldTypeName = fcg.getFieldEditorTypeName();
+
+			srcText.append("\t\t" + fieldTypeName + " " + fieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + i + "];\n");
+			srcText.append("\t\tLink " +  fieldInfo.getName() + "DetailsLink" + " = (Link) fDetailsLinks.get(" + i + ");\n");
 			i++;
 		}	
 		srcText.append("\n");
-		
-//		fileText = fileText + "\t\tBooleanFieldEditor useDefaultExecutable = (BooleanFieldEditor) fields[0];
-//		fileText = fileText + "\t\tBooleanFieldEditor useDefaultClasspath  = (BooleanFieldEditor) fields[1];
-//		BooleanFieldEditor emitDiagnostics      = (BooleanFieldEditor) fields[2];
-//		BooleanFieldEditor generateLog          = (BooleanFieldEditor) fields[3];
 
 		// Generate next block of field-independent text
 
@@ -890,33 +540,28 @@ public class CodeGenerator {
 		// For conditionally enabled fields, attempts to account for the conditionally enabling
 		// field
 		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		fields = pageInfo.getVirtualFieldInfos();
+		fields = pageInfo.getFieldInfos();
 		while (fields.hasNext()) {
 		    FieldInfo fieldInfo = (FieldInfo) fields.next();
+		    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 			String fieldName = fieldInfo.getName();
-			String enabledRepresentation = null;
+			String enablementExpr = null; // source text for a Boolean expr that evaluates to true if the field should be enabled
+
 			if (!fieldInfo.getIsConditional()) {
 				// simple case--enabled state is what it is
-				enabledRepresentation = "true"; // RMF Boolean.toString(cFieldInfo.getIsEditable());
+				enablementExpr = "true"; // RMF 14 May 2010 - RHS was Boolean.toString(cFieldInfo.getIsEditable());
 			} else {
 				// have to represent the setting with or against the condition field
-				enabledRepresentation = fieldInfo.getConditionField().getName() + ".getBooleanValue()";
+				enablementExpr = fieldInfo.getConditionField().getName() + ".getBooleanValue()";
 				if (!fieldInfo.getConditionalWith())
-					enabledRepresentation = "!" + enabledRepresentation;
+					enablementExpr = "!" + enablementExpr;
 			}
 
-			if (fieldInfo instanceof BooleanFieldInfo) {
-				srcText.append("\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + fieldName + ".getHolder());\n");
-				srcText.append("\t\t\t\t" + fieldName + ".getChangeControl().setEnabled(" + enabledRepresentation + ");\n");
-			} else if (fieldInfo instanceof IntFieldInfo ||
-					   fieldInfo instanceof StringFieldInfo)
-			{
-				srcText.append("\t\t\t\tfPrefUtils.setField(" + fieldName	 + ", " + fieldName + ".getHolder());\n");
-				srcText.append("\t\t\t\t" + fieldName + ".getTextControl().setEditable(" + enabledRepresentation + ");\n");
-				srcText.append("\t\t\t\t" + fieldName + ".getTextControl().setEnabled(" + enabledRepresentation + ");\n");
-				srcText.append("\t\t\t\t" + fieldName + ".setEnabled(" + enabledRepresentation + ", " + fieldName + ".getParent());\n");
-			} // etc.
-			// enable (or not) the details link, regardless of the type of field
+            srcText.append("\t\t\t\tfPrefUtils.setField(" + fieldName    + ", " + fieldName + ".getHolder());\n");
+
+            fcg.genTextToEnableField(srcText, enablementExpr);
+
+            // enable (or not) the details link, regardless of the type of field
 			srcText.append("\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectCombo.getText().length() > 0);\n\n");
 		}	
 		srcText.append("\t\t\t\tclearModifiedMarksOnLabels();\n"); 
@@ -927,7 +572,7 @@ public class CodeGenerator {
 
 		srcText.append("\t\t\t// Add property change listeners\n");
 		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		fields = pageInfo.getVirtualFieldInfos();
+		fields = pageInfo.getFieldInfos();
 		while (fields.hasNext()) {
 		    FieldInfo fieldInfo = (FieldInfo) fields.next();
 			String fieldName = fieldInfo.getName();
@@ -955,24 +600,13 @@ public class CodeGenerator {
 					
 		// Generate field-dependent code for disabling fields
 		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		fields = pageInfo.getVirtualFieldInfos();
+		fields = pageInfo.getFieldInfos();
 		while (fields.hasNext()) {
 		    FieldInfo fieldInfo = (FieldInfo) fields.next();
+		    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 			String fieldName = fieldInfo.getName();
-			if (fieldInfo instanceof BooleanFieldInfo ||
-                fieldInfo instanceof FontFieldInfo) {
-				srcText.append("\t\t\t\t" + fieldName + ".getChangeControl().setEnabled(false);\n\n");
-			} else if (fieldInfo instanceof IntFieldInfo ||
-                       fieldInfo instanceof ColorFieldInfo ||
-			           fieldInfo instanceof DoubleFieldInfo ||
-			           fieldInfo instanceof EnumFieldInfo ||
-					   fieldInfo instanceof StringFieldInfo)
-			{
-				srcText.append("\t\t\t\t" + fieldName + ".getTextControl().setEditable(false);\n");
-				srcText.append("\t\t\t\t" + fieldName + ".getTextControl().setEnabled(false);\n");
-				// I think we want the following also
-				srcText.append("\t\t\t\t" + fieldName + ".setEnabled(false, " + fieldName + ".getParent());\n\n");
-			} // etc.
+
+			fcg.genTextToEnableField(srcText, "false");
 		}
 		srcText.append("\t\t\t}\n\n");
 		
@@ -991,13 +625,7 @@ public class CodeGenerator {
 		// Close class
 		srcText.append("\n}\n");
 	}
-	
-	
-	/*
-	 * Utility subroutines
-	 */
-	
-	
+
 	protected IFile createFileWithText(
 			String srcText, ISourceProject project, String projectSourceLocation, String packageName, String className, IProgressMonitor mon)
 	{
@@ -1017,13 +645,13 @@ public class CodeGenerator {
 				if (!packageFolder.exists()) {
 					packageFolder.create(true, true, mon);
 					if (!packageFolder.exists()) {	
-						fConsoleStream.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
+						fConsoleStream.println("CodeGenerator.createFileWithText(): cannot find or create package folder; returning null" +
 								"\tpackage folder = " + packageFolder.getLocation().toString());
 						return null;
 					}
 				}
 			} catch (CoreException e) {
-				fConsoleStream.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
+				fConsoleStream.println("CodeGenerator.createFileWithText(): CoreException finding or creating package folder; returning null" +
 						"\tpackage folder = " + packageFolder.getLocation().toString());
 				return null;
 			}
@@ -1035,13 +663,13 @@ public class CodeGenerator {
 //			if (!packageFolder.exists()) {
 //				packageFolder.create(true, true, mon);
 //				if (!packageFolder.exists()) {	
-//					fConsoleStream.println("PreferencesFactory.createFileWithText(): cannot find or create package folder; returning null" +
+//					fConsoleStream.println("CodeGenerator.createFileWithText(): cannot find or create package folder; returning null" +
 //							"\tpackage folder = " + packageFolder.getLocation().toString());
 //					return null;
 //				}
 //			}
 //		} catch (CoreException e) {
-//			fConsoleStream.println("PreferencesFactory.createFileWithText(): CoreException finding or creating package folder; returning null" +
+//			fConsoleStream.println("CodeGenerator.createFileWithText(): CoreException finding or creating package folder; returning null" +
 //					"\tpackage folder = " + packageFolder.getLocation().toString());
 //			return null;
 //		}
@@ -1059,125 +687,10 @@ public class CodeGenerator {
 			    file.create(new ByteArrayInputStream(srcText.getBytes()), true, mon);
 			}
 		} catch (CoreException e) {
-			fConsoleStream.println("PreferencesFactory.createFileWithText(): CoreException creating file; returning null");
+			fConsoleStream.println("CodeGenerator.createFileWithText(): CoreException creating file; returning null");
 			return null;
 		}
 		
 		return file;
-	}
-	
-	
-	protected static String preferenceConstantForName(String  name) {
-		return "P_" + name.toUpperCase();
-	}
-	
-	
-	public static String stripQuotes(String s) {
-		if (s == null) 
-			return null;
-		if (s.length() == 0)
-			return s;
-		if (s.length() == 1) {
-			if (s.charAt(0) == '"')
-				return "";
-			else
-				return s;
-		}
-		
-		int newStart, newEnd;
-		if (s.charAt(0) == '"')
-			newStart = 1;
-		else
-			newStart = 0;
-		
-		if (s.charAt(s.length()-1) == '"')
-			newEnd = s.length()-1;
-		else
-			newEnd = s.length();
-		
-		return s.substring(newStart, newEnd);
-	}
-
-	public static String toStringArrayLiteral(String[] strings) {
-	    StringBuilder sb= new StringBuilder();
-        sb.append("new String[] { ");
-	    for(int i= 0; i < strings.length; i++) {
-	        if (i > 0) { sb.append(", "); }
-	        final String s= strings[i];
-            if (s != null) {
-	            appendWithQuotes(s, sb);
-	        } else {
-	            sb.append("null");
-	        }
-        }
-        sb.append(" }");
-	    return sb.toString();
-	}
-
-    public static String toStringArrayLiteral(List<String> strings) {
-        StringBuilder sb= new StringBuilder();
-        sb.append("new String[] { ");
-        for(int i= 0; i < strings.size(); i++) {
-            if (i > 0) { sb.append(", "); }
-            final String s= strings.get(i);
-            if (s != null) {
-                appendWithQuotes(s, sb);
-            } else {
-                sb.append("null");
-            }
-        }
-        sb.append(" }");
-        return sb.toString();
-    }
-
-	public static String getValueStringsExpr(IEnumValueSource vs) {
-	    if (vs instanceof LiteralEnumValueSource) {
-            LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
-            List<String> labels= levs.getValues();
-
-            return toStringArrayLiteral(labels);
-	    } else if (vs instanceof DynamicEnumValueSource) {
-	        // Uses local variable 'evp' generated earlier by the caller
-            return "evp.getValues()";
-	    }
-	    throw new IllegalStateException("Unexpected type of enum value source: " + vs.getClass().getCanonicalName());
-	}
-
-	private static void appendWithQuotes(final String s, StringBuilder sb) {
-        if (!s.startsWith("\"")) {
-            sb.append("\"");
-        }
-        sb.append(s);
-        if (!s.endsWith("\"")) {
-            sb.append("\"");
-        }
-    }
-
-	public static String getLabelStringsExpr(IEnumValueSource vs) {
-	    StringBuilder sb= new StringBuilder();
-
-	    if (vs instanceof LiteralEnumValueSource) {
-            LiteralEnumValueSource levs= (LiteralEnumValueSource) vs;
-            List<String> values= levs.getValues();
-            List<String> labels= levs.getLabels();
-	        
-            sb.append("new String[] { ");
-            for(int i=0; i < labels.size(); i++) {
-                if (i > 0) { sb.append(", "); }
-                if (labels.get(i) != null) {
-                    appendWithQuotes(labels.get(i), sb);
-                } else {
-                    appendWithQuotes(createLabelFor(values.get(i)), sb);
-                }
-            }
-            sb.append(" }");
-	    } else if (vs instanceof DynamicEnumValueSource) {
-//	        DynamicEnumValueSource devs= (DynamicEnumValueSource) vs;
-//
-//	        sb.append("new ");
-//	        sb.append(stripQuotes(devs.getQualClassName()));
-	        sb.append("evp.getLabels()");
-	    }
-	    return sb.toString();
 	}
 }

@@ -12,6 +12,8 @@
 package org.eclipse.imp.prefspecs.compiler.model;
 
 import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.RadioFieldCodeGenerator;
 
 public class RadioFieldInfo extends EnumFieldInfo {
     public RadioFieldInfo(PreferencesPageInfo parentPage, String name) {
@@ -20,5 +22,10 @@ public class RadioFieldInfo extends EnumFieldInfo {
 
     public RadioFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
         super(parentPage, name, valueSource);
+    }
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new RadioFieldCodeGenerator(this);
     }
 }

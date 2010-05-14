@@ -11,6 +11,9 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.DirListFieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
+
 /**
  * @author sutton
  */
@@ -28,5 +31,10 @@ public class DirListFieldInfo extends StringFieldInfo {
 			String defValue, boolean hasSpecial, String special)
 	{
 		this(parentPage, name, defValue);
+	}
+
+	@Override
+	public FieldCodeGenerator getCodeGenerator() {
+	    return new DirListFieldCodeGenerator(this);
 	}
 }

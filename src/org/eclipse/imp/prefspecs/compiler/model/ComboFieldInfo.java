@@ -12,6 +12,8 @@
 package org.eclipse.imp.prefspecs.compiler.model;
 
 import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
+import org.eclipse.imp.prefspecs.compiler.codegen.ComboFieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 
 public class ComboFieldInfo extends EnumFieldInfo {
     public ComboFieldInfo(PreferencesPageInfo parentPage, String name) {
@@ -20,5 +22,10 @@ public class ComboFieldInfo extends EnumFieldInfo {
 
     public ComboFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
         super(parentPage, name, valueSource);
+    }
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new ComboFieldCodeGenerator(this);
     }
 }

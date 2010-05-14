@@ -11,6 +11,8 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.IntFieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class IntFieldInfo extends FieldInfo {
@@ -40,6 +42,11 @@ public class IntFieldInfo extends FieldInfo {
 		this(parentPage, name);
 		this.defaultValue = defValue;
 	}
+
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new IntFieldCodeGenerator(this);
+    }
 
 	public void setDefaultValue(int i) {
 		if (i < getRangeLow() || i > getRangeHigh())
@@ -82,6 +89,6 @@ public class IntFieldInfo extends FieldInfo {
 	public void dump(String prefix, MessageConsoleStream out) {
 		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		out.println(indent + "defaultVallue    = " + getDefaultValue());
+		out.println(indent + "defaultValue    = " + getDefaultValue());
 	}
 }

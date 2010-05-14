@@ -15,10 +15,10 @@ import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 /**
- * A class representing an enumerated field, e.g. a combo box or group of radio buttons.
+ * An abstract base class representing an enumerated field, e.g. a combo box or group of radio buttons.
  * @author rfuhrer@watson.ibm.com
  */
-public class EnumFieldInfo extends FieldInfo {
+public abstract class EnumFieldInfo extends FieldInfo {
     private static final int DEFAULT_NUM_COLS= 2;
 
     private IEnumValueSource fValueSource;
@@ -44,14 +44,6 @@ public class EnumFieldInfo extends FieldInfo {
         return fValueSource;
     }
 
-    /*
-     * For reporting on the contents of the virtual field
-     */
-    public void dump(String prefix, MessageConsoleStream out) {
-        super.dump(prefix, out);
-        out.println(fValueSource.toString());
-    }
-
     public void setNumColumns(int numCols) {
         this.numCols= numCols;
         this.hasNumCols= true;
@@ -63,5 +55,13 @@ public class EnumFieldInfo extends FieldInfo {
 
     public int getNumColumns() {
         return hasNumCols ? numCols : DEFAULT_NUM_COLS;
+    }
+
+    /*
+     * For reporting on the contents of the virtual field
+     */
+    public void dump(String prefix, MessageConsoleStream out) {
+        super.dump(prefix, out);
+        out.println(fValueSource.toString());
     }
 }

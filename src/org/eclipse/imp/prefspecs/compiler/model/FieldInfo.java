@@ -11,9 +11,10 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class FieldInfo {
+public abstract class FieldInfo {
 	/**
 	 * The preferences page with which this field
 	 * is associated
@@ -84,6 +85,8 @@ public class FieldInfo {
 		this.name = name;
 		parentPage.addVirtualFieldInfo(this);
 	}
+
+	public abstract FieldCodeGenerator getCodeGenerator();
 
 	//
 	// Name is only defined through the constructor,

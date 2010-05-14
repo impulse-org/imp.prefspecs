@@ -7,18 +7,17 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
+import org.eclipse.imp.prefspecs.compiler.codegen.DoubleFieldCodeGenerator;
+import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class DoubleFieldInfo extends FieldInfo {
 	/**
 	 * The default value associated with this field
-	 * (used to set the value of the concrete instance of
-	 * this field on the default level)
 	 */
 	protected double defaultValue = 0.0;
 		
@@ -35,8 +34,6 @@ public class DoubleFieldInfo extends FieldInfo {
 	protected double rangeHigh = Double.MAX_VALUE;
 	protected double rangeLow = Double.MIN_VALUE;
 
-
-
 	public DoubleFieldInfo(PreferencesPageInfo parentPage, String name) {
 		super(parentPage, name);
 	}
@@ -46,11 +43,15 @@ public class DoubleFieldInfo extends FieldInfo {
 		this.defaultValue = defValue;
 	}
 
+    @Override
+    public FieldCodeGenerator getCodeGenerator() {
+        return new DoubleFieldCodeGenerator(this);
+    }
 
 	public void setDefaultValue(double d) {
 		if (d < getRangeLow() || d > getRangeHigh())
 			throw new IllegalArgumentException(
-				"VirtualDoubleFieldInfo.setDefaultValue(double):  attempt to set default value = " + d +
+				"DoubleFieldInfo.setDefaultValue(double):  attempt to set default value = " + d +
 				" outside of range = " + getRangeLow() + ".." + getRangeHigh());
 		defaultValue = d;
 	}
@@ -66,7 +67,7 @@ public class DoubleFieldInfo extends FieldInfo {
 	public void setRange(double low, double high) {
 		if (high < low) {
 			throw new IllegalArgumentException(
-				"VirtualDoubleFieldInfo.setRange(double,double):  given high value = " + high +
+				"DoubleFieldInfo.setRange(double,double):  given high value = " + high +
 				" is less than low value " + low);
 		}
 		hasRangeSpec = true;
@@ -82,13 +83,12 @@ public class DoubleFieldInfo extends FieldInfo {
 		return rangeLow;
 	}
 
-
-	/*
+	/**
 	 * For reporting on the contents of the virtual field
 	 */
 	public void dump(String prefix, MessageConsoleStream out) {
 		super.dump(prefix, out);
 		String indent = prefix + "  ";
-		out.println(indent + "defaultVallue    = " + getDefaultValue());
+		out.println(indent + "defaultValue    = " + getDefaultValue());
 	}
 }
