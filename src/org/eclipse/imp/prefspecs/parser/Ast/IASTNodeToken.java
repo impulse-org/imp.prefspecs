@@ -44,10 +44,6 @@ import java.util.HashMap;
  *<li>signedNumber__sign_INTEGER
  *<li>sign__PLUS
  *<li>sign__MINUS
- *<li>tab__DEFAULT
- *<li>tab__CONFIGURATION
- *<li>tab__INSTANCE
- *<li>tab__PROJECT
  *</ul>
  *</b>
  */

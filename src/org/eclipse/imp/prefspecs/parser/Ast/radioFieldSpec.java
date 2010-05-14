@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 64:  radioFieldSpec ::= RADIO$ identifier radioFieldPropertySpecs optConditionalSpec
+ *<li>Rule 62:  radioFieldSpec ::= RADIO$ identifier radioFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class radioFieldSpec extends ASTNode implements IradioFieldSpec

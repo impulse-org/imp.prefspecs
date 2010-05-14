@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * is implemented by <b>optionalSpecs</b>
+ * is implemented by <b>conditionalsSpec</b>
  */
 public interface IoptionalSpecs
 {

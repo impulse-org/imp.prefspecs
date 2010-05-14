@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 65:  stringFieldSpec ::= STRING$ identifier stringFieldPropertySpecs optConditionalSpec
+ *<li>Rule 63:  stringFieldSpec ::= STRING$ identifier stringFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class stringFieldSpec extends ASTNode implements IstringFieldSpec

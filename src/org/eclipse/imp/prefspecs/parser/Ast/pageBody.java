@@ -36,19 +36,22 @@ public class pageBody extends ASTNode implements IpageBody
 {
     private tabsSpec _tabsSpec;
     private fieldsSpec _fieldsSpec;
-    private optionalSpecs _optionalSpecs;
+    private conditionalsSpec _optionalSpecs;
 
     /**
      * The value returned by <b>gettabsSpec</b> may be <b>null</b>
      */
     public tabsSpec gettabsSpec() { return _tabsSpec; }
     public fieldsSpec getfieldsSpec() { return _fieldsSpec; }
-    public optionalSpecs getoptionalSpecs() { return _optionalSpecs; }
+    /**
+     * The value returned by <b>getoptionalSpecs</b> may be <b>null</b>
+     */
+    public conditionalsSpec getoptionalSpecs() { return _optionalSpecs; }
 
     public pageBody(IToken leftIToken, IToken rightIToken,
                     tabsSpec _tabsSpec,
                     fieldsSpec _fieldsSpec,
-                    optionalSpecs _optionalSpecs)
+                    conditionalsSpec _optionalSpecs)
     {
         super(leftIToken, rightIToken);
 
@@ -57,7 +60,7 @@ public class pageBody extends ASTNode implements IpageBody
         this._fieldsSpec = _fieldsSpec;
         ((ASTNode) _fieldsSpec).setParent(this);
         this._optionalSpecs = _optionalSpecs;
-        ((ASTNode) _optionalSpecs).setParent(this);
+        if (_optionalSpecs != null) ((ASTNode) _optionalSpecs).setParent(this);
         initialize();
     }
 
@@ -84,7 +87,10 @@ public class pageBody extends ASTNode implements IpageBody
             else; // continue
         else if (! _tabsSpec.equals(other._tabsSpec)) return false;
         if (! _fieldsSpec.equals(other._fieldsSpec)) return false;
-        if (! _optionalSpecs.equals(other._optionalSpecs)) return false;
+        if (_optionalSpecs == null)
+            if (other._optionalSpecs != null) return false;
+            else; // continue
+        else if (! _optionalSpecs.equals(other._optionalSpecs)) return false;
         return true;
     }
 
@@ -93,7 +99,7 @@ public class pageBody extends ASTNode implements IpageBody
         int hash = super.hashCode();
         hash = hash * 31 + (_tabsSpec == null ? 0 : _tabsSpec.hashCode());
         hash = hash * 31 + (_fieldsSpec.hashCode());
-        hash = hash * 31 + (_optionalSpecs.hashCode());
+        hash = hash * 31 + (_optionalSpecs == null ? 0 : _optionalSpecs.hashCode());
         return hash;
     }
 
@@ -111,7 +117,7 @@ public class pageBody extends ASTNode implements IpageBody
         {
             if (_tabsSpec != null) _tabsSpec.accept(v);
             _fieldsSpec.accept(v);
-            _optionalSpecs.accept(v);
+            if (_optionalSpecs != null) _optionalSpecs.accept(v);
         }
         v.endVisit(this);
     }

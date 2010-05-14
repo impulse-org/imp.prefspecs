@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 66:  booleanFieldPropertySpecs ::= $Empty
+ *<li>Rule 64:  booleanFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 67:  booleanFieldPropertySpecs ::= {$ booleanSpecificSpecs }$
+ *<li>Rule 65:  booleanFieldPropertySpecs ::= {$ booleanSpecificSpecs }$
  *</b>
  */
 public class booleanFieldPropertySpecs extends ASTNode implements IbooleanFieldPropertySpecs

@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 117:  doubleSpecificSpecs ::= doubleSpecificSpec
- *<li>Rule 118:  doubleSpecificSpecs ::= doubleSpecificSpecs doubleSpecificSpec
+ *<li>Rule 113:  doubleSpecificSpecs ::= doubleSpecificSpec
+ *<li>Rule 114:  doubleSpecificSpecs ::= doubleSpecificSpecs doubleSpecificSpec
  *</b>
  */
 public class doubleSpecificSpecList extends AbstractASTNodeList implements IdoubleSpecificSpecs

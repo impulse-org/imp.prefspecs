@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 103:  booleanSpecialSpec ::= HASSPECIAL$ booleanValue ;$
+ *<li>Rule 99:  booleanSpecialSpec ::= HASSPECIAL$ booleanValue ;$
  *</b>
  */
 public class booleanSpecialSpec extends ASTNode implements IbooleanSpecialSpec

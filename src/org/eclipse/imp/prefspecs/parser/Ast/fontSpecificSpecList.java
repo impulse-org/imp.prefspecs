@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 124:  fontSpecificSpecs ::= fontSpecificSpec
- *<li>Rule 125:  fontSpecificSpecs ::= fontSpecificSpecs fontSpecificSpec
+ *<li>Rule 120:  fontSpecificSpecs ::= fontSpecificSpec
+ *<li>Rule 121:  fontSpecificSpecs ::= fontSpecificSpecs fontSpecificSpec
  *</b>
  */
 public class fontSpecificSpecList extends AbstractASTNodeList implements IfontSpecificSpecs

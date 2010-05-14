@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 94:  isEditableSpec ::= ISEDITABLE$ booleanValue ;$
+ *<li>Rule 90:  isEditableSpec ::= ISEDITABLE$ booleanValue ;$
  *</b>
  */
 public class isEditableSpec extends ASTNode implements IisEditableSpec

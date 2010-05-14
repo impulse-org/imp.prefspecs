@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 68:  colorFieldPropertySpecs ::= $Empty
+ *<li>Rule 66:  colorFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 69:  colorFieldPropertySpecs ::= {$ colorSpecificSpecs }$
+ *<li>Rule 67:  colorFieldPropertySpecs ::= {$ colorSpecificSpecs }$
  *</b>
  */
 public class colorFieldPropertySpecs extends ASTNode implements IcolorFieldPropertySpecs

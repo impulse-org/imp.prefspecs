@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 110:  comboSpecificSpecs ::= comboSpecificSpec
- *<li>Rule 111:  comboSpecificSpecs ::= comboSpecificSpecs comboSpecificSpec
+ *<li>Rule 106:  comboSpecificSpecs ::= comboSpecificSpec
+ *<li>Rule 107:  comboSpecificSpecs ::= comboSpecificSpecs comboSpecificSpec
  *</b>
  */
 public class comboSpecificSpecList extends AbstractASTNodeList implements IcomboSpecificSpecs

@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 61:  fileFieldSpec ::= FILE$ identifier fileFieldPropertySpecs optConditionalSpec
+ *<li>Rule 59:  fileFieldSpec ::= FILE$ identifier fileFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class fileFieldSpec extends ASTNode implements IfileFieldSpec

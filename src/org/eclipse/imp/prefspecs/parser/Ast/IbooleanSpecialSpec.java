@@ -16,6 +16,6 @@ package org.eclipse.imp.prefspecs.parser.Ast;
 /**
  * is implemented by <b>booleanSpecialSpec</b>
  */
-public interface IbooleanSpecialSpec extends IbooleanSpecificSpec, ItypeCustomSpecs {}
+public interface IbooleanSpecialSpec extends IbooleanSpecificSpec {}
 
 

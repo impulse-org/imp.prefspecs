@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 149:  valuesSpec ::= VALUES$ {$ staticOrDynamicValues }$
+ *<li>Rule 145:  valuesSpec ::= VALUES$ {$ staticOrDynamicValues }$
  *</b>
  */
 public class valuesSpec extends ASTNode implements IvaluesSpec

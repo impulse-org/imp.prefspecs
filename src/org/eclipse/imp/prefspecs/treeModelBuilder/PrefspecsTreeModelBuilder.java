@@ -20,8 +20,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_AGAINST_
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_WITH_identifier;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
-import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.directoryFieldSpec;
@@ -76,19 +74,15 @@ public class PrefspecsTreeModelBuilder extends TreeModelBuilderBase {
 		public void endVisit(tabsSpec n) {
 			popSubItem();
 		}
-	
-		boolean inDefaultTabSpec = false;
 
         @Override
 		public boolean visit(defaultTabSpec n) {
 			pushSubItem(n);
-			inDefaultTabSpec = true;
 			return true;
 		}
 		
         @Override
 		public void endVisit(defaultTabSpec n) {
-			inDefaultTabSpec = false;
 			popSubItem();
 		}
 		
@@ -259,31 +253,6 @@ public class PrefspecsTreeModelBuilder extends TreeModelBuilderBase {
 		
         @Override
 		public void endVisit(stringFieldSpec n) {
-			popSubItem();
-		}
-
-		
-		// Custom
-		
-        @Override
-		public boolean visit(customSpec n) {
-			pushSubItem(n);
-			return true;
-		}
-		
-        @Override
-		public void endVisit(customSpec n) {
-			popSubItem();
-		}
-		
-        @Override
-		public boolean visit(customRule n) {
-			pushSubItem(n);
-			return true;
-		}
-		
-        @Override
-		public void endVisit(customRule n) {
 			popSubItem();
 		}
 

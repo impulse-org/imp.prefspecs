@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 28:  tabSpecs ::= $Empty
- *<li>Rule 29:  tabSpecs ::= tabSpecs tabSpec
+ *<li>Rule 26:  tabSpecs ::= $Empty
+ *<li>Rule 27:  tabSpecs ::= tabSpecs tabSpec
  *</b>
  */
 public class tabSpecList extends AbstractASTNodeList implements ItabSpecs

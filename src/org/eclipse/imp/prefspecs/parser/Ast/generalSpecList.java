@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 88:  generalSpecs ::= $Empty
- *<li>Rule 89:  generalSpecs ::= generalSpecs generalSpec
+ *<li>Rule 86:  generalSpecs ::= $Empty
+ *<li>Rule 87:  generalSpecs ::= generalSpecs generalSpec
  *</b>
  */
 public class generalSpecList extends AbstractASTNodeList implements IgeneralSpecs

@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 167:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
+ *<li>Rule 161:  stringEmptySpec ::= EMPTYALLOWED$ TRUE stringValue ;$
  *</b>
  */
 public class stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON extends ASTNode implements IstringEmptySpec

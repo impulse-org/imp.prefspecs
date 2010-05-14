@@ -25,13 +25,14 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 1:  prefSpecs ::= optPackageSpec optDetailsSpec topLevelItems
+ *<li>Rule 1:  prefSpecs ::= optPackageSpec optDetailsSpec tabsSpec topLevelItems
  *</b>
  */
 public class prefSpecs extends ASTNode implements IprefSpecs
 {
     private optPackageSpec _optPackageSpec;
     private optDetailsSpec _optDetailsSpec;
+    private tabsSpec _tabsSpec;
     private topLevelItemList _topLevelItems;
 
     /**
@@ -42,11 +43,16 @@ public class prefSpecs extends ASTNode implements IprefSpecs
      * The value returned by <b>getoptDetailsSpec</b> may be <b>null</b>
      */
     public optDetailsSpec getoptDetailsSpec() { return _optDetailsSpec; }
+    /**
+     * The value returned by <b>gettabsSpec</b> may be <b>null</b>
+     */
+    public tabsSpec gettabsSpec() { return _tabsSpec; }
     public topLevelItemList gettopLevelItems() { return _topLevelItems; }
 
     public prefSpecs(IToken leftIToken, IToken rightIToken,
                      optPackageSpec _optPackageSpec,
                      optDetailsSpec _optDetailsSpec,
+                     tabsSpec _tabsSpec,
                      topLevelItemList _topLevelItems)
     {
         super(leftIToken, rightIToken);
@@ -55,6 +61,8 @@ public class prefSpecs extends ASTNode implements IprefSpecs
         if (_optPackageSpec != null) ((ASTNode) _optPackageSpec).setParent(this);
         this._optDetailsSpec = _optDetailsSpec;
         if (_optDetailsSpec != null) ((ASTNode) _optDetailsSpec).setParent(this);
+        this._tabsSpec = _tabsSpec;
+        if (_tabsSpec != null) ((ASTNode) _tabsSpec).setParent(this);
         this._topLevelItems = _topLevelItems;
         ((ASTNode) _topLevelItems).setParent(this);
         initialize();
@@ -68,6 +76,7 @@ public class prefSpecs extends ASTNode implements IprefSpecs
         java.util.ArrayList list = new java.util.ArrayList();
         list.add(_optPackageSpec);
         list.add(_optDetailsSpec);
+        list.add(_tabsSpec);
         list.add(_topLevelItems);
         return list;
     }
@@ -86,6 +95,10 @@ public class prefSpecs extends ASTNode implements IprefSpecs
             if (other._optDetailsSpec != null) return false;
             else; // continue
         else if (! _optDetailsSpec.equals(other._optDetailsSpec)) return false;
+        if (_tabsSpec == null)
+            if (other._tabsSpec != null) return false;
+            else; // continue
+        else if (! _tabsSpec.equals(other._tabsSpec)) return false;
         if (! _topLevelItems.equals(other._topLevelItems)) return false;
         return true;
     }
@@ -95,6 +108,7 @@ public class prefSpecs extends ASTNode implements IprefSpecs
         int hash = super.hashCode();
         hash = hash * 31 + (_optPackageSpec == null ? 0 : _optPackageSpec.hashCode());
         hash = hash * 31 + (_optDetailsSpec == null ? 0 : _optDetailsSpec.hashCode());
+        hash = hash * 31 + (_tabsSpec == null ? 0 : _tabsSpec.hashCode());
         hash = hash * 31 + (_topLevelItems.hashCode());
         return hash;
     }
@@ -113,6 +127,7 @@ public class prefSpecs extends ASTNode implements IprefSpecs
         {
             if (_optPackageSpec != null) _optPackageSpec.accept(v);
             if (_optDetailsSpec != null) _optDetailsSpec.accept(v);
+            if (_tabsSpec != null) _tabsSpec.accept(v);
             _topLevelItems.accept(v);
         }
         v.endVisit(this);

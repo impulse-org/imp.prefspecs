@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 62:  fontFieldSpec ::= FONT$ identifier fontFieldPropertySpecs optConditionalSpec
+ *<li>Rule 60:  fontFieldSpec ::= FONT$ identifier fontFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class fontFieldSpec extends ASTNode implements IfontFieldSpec

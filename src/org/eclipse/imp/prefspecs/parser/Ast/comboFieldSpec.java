@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 57:  comboFieldSpec ::= COMBO$ identifier comboFieldPropertySpecs optConditionalSpec
+ *<li>Rule 55:  comboFieldSpec ::= COMBO$ identifier comboFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class comboFieldSpec extends ASTNode implements IcomboFieldSpec

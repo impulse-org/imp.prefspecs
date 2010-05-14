@@ -31,7 +31,6 @@ import java.util.HashMap;
  *<li>isRemovableSpec
  *<li>optLabelSpec
  *<li>optToolTipSpec
- *<li>stringSpecialSpec
  *<li>stringDefValueSpec
  *<li>stringValidatorSpec
  *<li>stringEmptySpec__EMPTYALLOWED_FALSE_SEMICOLON

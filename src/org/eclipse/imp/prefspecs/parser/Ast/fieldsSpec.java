@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 40:  fieldsSpec ::= FIELDS$ {$ fieldSpecs }$
+ *<li>Rule 38:  fieldsSpec ::= FIELDS$ {$ fieldSpecs }$
  *</b>
  */
 public class fieldsSpec extends ASTNode implements IfieldsSpec

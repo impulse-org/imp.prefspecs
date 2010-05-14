@@ -23,7 +23,6 @@ import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
 import org.eclipse.imp.services.ILabelProvider;
 import org.eclipse.imp.utils.MarkerUtils;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -178,11 +177,6 @@ public class PrefspecsLabelProvider implements ILabelProvider {
 		if (n instanceof stringFieldSpec)
 			return ((stringFieldSpec) n).getidentifier().toString();
 	
-		if (n instanceof customSpec)
-			return "Custom";
-		if (n instanceof customRule)
-			return ((customRule) n).getidentifier().toString();
-		
 		if (n instanceof conditionalsSpec)
 			return "Conditionals";
 		if (n instanceof conditionalSpec__identifier_WITH_identifier)

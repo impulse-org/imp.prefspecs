@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 63:  intFieldSpec ::= INT$ identifier intFieldPropertySpecs optConditionalSpec
+ *<li>Rule 61:  intFieldSpec ::= INT$ identifier intFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class intFieldSpec extends ASTNode implements IintFieldSpec

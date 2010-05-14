@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 123:  doubleDefValueSpec ::= DEFVALUE$ DECIMAL ;$
+ *<li>Rule 119:  doubleDefValueSpec ::= DEFVALUE$ DECIMAL ;$
  *</b>
  */
 public class doubleDefValueSpec extends ASTNode implements IdoubleDefValueSpec

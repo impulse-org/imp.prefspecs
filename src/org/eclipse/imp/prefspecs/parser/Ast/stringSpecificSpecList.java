@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 158:  stringSpecificSpecs ::= stringSpecificSpec
- *<li>Rule 159:  stringSpecificSpecs ::= stringSpecificSpecs stringSpecificSpec
+ *<li>Rule 154:  stringSpecificSpecs ::= stringSpecificSpec
+ *<li>Rule 155:  stringSpecificSpecs ::= stringSpecificSpecs stringSpecificSpec
  *</b>
  */
 public class stringSpecificSpecList extends AbstractASTNodeList implements IstringSpecificSpecs

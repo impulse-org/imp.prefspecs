@@ -47,35 +47,27 @@ import org.eclipse.imp.prefspecs.parser.Ast.signedNumber__INTEGER;
 import org.eclipse.imp.prefspecs.parser.Ast.signedNumber__sign_INTEGER;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__CONFIGURATION;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__DEFAULT;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__INSTANCE;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__PROJECT;
 import org.eclipse.imp.services.IOccurrenceMarker;
 
 public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceMarker {
-
-	private List fOccurrences = Collections.EMPTY_LIST;
-	private IAst decl;
+	private List<Object> fOccurrences = Collections.emptyList();
 
 	public String getKindName() {
 		return "prefspecs Occurence Marker";
 	}
 
-	public List<Object> getOccurrencesOf(IParseController parseController,
-			Object ast) {
-
+	public List<Object> getOccurrencesOf(IParseController parseController, Object ast) {
 		if (ast == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		// Check whether we even have an AST in which to find occurrences
 		ASTNode root = (ASTNode) parseController.getCurrentAst();
 		if (root == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
-		fOccurrences = new ArrayList();
+		fOccurrences = new ArrayList<Object>();
 
 		// For those selections where only the occurrence of the given
 		// instance is to be marked
@@ -167,17 +159,12 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 	
 	
 	public boolean isTabNode(Object ast) {
-		if (ast instanceof identifier ||
-				ast instanceof tab__DEFAULT || ast instanceof tab__CONFIGURATION ||
-				ast instanceof tab__INSTANCE || ast instanceof tab__PROJECT)
-		{
+		if (ast instanceof identifier) {
 			return true;
 		}
 		return false;
 	}
-	
-	
-	
+
 	/**
 	 * Test whether the given object represents an element in the source
 	 * text for which the elements to be marked need to be determined by
@@ -189,10 +176,7 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 	 * 				instances to be marked
 	 */
 	public boolean nodeKindIndicatesComputedOccurrences(Object ast) {
-		if (ast instanceof identifier ||
-			(isTabNodeToken((ASTNodeToken)ast)) ||
-			isTabNode(ast))
-		{
+		if (ast instanceof identifier || (isTabNodeToken((ASTNodeToken)ast)) || isTabNode(ast)) {
 			return true;
 		}
 		return false;
@@ -431,8 +415,7 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 			// If the ast represents a defaultTabSpec, or the default tab within a default tab spec,
 			// or a default tab itself, then mark this default tab spec
 			if (ast instanceof defaultTabSpec ||
-				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof defaultTabSpec)) ||
-				(ast instanceof tab__DEFAULT))
+				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof defaultTabSpec)))
 			{
 				fOccurrences.add(n);
 			}
@@ -443,8 +426,7 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 			// If the ast represents a configurationTabSpec, or the configuration tab within a configuration tab spec,
 			// or a configuration tab itself, then mark this configuration tab spec
 			if (ast instanceof configurationTabSpec ||
-				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof configurationTabSpec)) ||
-				(ast instanceof tab__CONFIGURATION))
+				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof configurationTabSpec)))
 			{
 				fOccurrences.add(n);
 			}
@@ -455,8 +437,7 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 			// If the ast represents an instanceTabSpec, or the instance tab within an instance tab spec,
 			// or an instance tab itself, then mark this instance tab spec
 			if (ast instanceof instanceTabSpec ||
-				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof instanceTabSpec)) ||
-				(ast instanceof tab__INSTANCE))
+				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof instanceTabSpec)))
 			{
 				fOccurrences.add(n);
 			}
@@ -467,73 +448,11 @@ public class PrefspecsOccurrenceMarker implements ILanguageService, IOccurrenceM
 			// If the ast represents a projectTabSpec, or the project tab within a project tab spec,
 			// or a project tab itself, then mark this project tab spec
 			if (ast instanceof projectTabSpec ||
-				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof projectTabSpec)) ||
-				(ast instanceof tab__PROJECT))
+				((ast instanceof ASTNodeToken) && (isTabNodeToken((ASTNodeToken) ast) && ((ASTNodeToken)ast).getParent() instanceof projectTabSpec)))
 			{
 				fOccurrences.add(n);
 			}
 			return true;
-		}
-		
-
-		
-		
-		// Default tab
-		public boolean visit(tab__DEFAULT n) {
-			// Record this occurrence if the AST is a default tab spec,
-			// a default tab reference within a default tab spec,
-			// or a default tab itself
-			if ((ast instanceof defaultTabSpec) ||
-				((ast instanceof ASTNodeToken) && (((ASTNodeToken)ast).getParent() instanceof defaultTabSpec)) ||
-				(ast instanceof tab__DEFAULT))
-			{
-				fOccurrences.add(n);
-			}
-			return false;
-		}
-		
-		
-		// Configuration tab
-		public boolean visit(tab__CONFIGURATION n) {
-			// Record this occurrence if the AST is a configuration tab spec,
-			// a configuration tab reference within a configuration tab spec,
-			// or a configuration tab itself
-			if ((ast instanceof configurationTabSpec) ||
-				((ast instanceof ASTNodeToken) && (((ASTNodeToken)ast).getParent() instanceof configurationTabSpec)) ||
-				(ast instanceof tab__CONFIGURATION))
-			{
-				fOccurrences.add(n);
-			}
-			return false;
-		}
-
-		
-		// Instance tab
-		public boolean visit(tab__INSTANCE n) {
-			// Record this occurrence if the AST is an instance tab spec,
-			// an instance tab reference within an instance tab spec,
-			// or an instance tab itself
-			if ((ast instanceof instanceTabSpec) ||
-				((ast instanceof ASTNodeToken) && (((ASTNodeToken)ast).getParent() instanceof instanceTabSpec)) ||
-				(ast instanceof tab__INSTANCE))
-			{
-				fOccurrences.add(n);
-			}
-			return false;
-		}
-		
-		// Project tab
-		public boolean visit(tab__PROJECT n) {
-			// Record this occurrence if the AST is an project tab spec,
-			// an project tab reference within an project tab spec,
-			// or an project tab itself
-			if ((ast instanceof projectTabSpec) ||
-				((ast instanceof ASTNodeToken) && (((ASTNodeToken)ast).getParent() instanceof projectTabSpec)) ||
-				(ast instanceof tab__PROJECT))
-			{
-				fOccurrences.add(n);
-			}
-			return false;
 		}
 	}
 }

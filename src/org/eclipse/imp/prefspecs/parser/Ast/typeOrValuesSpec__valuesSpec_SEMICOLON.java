@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 148:  typeOrValuesSpec ::= valuesSpec ;$
+ *<li>Rule 144:  typeOrValuesSpec ::= valuesSpec ;$
  *</b>
  */
 public class typeOrValuesSpec__valuesSpec_SEMICOLON extends ASTNode implements ItypeOrValuesSpec

@@ -4,9 +4,9 @@
    <extension
          point="org.eclipse.imp.runtime.languageDescription">
       <language
-            description="Language for specifying preference fields and preference pages"
-            extensions="pfsp"
             icon="icons/prefspecs_file.gif"
+            extensions="pfsp"
+            description="Language for specifying preference fields and preference pages"
             language="prefspecs">
       </language>
    </extension>
@@ -76,10 +76,10 @@
             id="org.eclipse.imp.prefspecs.projectContextMenu">
          <action
                label="Enable PrefSpecs Builder"
-               menubarPath="org.eclipse.imp.metatooling.projectContextMenu/group1"
+               icon="icons/builderEnable.gif"
                tooltip="Enable the preferences specifcation builder for this project"
                class="org.eclipse.imp.prefspecs.actions.EnableNature"
-               icon="icons/builderEnable.gif"
+               menubarPath="org.eclipse.imp.metatooling.projectContextMenu/group1"
                id="org.eclipse.imp.prefspecs.actions.enableNatureAction">
          </action>
       </objectContribution>
@@ -124,9 +124,9 @@
    <extension
          point="org.eclipse.help.toc">
       <toc
-            category="IMP"
             file="docs/toc.xml"
-            primary="true">
+            primary="true"
+            category="IMP">
       </toc>
    </extension>
    <extension
@@ -139,21 +139,38 @@
    <extension
          point="org.eclipse.compare.structureCreators">
       <structureCreator
-            class="org.eclipse.imp.compare.ModelStructureCreator"
             extensions="pfsp"
+            class="org.eclipse.imp.compare.ModelStructureCreator"
             id="org.eclipse.imp.prefspecs.structureCreator">
       </structureCreator>
    </extension>
    <extension
          point="org.eclipse.imp.runtime.compareNodeIdentifier">
-         <compareNodeIdentifier
-             language="prefspecs"
-             class="org.eclipse.imp.prefspecs.compare.CompareNodeIdentifier"/>
+      <compareNodeIdentifier
+            class="org.eclipse.imp.prefspecs.compare.CompareNodeIdentifier"
+            language="prefspecs">
+      </compareNodeIdentifier>
    </extension>
    <extension
          point="org.eclipse.imp.runtime.entityNameLocator">
-         <entityNameLocator
-             language="prefspecs"
-             class="org.eclipse.imp.prefspecs.referenceResolvers.EntityNameLocator"/>
+      <entityNameLocator
+            class="org.eclipse.imp.prefspecs.referenceResolvers.EntityNameLocator"
+            language="prefspecs">
+      </entityNameLocator>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.imp.prefspecs.preferences.PrefspecsPreferencesInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="PreferenceSpecifications"
+            class="org.eclipse.imp.prefspecs.preferences.PreferenceSpecificationsPreferencePage"
+            id="org.eclipse.imp.prefspecs.preferences.PreferenceSpecifications">
+      </page>
+   </extension>
+
 </plugin>

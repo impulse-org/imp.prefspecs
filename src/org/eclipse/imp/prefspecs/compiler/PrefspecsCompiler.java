@@ -50,33 +50,22 @@ import org.eclipse.imp.parser.SymbolTable;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.prefspecs.PrefspecsPlugin;
 import org.eclipse.imp.prefspecs.compiler.codegen.PreferencesFactory;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteBooleanFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteColorFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteComboFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirListFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteDirectoryFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteDoubleFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteFileFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteFontFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteIntFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteRadioFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.ConcreteStringFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.PreferencesPageInfo;
-import org.eclipse.imp.prefspecs.pageinfo.PreferencesTabInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualBooleanFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualColorFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualComboFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualDirListFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualDirectoryFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualDoubleFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualEnumFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualFileFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualFontFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualIntFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualRadioFieldInfo;
-import org.eclipse.imp.prefspecs.pageinfo.VirtualStringFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.IPreferenceTabContainer;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.PreferencesTabInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.BooleanFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.ColorFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.ComboFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.DirListFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.DirectoryFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.DoubleFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.EnumFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.FieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.FileFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.FontFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.IntFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.RadioFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.pageinfo.StringFieldInfo;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNodeToken;
@@ -108,7 +97,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpec__identifier_WITH_ide
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs__conditionalSpec_SEMICOLON;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON;
 import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
 import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.directoryFieldPropertySpecs;
@@ -146,6 +134,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.optLabelSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.optPackageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.optToolTipSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
+import org.eclipse.imp.prefspecs.parser.Ast.prefSpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
@@ -159,7 +148,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec__EMPTYALLOWED_FALSE_
 import org.eclipse.imp.prefspecs.parser.Ast.stringEmptySpec__EMPTYALLOWED_TRUE_stringValue_SEMICOLON;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.stringSpecialSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringSpecificSpecList;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValidatorSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringValue;
@@ -199,8 +187,10 @@ public class PrefspecsCompiler {
 	protected String fProjectName = null;
 	protected String fLanguageName = null;
 
+	protected PreferencesInfo fPreferencesInfo= new PreferencesInfo();
 	protected List<PreferencesPageInfo> fPages = new ArrayList<PreferencesPageInfo>();
 
+	protected IPreferenceTabContainer fTabContainer = null;
 	protected PreferencesPageInfo fPageInfo = null;
     protected IFile fPageInfoFile = null;
     
@@ -233,17 +223,17 @@ public class PrefspecsCompiler {
 
     protected void computePreferencesPageInfo(IFile specFile) {
     	if (specFile == null) {
-		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..):  returning null");
+		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..): no specification file?");
 		}
 		IProject project= specFile.getProject();
 		if (project == null) {
-		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..):  Project is null; returning null");
+		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..): project is null");
 		}
 		ISourceProject sourceProject = null;
 		try {
 			sourceProject = ModelFactory.open(project);
-		} catch (ModelException me){
-		  fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..):  Model exception:\n" + me.getMessage() + "\nReturning null");
+		} catch (ModelException me) {
+		    fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(..): exception while opening source project:\n" + me.getMessage() + "\n");
 		}
 		IParseController parseController= new PrefspecsParseController();
 		
@@ -253,28 +243,59 @@ public class PrefspecsCompiler {
 		// If we have a kind of parser that might be receptive, tell it
 		// what types of problem marker the builder will create
 		parseController.getAnnotationTypeInfo().addProblemMarkerType(PROBLEM_MARKER_ID);
-		
 		parseController.initialize(specFile.getProjectRelativePath(), sourceProject, markerCreator);
-		
 		parseController.parse(getFileContents(specFile), new NullProgressMonitor());
 		
 		ASTNode currentAst= (ASTNode) parseController.getCurrentAst();
-		
+
 		if (currentAst == null) {
-				fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo:  current AST is null (parse errors?); unable to compute page info.");
-				return;
+		    fConsoleStream.println("PrefspecsCompiler.computePreferencesPageInfo(): current AST is null (parse errors?); unable to compute page info.");
+		    return;
 		}
 		
 		TranslatorVisitor visitor = new TranslatorVisitor();
 		
 		currentAst.accept(visitor);
     }
-    
-    
+
+    private void createErrorMarker(String msg, ASTNode node) {
+        int startLine= node.getLeftIToken().getLine();
+        int startOffset= node.getLeftIToken().getStartOffset();
+        int endOffset= node.getRightIToken().getEndOffset()+1;
+
+        createMarker(msg, startLine, startOffset, endOffset, IMarker.SEVERITY_ERROR);
+    }
+
+    private void createMarker(String msg, int startLine, int startOffset, int endOffset, int severity) {
+        try {
+            IMarker m = PrefspecsCompiler.this.fSpecFile.createMarker(PROBLEM_MARKER_ID);
+            String[] attributeNames = new String[] {IMarker.LINE_NUMBER, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.MESSAGE, IMarker.PRIORITY, IMarker.SEVERITY};
+            Object[] values = new Object[] {startLine, startOffset, endOffset, msg, IMarker.PRIORITY_HIGH, severity};
+
+            m.setAttributes(attributeNames, values);
+        } catch (CoreException e) {
+            PrefspecsPlugin.getInstance().logException("PrefspecsCompiler.createMarker: CoreException trying to create marker", e);
+        } catch (Exception e) {
+            PrefspecsPlugin.getInstance().logException("PrefspecsCompiler.createMarker: Exception trying to create marker", e);
+        }
+    }
+
     private final class TranslatorVisitor extends AbstractVisitor {
     	SymbolTable<IAst> innerScope;
 
-        @Override
+    	@Override
+    	public boolean visit(prefSpecs n) {
+    	    fTabContainer= fPreferencesInfo;
+            if (n.gettabsSpec() == null) {
+                createStandardTab(IPreferencesService.DEFAULT_LEVEL, false);
+                createStandardTab(IPreferencesService.CONFIGURATION_LEVEL, true);
+                createStandardTab(IPreferencesService.INSTANCE_LEVEL, true);
+                createStandardTab(IPreferencesService.PROJECT_LEVEL, true);
+            }
+    	    return super.visit(n);
+    	}
+
+    	@Override
         public void unimplementedVisitor(String s) {
             // fConsoleStream.println("Don't know how to translate node type '" + s + "'.");
         }
@@ -297,18 +318,19 @@ public class PrefspecsCompiler {
             fPageInfo = new PreferencesPageInfo(pageName);
             fPageInfo.setNoDetails(PrefspecsCompiler.this.fNoDetails);
         	fPages.add(fPageInfo);
+        	fTabContainer= fPageInfo;
 
-        	if (p.getpageBody().gettabsSpec() == null) {
-        	    createStandardTab(IPreferencesService.DEFAULT_LEVEL, false);
-                createStandardTab(IPreferencesService.CONFIGURATION_LEVEL, true);
-                createStandardTab(IPreferencesService.INSTANCE_LEVEL, true);
-                createStandardTab(IPreferencesService.PROJECT_LEVEL, true);
-        	}
+//        	if (p.getpageBody().gettabsSpec() == null) {
+//        	    createStandardTab(IPreferencesService.DEFAULT_LEVEL, false);
+//              createStandardTab(IPreferencesService.CONFIGURATION_LEVEL, true);
+//              createStandardTab(IPreferencesService.INSTANCE_LEVEL, true);
+//              createStandardTab(IPreferencesService.PROJECT_LEVEL, true);
+//        	}
         	return true;
         }
 
         private void createStandardTab(String level, boolean editableRemovable) {
-            PreferencesTabInfo tab = new PreferencesTabInfo(fPageInfo, level);
+            PreferencesTabInfo tab = new PreferencesTabInfo(fTabContainer, level);
             tab.setIsEditable(editableRemovable);
             tab.setIsRemovable(editableRemovable);
             tab.setIsUsed(true);
@@ -355,45 +377,46 @@ public class PrefspecsCompiler {
 
         @Override
         public boolean visit(defaultTabSpec tabSpec) {
-        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.DEFAULT_LEVEL);
-        	generalSpecList propSpecs = tabSpec.getgeneralSpecs();
-        	handleTabPropertySpecs(tabInfo, propSpecs);
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fTabContainer, IPreferencesService.DEFAULT_LEVEL);
+//        	generalSpecList genSpecs = tabSpec.getgeneralSpecs();
+//        	handleTabPropertySpecs(tabInfo, genSpecs);
 
-        	isRemovableSpec removableSpec = findSpec(propSpecs, isRemovableSpec.class);
+//        	isRemovableSpec removableSpec = findSpec(genSpecs, isRemovableSpec.class);
 
-        	if (removableSpec != null) {
-                String removableValue= removableSpec.getbooleanValue().toString();
-                if (removableValue.equals("true")) {
-                    createErrorMarker("The default level cannot be made removable", removableSpec);
-                    tabInfo.setIsRemovable(false);
-                } else {
-                    tabInfo.setIsRemovable(removableValue.equals("true"));
-        		}
-        	}
+//        	if (removableSpec != null) {
+//                String removableValue= removableSpec.getbooleanValue().toString();
+//                if (removableValue.equals("true")) {
+//                    createErrorMarker("The default level cannot be made removable", removableSpec);
+//                    tabInfo.setIsRemovable(false);
+//                } else {
+//                    tabInfo.setIsRemovable(removableValue.equals("true"));
+//        		}
+//        	}
+        	tabInfo.setIsRemovable(false);
         	tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
 
         @Override
         public boolean visit(configurationTabSpec tabSpec) {
-        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.CONFIGURATION_LEVEL);
-        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fTabContainer, IPreferencesService.CONFIGURATION_LEVEL);
+//        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
             tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
 
         @Override
         public boolean visit(instanceTabSpec tabSpec) {
-        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.INSTANCE_LEVEL);
-        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fTabContainer, IPreferencesService.INSTANCE_LEVEL);
+//        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
         	tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
 
         @Override
         public boolean visit(projectTabSpec tabSpec) {
-        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fPageInfo, IPreferencesService.PROJECT_LEVEL);
-        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
+        	PreferencesTabInfo tabInfo = new PreferencesTabInfo(fTabContainer, IPreferencesService.PROJECT_LEVEL);
+//        	handleTabPropertySpecs(tabInfo, tabSpec.getgeneralSpecs());
         	tabInfo.setIsUsed(tabSpec.getinout().toString().equals("in")); // Should always have an inout spec
         	return false;
         }
@@ -442,15 +465,15 @@ public class PrefspecsCompiler {
             return SWT.NORMAL;
         }
 
-	    private VirtualBooleanFieldInfo findConditionalField(optConditionalSpec condSpec, String depFieldName) {
+	    private BooleanFieldInfo findConditionalField(optConditionalSpec condSpec, String depFieldName) {
 	        String name = condSpec.getidentifier().getIDENTIFIER().toString();
-            Iterator<VirtualFieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();    
+            Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();    
             while (virtualFieldInfos.hasNext()) {
-                VirtualFieldInfo next = virtualFieldInfos.next();
+                FieldInfo next = virtualFieldInfos.next();
                 String nextName = next.getName();
                 if (nextName.equals(name)) {
-                    if (next instanceof VirtualBooleanFieldInfo) {
-                        return (VirtualBooleanFieldInfo) next;
+                    if (next instanceof BooleanFieldInfo) {
+                        return (BooleanFieldInfo) next;
                     } else {
                         createErrorMarker("A field can only be made conditional on a boolean field", condSpec);
                     }
@@ -460,30 +483,8 @@ public class PrefspecsCompiler {
             return null;
 	    }
 
-	    private void createErrorMarker(String msg, ASTNode node) {
-	        try {
-	            int startLine= node.getLeftIToken().getLine();
-	            int startOffset= node.getLeftIToken().getStartOffset();
-	            int endOffset= node.getRightIToken().getEndOffset()+1;
-
-	            IMarker m = PrefspecsCompiler.this.fSpecFile.createMarker(PROBLEM_MARKER_ID);
-	            String[] attributeNames = new String[] {IMarker.LINE_NUMBER, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.MESSAGE, IMarker.PRIORITY, IMarker.SEVERITY};
-	            Object[] values = new Object[] {startLine, startOffset, endOffset, msg, IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR};
-
-	            m.setAttributes(attributeNames, values);
-	        } catch (CoreException e) {
-                PrefspecsPlugin.getInstance().logException("PrefspecsCompiler.createMarker: CoreException trying to create marker", e);
-	        } catch (Exception e) {
-                PrefspecsPlugin.getInstance().logException("PrefspecsCompiler.createMarker: Exception trying to create marker", e);
-	        }
-        }
-
-        private void setVirtualProperties(VirtualFieldInfo vField, AbstractASTNodeList generalSpecs, optConditionalSpec condSpec) {
+        private void setVirtualProperties(FieldInfo vField, AbstractASTNodeList generalSpecs, optConditionalSpec condSpec) {
             checkGeneralSpecs(generalSpecs);
-            isEditableSpec editableSpec = findSpec(generalSpecs, isEditableSpec.class);
-            if (editableSpec != null) {
-                vField.setIsEditable(getValueOf(editableSpec.getbooleanValue()));
-            }
             isRemovableSpec removableSpec = findSpec(generalSpecs, isRemovableSpec.class);
             if (removableSpec != null) {
                 vField.setIsRemovable(getValueOf(removableSpec.getbooleanValue()));
@@ -503,23 +504,23 @@ public class PrefspecsCompiler {
             }
         }
 
-        private void setConcreteProperties(VirtualFieldInfo vField, PreferencesTabInfo tab, ConcreteFieldInfo cField) {
-            if (vField.hasEditableSpec()) {
-                cField.setIsEditable(vField.getIsEditable());
-            } else {
-                cField.setIsEditable(tab.getIsEditable());
-            }
-            if (vField.hasRemovableSpec() && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
-                cField.setIsRemovable(vField.getIsRemovable());
-            } else {
-                cField.setIsRemovable(tab.getIsRemovable());
-            }
-            if (vField.getIsConditional()) {
-                cField.setIsConditional(true);
-                cField.setConditionalWith(vField.getConditionalWith());
-                cField.setConditionField(vField.getConditionField());
-            }
-        }
+//        private void setConcreteProperties(VirtualFieldInfo vField, PreferencesTabInfo tab, ConcreteFieldInfo cField) {
+//            if (vField.hasEditableSpec()) {
+//                cField.setIsEditable(vField.getIsEditable());
+//            } else {
+//                cField.setIsEditable(tab.getIsEditable());
+//            }
+//            if (vField.hasRemovableSpec() && !(tab.getName().equals(IPreferencesService.DEFAULT_LEVEL))) {
+//                cField.setIsRemovable(vField.getIsRemovable());
+//            } else {
+//                cField.setIsRemovable(tab.getIsRemovable());
+//            }
+//            if (vField.getIsConditional()) {
+//                cField.setIsConditional(true);
+//                cField.setConditionalWith(vField.getConditionalWith());
+//                cField.setConditionField(vField.getConditionField());
+//            }
+//        }
 
         private <T> T findSpec(AbstractASTNodeList specs, Class<T> type) {
             for(int i=0; i < specs.size(); i++) {
@@ -533,21 +534,12 @@ public class PrefspecsCompiler {
 
         @Override
         public boolean visit(booleanFieldSpec boolField) {
-        	VirtualBooleanFieldInfo vBool = new VirtualBooleanFieldInfo(fPageInfo, boolField.getidentifier().toString());
+        	BooleanFieldInfo vBool = new BooleanFieldInfo(fPageInfo, boolField.getidentifier().toString());
         	booleanFieldPropertySpecs propSpecs = boolField.getbooleanFieldPropertySpecs();
 
         	if (propSpecs != null) {
             	booleanSpecificSpecList booleanSpecificSpecs= propSpecs.getbooleanSpecificSpecs();
                 setVirtualProperties(vBool, booleanSpecificSpecs, boolField.getoptConditionalSpec());
-
-                booleanSpecialSpec specialSpec = findSpec(booleanSpecificSpecs, booleanSpecialSpec.class);
-            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-            	if (specialSpec != null) {
-            		vBool.setHasSpecialValue(true);
-                	vBool.setSpecialValue(getValueOf(specialSpec.getbooleanValue()));
-            	} else {
-            		vBool.setHasSpecialValue(false);
-            	}
 
             	booleanDefValueSpec defValueSpec = findSpec(booleanSpecificSpecs, booleanDefValueSpec.class);
             	if (defValueSpec != null) {
@@ -555,46 +547,31 @@ public class PrefspecsCompiler {
             	}
         	}
 
-        	// Create an instance of a concrete field for each tab on the page
-        	Iterator<?> tabs = fPageInfo.getTabInfos();
-        	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
-        		if (!tab.getIsUsed())
-        			continue;
-        		ConcreteBooleanFieldInfo cBool = new ConcreteBooleanFieldInfo(vBool, tab);
-    		
-        		// Set the attributes of the concrete field:
-        		// if set in the virtual field, use that value;
-        		// else if set for the tab, use that value;
-        		// else rely on the default for the field type
-            	setConcreteProperties(vBool, tab, cBool);
-            	if (vBool.getHasSpecialValue()) {
-            		cBool.setHasSpecialValue(true);
-                	cBool.setSpecialValue(vBool.getSpecialValue());
-            	} else {
-            		cBool.setHasSpecialValue(false);
-            	}
-        	}
+//        	// Create an instance of a concrete field for each tab on the page
+//        	Iterator<?> tabs = fPageInfo.getTabInfos();
+//        	while (tabs.hasNext()) {
+//        		PreferencesTabInfo tab = (PreferencesTabInfo) tabs.next();
+//        		if (!tab.getIsUsed())
+//        			continue;
+//        		ConcreteBooleanFieldInfo cBool = new ConcreteBooleanFieldInfo(vBool, tab);
+//    		
+//        		// Set the attributes of the concrete field:
+//        		// if set in the virtual field, use that value;
+//        		// else if set for the tab, use that value;
+//        		// else rely on the default for the field type
+//            	setConcreteProperties(vBool, tab, cBool);
+//        	}
         	return false;
         }
 
         @Override
         public boolean visit(dirListFieldSpec dirListField) {
-        	VirtualDirListFieldInfo vDirList = new VirtualDirListFieldInfo(fPageInfo, dirListField.getidentifier().toString());
+        	DirListFieldInfo vDirList = new DirListFieldInfo(fPageInfo, dirListField.getidentifier().toString());
         	dirlistFieldPropertySpecs propSpecs = dirListField.getdirlistFieldPropertySpecs();
 
         	if (propSpecs != null) {
                 stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
                 setVirtualProperties(vDirList, stringSpecificSpecs, dirListField.getoptConditionalSpec());
-
-            	stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
-            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-            	if (specialSpec != null) {
-            		vDirList.setHasSpecialValue(true);
-                	vDirList.setSpecialValue(getValueOf(specialSpec.getstringValue()));
-            	} else {
-            		vDirList.setHasSpecialValue(false);
-            	}
 
             	stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
             	if (defValueSpec != null) {
@@ -611,59 +588,44 @@ public class PrefspecsCompiler {
             		vDirList.setEmptyValue(getValueOf(ses1.getstringValue()));
             	}
         	}
-        	
-        	// Create an instance of a concrete field for each tab on the page
-        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-        	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = tabs.next();
-        		if (!tab.getIsUsed())
-        			continue;
-        		ConcreteDirListFieldInfo cDirList = new ConcreteDirListFieldInfo(vDirList, tab);
-        		
-        		// Set the attributes of the concrete field:
-        		// if set in the virtual field, use that value;
-        		// else if set for the tab, use that value;
-        		// else rely on the default for the field type
-        		setConcreteProperties(vDirList, tab, cDirList);
 
-        		if (vDirList.getHasSpecialValue()) {
-            		cDirList.setHasSpecialValue(true);
-                	cDirList.setSpecialValue(vDirList.getSpecialValue());
-            	} else {
-            		cDirList.setHasSpecialValue(false);
-            	}
-            	if (vDirList.hasEmptyValueSpec()) {
-	            	if (!vDirList.getEmptyValueAllowed()) {
-	            		cDirList.setEmptyValueAllowed(false);
-	            		cDirList.setEmptyValue(null);
-	            	} else {
-	            		cDirList.setEmptyValueAllowed(true);
-	            		cDirList.setEmptyValue(vDirList.getEmptyValue());
-	            	}
-            	}
-        	}
+//        	// Create an instance of a concrete field for each tab on the page
+//        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//        	while (tabs.hasNext()) {
+//        		PreferencesTabInfo tab = tabs.next();
+//        		if (!tab.getIsUsed())
+//        			continue;
+//        		ConcreteDirListFieldInfo cDirList = new ConcreteDirListFieldInfo(vDirList, tab);
+//        		
+//        		// Set the attributes of the concrete field:
+//        		// if set in the virtual field, use that value;
+//        		// else if set for the tab, use that value;
+//        		// else rely on the default for the field type
+//        		setConcreteProperties(vDirList, tab, cDirList);
+//
+//            	if (vDirList.hasEmptyValueSpec()) {
+//	            	if (!vDirList.getEmptyValueAllowed()) {
+//	            		cDirList.setEmptyValueAllowed(false);
+//	            		cDirList.setEmptyValue(null);
+//	            	} else {
+//	            		cDirList.setEmptyValueAllowed(true);
+//	            		cDirList.setEmptyValue(vDirList.getEmptyValue());
+//	            	}
+//            	}
+//        	}
         	return false;
         }
 
 
         @Override
         public boolean visit(directoryFieldSpec directoryField) {
-            VirtualDirectoryFieldInfo vDir = new VirtualDirectoryFieldInfo(fPageInfo, directoryField.getidentifier().toString());
+            DirectoryFieldInfo vDir = new DirectoryFieldInfo(fPageInfo, directoryField.getidentifier().toString());
             directoryFieldPropertySpecs propSpecs = directoryField.getdirectoryFieldPropertySpecs();
             
             if (propSpecs != null) {
                 stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
                 setVirtualProperties(vDir, stringSpecificSpecs, directoryField.getoptConditionalSpec());
             
-                stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
-                // hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-                if (specialSpec != null) {
-                    vDir.setHasSpecialValue(true);
-                    vDir.setSpecialValue(getValueOf(specialSpec.getstringValue()));
-                } else {
-                    vDir.setHasSpecialValue(false);
-                }
-
                 stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
                 if (defValueSpec != null) {
                     vDir.setDefaultValue(getValueOf(defValueSpec.getstringValue()));
@@ -680,55 +642,40 @@ public class PrefspecsCompiler {
                 }
             }
             
-            // Create an instance of a concrete field for each tab on the page
-            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-            while (tabs.hasNext()) {
-                PreferencesTabInfo tab = tabs.next();
-                if (!tab.getIsUsed())
-                    continue;
-                ConcreteDirectoryFieldInfo cFile = new ConcreteDirectoryFieldInfo(vDir, tab);
-                
-                // Set the attributes of the concrete field:
-                // if set in the virtual field, use that value;
-                // else if set for the tab, use that value;
-                // else rely on the default for the field type
-                setConcreteProperties(vDir, tab, cFile);
-                if (vDir.getHasSpecialValue()) {
-                    cFile.setHasSpecialValue(true);
-                    cFile.setSpecialValue(vDir.getSpecialValue());
-                } else {
-                    cFile.setHasSpecialValue(false);
-                }
-                if (vDir.hasEmptyValueSpec()) {
-                    if (!vDir.getEmptyValueAllowed()) {
-                        cFile.setEmptyValueAllowed(false);
-                        cFile.setEmptyValue(null);
-                    } else {
-                        cFile.setEmptyValueAllowed(true);
-                        cFile.setEmptyValue(vDir.getEmptyValue());
-                    }
-                }
-            }
+//            // Create an instance of a concrete field for each tab on the page
+//            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//            while (tabs.hasNext()) {
+//                PreferencesTabInfo tab = tabs.next();
+//                if (!tab.getIsUsed())
+//                    continue;
+//                ConcreteDirectoryFieldInfo cFile = new ConcreteDirectoryFieldInfo(vDir, tab);
+//                
+//                // Set the attributes of the concrete field:
+//                // if set in the virtual field, use that value;
+//                // else if set for the tab, use that value;
+//                // else rely on the default for the field type
+//                setConcreteProperties(vDir, tab, cFile);
+//                if (vDir.hasEmptyValueSpec()) {
+//                    if (!vDir.getEmptyValueAllowed()) {
+//                        cFile.setEmptyValueAllowed(false);
+//                        cFile.setEmptyValue(null);
+//                    } else {
+//                        cFile.setEmptyValueAllowed(true);
+//                        cFile.setEmptyValue(vDir.getEmptyValue());
+//                    }
+//                }
+//            }
             return false;
         }
         
         @Override
         public boolean visit(fileFieldSpec fileField) {
-        	VirtualFileFieldInfo vFile = new VirtualFileFieldInfo(fPageInfo, fileField.getidentifier().toString());
+        	FileFieldInfo vFile = new FileFieldInfo(fPageInfo, fileField.getidentifier().toString());
         	fileFieldPropertySpecs propSpecs = fileField.getfileFieldPropertySpecs();
         	
         	if (propSpecs != null) {
             	stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
                 setVirtualProperties(vFile, stringSpecificSpecs, fileField.getoptConditionalSpec());
-
-            	stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
-            	// hasSpecial <==> specialSpec != null (i.e., presence of spec indicates true)
-            	if (specialSpec != null) {
-            		vFile.setHasSpecialValue(true);
-                	vFile.setSpecialValue(getValueOf(specialSpec.getstringValue()));
-            	} else {
-            		vFile.setHasSpecialValue(false);
-            	}
 
             	stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
             	if (defValueSpec != null) {
@@ -746,55 +693,41 @@ public class PrefspecsCompiler {
             	}
         	}
         	
-        	// Create an instance of a concrete field for each tab on the page
-        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-        	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = tabs.next();
-        		if (!tab.getIsUsed())
-        			continue;
-        		ConcreteFileFieldInfo cFile = new ConcreteFileFieldInfo(vFile, tab);
-        		
-        		// Set the attributes of the concrete field:
-        		// if set in the virtual field, use that value;
-        		// else if set for the tab, use that value;
-        		// else rely on the default for the field type
-        		setConcreteProperties(vFile, tab, cFile);
-            	if (vFile.getHasSpecialValue()) {
-            		cFile.setHasSpecialValue(true);
-                	cFile.setSpecialValue(vFile.getSpecialValue());
-            	} else {
-            		cFile.setHasSpecialValue(false);
-            	}
-            	if (vFile.hasEmptyValueSpec()) {
-	            	if (!vFile.getEmptyValueAllowed()) {
-	            		cFile.setEmptyValueAllowed(false);
-	            		cFile.setEmptyValue(null);
-	            	} else {
-	            		cFile.setEmptyValueAllowed(true);
-	            		cFile.setEmptyValue(vFile.getEmptyValue());
-	            	}
-            	}
-        	}
+//        	// Create an instance of a concrete field for each tab on the page
+//        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//        	while (tabs.hasNext()) {
+//        		PreferencesTabInfo tab = tabs.next();
+//        		if (!tab.getIsUsed())
+//        			continue;
+//        		ConcreteFileFieldInfo cFile = new ConcreteFileFieldInfo(vFile, tab);
+//        		
+//        		// Set the attributes of the concrete field:
+//        		// if set in the virtual field, use that value;
+//        		// else if set for the tab, use that value;
+//        		// else rely on the default for the field type
+//        		setConcreteProperties(vFile, tab, cFile);
+//            	if (vFile.hasEmptyValueSpec()) {
+//	            	if (!vFile.getEmptyValueAllowed()) {
+//	            		cFile.setEmptyValueAllowed(false);
+//	            		cFile.setEmptyValue(null);
+//	            	} else {
+//	            		cFile.setEmptyValueAllowed(true);
+//	            		cFile.setEmptyValue(vFile.getEmptyValue());
+//	            	}
+//            	}
+//        	}
         	return false;
         }
         
         @Override
         public boolean visit(intFieldSpec intField) {
-        	VirtualIntFieldInfo vInt = new VirtualIntFieldInfo(fPageInfo, intField.getidentifier().toString());
+        	IntFieldInfo vInt = new IntFieldInfo(fPageInfo, intField.getidentifier().toString());
         	intFieldPropertySpecs propSpecs = intField.getintFieldPropertySpecs();
 
         	if (propSpecs != null) {
             	// Create a virtual field
                 intSpecificSpecList intSpecificSpecs = propSpecs.getintSpecificSpecs();
         	    setVirtualProperties(vInt, intSpecificSpecs, intField.getoptConditionalSpec());
-
-            	intSpecialSpec specialSpec = findSpec(intSpecificSpecs, intSpecialSpec.class);
-            	if (specialSpec != null) {
-            		vInt.setHasSpecialValue(true);
-            		vInt.setSpecialValue(getValueOf(specialSpec.getsignedNumber()));
-            	} else {
-            		vInt.setHasSpecialValue(false);
-            	}
 
             	intDefValueSpec defValueSpec = findSpec(intSpecificSpecs, intDefValueSpec.class);
             	if (defValueSpec != null) {
@@ -810,39 +743,32 @@ public class PrefspecsCompiler {
             	}
         	}
         	
-        	// Create an instance of a concrete field for each tab on the page
-        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-        	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = tabs.next();
-        		if (!tab.getIsUsed())
-        			continue;
-        		ConcreteIntFieldInfo cInt = new ConcreteIntFieldInfo(vInt, tab);
-
-        		// Set the attributes of the concrete field:
-        		// if set in the virtual field, use that value;
-        		// else if set for the tab, use that value;
-        		// else rely on the default for the field type
-        		setConcreteProperties(vInt, tab, cInt);
-
-        		if (vInt.getHasSpecialValue()) {
-            		cInt.setHasSpecialValue(true);
-            		cInt.setSpecialValue(vInt.getSpecialValue());
-            	} else {
-            		cInt.setHasSpecialValue(false);
-            	}
-
-            	if (vInt.hasRangeSpec()) {
-            		cInt.setRangeLow(vInt.getRangeLow());
-            		cInt.setRangeHigh(vInt.getRangeHigh());
-            	}
-        	}
+//        	// Create an instance of a concrete field for each tab on the page
+//        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//        	while (tabs.hasNext()) {
+//        		PreferencesTabInfo tab = tabs.next();
+//        		if (!tab.getIsUsed())
+//        			continue;
+//        		ConcreteIntFieldInfo cInt = new ConcreteIntFieldInfo(vInt, tab);
+//
+//        		// Set the attributes of the concrete field:
+//        		// if set in the virtual field, use that value;
+//        		// else if set for the tab, use that value;
+//        		// else rely on the default for the field type
+//        		setConcreteProperties(vInt, tab, cInt);
+//
+//            	if (vInt.hasRangeSpec()) {
+//            		cInt.setRangeLow(vInt.getRangeLow());
+//            		cInt.setRangeHigh(vInt.getRangeHigh());
+//            	}
+//        	}
         	return false;
         }
 
 
         @Override
         public boolean visit(doubleFieldSpec doubleField) {
-            VirtualDoubleFieldInfo vDouble = new VirtualDoubleFieldInfo(fPageInfo, doubleField.getidentifier().toString());
+            DoubleFieldInfo vDouble = new DoubleFieldInfo(fPageInfo, doubleField.getidentifier().toString());
             doubleFieldPropertySpecs propSpecs = doubleField.getdoubleFieldPropertySpecs();
 
             if (propSpecs != null) {
@@ -865,47 +791,37 @@ public class PrefspecsCompiler {
                 }
             }
             
-            // Create an instance of a concrete field for each tab on the page
-            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-            while (tabs.hasNext()) {
-                PreferencesTabInfo tab = tabs.next();
-                if (!tab.getIsUsed())
-                    continue;
-                ConcreteDoubleFieldInfo cDouble = new ConcreteDoubleFieldInfo(vDouble, tab);
-
-                // Set the attributes of the concrete field:
-                // if set in the virtual field, use that value;
-                // else if set for the tab, use that value;
-                // else rely on the default for the field type
-                setConcreteProperties(vDouble, tab, cDouble);
-
-                if (vDouble.hasRangeSpec()) {
-                    cDouble.setRangeLow(vDouble.getRangeLow());
-                    cDouble.setRangeHigh(vDouble.getRangeHigh());
-                }
-            }
+//            // Create an instance of a concrete field for each tab on the page
+//            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//            while (tabs.hasNext()) {
+//                PreferencesTabInfo tab = tabs.next();
+//                if (!tab.getIsUsed())
+//                    continue;
+//                ConcreteDoubleFieldInfo cDouble = new ConcreteDoubleFieldInfo(vDouble, tab);
+//
+//                // Set the attributes of the concrete field:
+//                // if set in the virtual field, use that value;
+//                // else if set for the tab, use that value;
+//                // else rely on the default for the field type
+//                setConcreteProperties(vDouble, tab, cDouble);
+//
+//                if (vDouble.hasRangeSpec()) {
+//                    cDouble.setRangeLow(vDouble.getRangeLow());
+//                    cDouble.setRangeHigh(vDouble.getRangeHigh());
+//                }
+//            }
             return false;
         }
 
 
         @Override
         public boolean visit(stringFieldSpec stringField) {
-        	VirtualStringFieldInfo vString = new VirtualStringFieldInfo(fPageInfo, stringField.getidentifier().toString());
+        	StringFieldInfo vString = new StringFieldInfo(fPageInfo, stringField.getidentifier().toString());
         	stringFieldPropertySpecs propSpecs = stringField.getstringFieldPropertySpecs();
 
         	if (propSpecs != null) {
                 stringSpecificSpecList stringSpecificSpecs= propSpecs.getstringSpecificSpecs();
             	setVirtualProperties(vString, stringSpecificSpecs, stringField.getoptConditionalSpec());
-
-                stringSpecialSpec specialSpec = findSpec(stringSpecificSpecs, stringSpecialSpec.class);
-
-            	if (specialSpec != null) {
-            		vString.setHasSpecialValue(true);
-                	vString.setSpecialValue(getValueOf(specialSpec.getstringValue()));
-            	} else {
-            		vString.setHasSpecialValue(false);
-            		//vString.setSpecialValue(null);
-            	}
 
             	stringDefValueSpec defValueSpec = findSpec(stringSpecificSpecs, stringDefValueSpec.class);
             	if (defValueSpec != null) {
@@ -935,43 +851,37 @@ public class PrefspecsCompiler {
             	}
         	}
         	
-        	// Create an instance of a concrete field for each tab on the page
-        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-        	while (tabs.hasNext()) {
-        		PreferencesTabInfo tab = tabs.next();
-        		if (!tab.getIsUsed())
-        			continue;
-        		ConcreteStringFieldInfo cString = new ConcreteStringFieldInfo(vString, tab);
-        		
-        		// Set the attributes of the concrete field:
-        		// if set in the virtual field, use that value;
-        		// else if set for the tab, use that value;
-        		// else rely on the default for the field type
-        		setConcreteProperties(vString, tab, cString);
-
-        		if (vString.getHasSpecialValue()) {
-            		cString.setHasSpecialValue(true);
-                	cString.setSpecialValue(vString.getSpecialValue());
-            	} else {
-            		cString.setHasSpecialValue(false);
-            	}
-            	if (vString.hasEmptyValueSpec()) {
-	            	if (!vString.getEmptyValueAllowed()) {
-	            		cString.setEmptyValueAllowed(false);
-	            		cString.setEmptyValue(null);
-	            	} else {
-	            		cString.setEmptyValueAllowed(true);
-	            		cString.setEmptyValue(vString.getEmptyValue());
-	            	}
-            	}
-        	}
+//        	// Create an instance of a concrete field for each tab on the page
+//        	Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//        	while (tabs.hasNext()) {
+//        		PreferencesTabInfo tab = tabs.next();
+//        		if (!tab.getIsUsed())
+//        			continue;
+//        		ConcreteStringFieldInfo cString = new ConcreteStringFieldInfo(vString, tab);
+//        		
+//        		// Set the attributes of the concrete field:
+//        		// if set in the virtual field, use that value;
+//        		// else if set for the tab, use that value;
+//        		// else rely on the default for the field type
+//        		setConcreteProperties(vString, tab, cString);
+//
+//            	if (vString.hasEmptyValueSpec()) {
+//	            	if (!vString.getEmptyValueAllowed()) {
+//	            		cString.setEmptyValueAllowed(false);
+//	            		cString.setEmptyValue(null);
+//	            	} else {
+//	            		cString.setEmptyValueAllowed(true);
+//	            		cString.setEmptyValue(vString.getEmptyValue());
+//	            	}
+//            	}
+//        	}
         	return false;
         }
 
 
         @Override
         public boolean visit(colorFieldSpec colorField) {
-            VirtualColorFieldInfo vColor= new VirtualColorFieldInfo(fPageInfo, colorField.getidentifier().toString());
+            ColorFieldInfo vColor= new ColorFieldInfo(fPageInfo, colorField.getidentifier().toString());
             colorFieldPropertySpecs propSpecs = colorField.getcolorFieldPropertySpecs();
 
             if (propSpecs != null) {
@@ -988,26 +898,26 @@ public class PrefspecsCompiler {
                 }
             }
             
-            // Create an instance of a concrete field for each tab on the page
-            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-            while (tabs.hasNext()) {
-                PreferencesTabInfo tab = tabs.next();
-                if (!tab.getIsUsed())
-                    continue;
-                ConcreteColorFieldInfo cColor= new ConcreteColorFieldInfo(vColor, tab);
-                
-                // Set the attributes of the concrete field:
-                // if set in the virtual field, use that value;
-                // else if set for the tab, use that value;
-                // else rely on the default for the field type
-                setConcreteProperties(vColor, tab, cColor);
-            }
+//            // Create an instance of a concrete field for each tab on the page
+//            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//            while (tabs.hasNext()) {
+//                PreferencesTabInfo tab = tabs.next();
+//                if (!tab.getIsUsed())
+//                    continue;
+//                ConcreteColorFieldInfo cColor= new ConcreteColorFieldInfo(vColor, tab);
+//                
+//                // Set the attributes of the concrete field:
+//                // if set in the virtual field, use that value;
+//                // else if set for the tab, use that value;
+//                // else rely on the default for the field type
+//                setConcreteProperties(vColor, tab, cColor);
+//            }
             return false;
         }
 
         @Override
         public boolean visit(fontFieldSpec fontField) {
-            VirtualFontFieldInfo vFont= new VirtualFontFieldInfo(fPageInfo, fontField.getidentifier().toString());
+            FontFieldInfo vFont= new FontFieldInfo(fPageInfo, fontField.getidentifier().toString());
             fontFieldPropertySpecs propSpecs = fontField.getfontFieldPropertySpecs();
 
             if (propSpecs != null) {
@@ -1023,20 +933,20 @@ public class PrefspecsCompiler {
                 }
             }
             
-            // Create an instance of a concrete field for each tab on the page
-            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-            while (tabs.hasNext()) {
-                PreferencesTabInfo tab = tabs.next();
-                if (!tab.getIsUsed())
-                    continue;
-                ConcreteFontFieldInfo cFont= new ConcreteFontFieldInfo(vFont, tab);
-                
-                // Set the attributes of the concrete field:
-                // if set in the virtual field, use that value;
-                // else if set for the tab, use that value;
-                // else rely on the default for the field type
-                setConcreteProperties(vFont, tab, cFont);
-            }
+//            // Create an instance of a concrete field for each tab on the page
+//            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//            while (tabs.hasNext()) {
+//                PreferencesTabInfo tab = tabs.next();
+//                if (!tab.getIsUsed())
+//                    continue;
+//                ConcreteFontFieldInfo cFont= new ConcreteFontFieldInfo(vFont, tab);
+//                
+//                // Set the attributes of the concrete field:
+//                // if set in the virtual field, use that value;
+//                // else if set for the tab, use that value;
+//                // else rely on the default for the field type
+//                setConcreteProperties(vFont, tab, cFont);
+//            }
             return false;
         }
 
@@ -1068,7 +978,7 @@ public class PrefspecsCompiler {
 
         @Override
         public boolean visit(comboFieldSpec comboField) {
-            VirtualComboFieldInfo vCombo= new VirtualComboFieldInfo(fPageInfo, comboField.getidentifier().toString());
+            ComboFieldInfo vCombo= new ComboFieldInfo(fPageInfo, comboField.getidentifier().toString());
             comboFieldPropertySpecs propSpecs = comboField.getcomboFieldPropertySpecs();
 
             if (propSpecs != null) {
@@ -1085,24 +995,24 @@ public class PrefspecsCompiler {
                 }
             }
 
-            // Create an instance of a concrete field for each tab on the page
-            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-            while (tabs.hasNext()) {
-                PreferencesTabInfo tab = tabs.next();
-                if (!tab.getIsUsed())
-                    continue;
-                ConcreteComboFieldInfo cCombo= new ConcreteComboFieldInfo(vCombo, tab);
-                
-                // Set the attributes of the concrete field:
-                // if set in the virtual field, use that value;
-                // else if set for the tab, use that value;
-                // else rely on the default for the field type
-                setConcreteProperties(vCombo, tab, cCombo);
-            }
+//            // Create an instance of a concrete field for each tab on the page
+//            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//            while (tabs.hasNext()) {
+//                PreferencesTabInfo tab = tabs.next();
+//                if (!tab.getIsUsed())
+//                    continue;
+//                ConcreteComboFieldInfo cCombo= new ConcreteComboFieldInfo(vCombo, tab);
+//                
+//                // Set the attributes of the concrete field:
+//                // if set in the virtual field, use that value;
+//                // else if set for the tab, use that value;
+//                // else rely on the default for the field type
+//                setConcreteProperties(vCombo, tab, cCombo);
+//            }
             return false;
         }
 
-        private void setupValueSource(VirtualEnumFieldInfo vEnum, ItypeOrValuesSpec tovSpec, enumDefValueSpec defValueSpec) {
+        private void setupValueSource(EnumFieldInfo vEnum, ItypeOrValuesSpec tovSpec, enumDefValueSpec defValueSpec) {
             IEnumValueSource vs;
 
             if (tovSpec instanceof typeOrValuesSpec__TYPE_identifier_SEMICOLON) {
@@ -1127,7 +1037,7 @@ public class PrefspecsCompiler {
 
         @Override
         public boolean visit(radioFieldSpec radioField) {
-            VirtualRadioFieldInfo vRadio= new VirtualRadioFieldInfo(fPageInfo, radioField.getidentifier().toString());
+            RadioFieldInfo vRadio= new RadioFieldInfo(fPageInfo, radioField.getidentifier().toString());
             radioFieldPropertySpecs propSpecs = radioField.getradioFieldPropertySpecs();
 
             if (propSpecs != null) {
@@ -1144,126 +1054,26 @@ public class PrefspecsCompiler {
                 }
             }
 
-            // Create an instance of a concrete field for each tab on the page
-            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
-            while (tabs.hasNext()) {
-                PreferencesTabInfo tab = tabs.next();
-                if (!tab.getIsUsed())
-                    continue;
-                ConcreteRadioFieldInfo cRadio= new ConcreteRadioFieldInfo(vRadio, tab);
-                
-                // Set the attributes of the concrete field:
-                // if set in the virtual field, use that value;
-                // else if set for the tab, use that value;
-                // else rely on the default for the field type
-                setConcreteProperties(vRadio, tab, cRadio);
-            }
+//            // Create an instance of a concrete field for each tab on the page
+//            Iterator<PreferencesTabInfo> tabs = fPageInfo.getTabInfos();
+//            while (tabs.hasNext()) {
+//                PreferencesTabInfo tab = tabs.next();
+//                if (!tab.getIsUsed())
+//                    continue;
+//                ConcreteRadioFieldInfo cRadio= new ConcreteRadioFieldInfo(vRadio, tab);
+//                
+//                // Set the attributes of the concrete field:
+//                // if set in the virtual field, use that value;
+//                // else if set for the tab, use that value;
+//                // else rely on the default for the field type
+//                setConcreteProperties(vRadio, tab, cRadio);
+//            }
             return false;
         }
 
-        /*
-         * Context for processing of custom rules 
-         */ 
-        String customTabName = null;
-        PreferencesTabInfo customTabInfo = null;
-        String customFieldName = null;
-        ConcreteFieldInfo customFieldInfo = null;
-        
-        
-        @Override
-        public boolean visit(customRule custRule)
-        {
-        	// Set context for custom spec processing
-        	customTabName = custRule.gettab().toString();
-        	customFieldName = custRule.getidentifier().toString();
-        	
-        	customTabInfo = fPageInfo.getTabInfo(customTabName);
-        	Iterator<ConcreteFieldInfo> concreteFields = customTabInfo.getConcreteFields();
-        	// Should always have a field with the given name
-        	while (concreteFields.hasNext()) {
-        		ConcreteFieldInfo next = concreteFields.next();
-        		if (next.getName().equals(customFieldName)) {
-        			customFieldInfo = next;
-        			break;
-        		}	
-        	}
-        	if (customFieldInfo == null) {
-        		// What to do?  Seems that specification is erroneous
-        		fConsoleStream.println("PrefspecsCompiler.TranslatorVisitor.visit(customRule):\n    found no field info corresponding to field name = '" +
-        				customFieldName + "';\n    continuing at your own risk");
-        	}
-        	
-        	return true;
-        }
-        
-        
-        @Override
-        public void endVisit(customRule custRule)
-        {
-        	// Reset context of custom spec processing
-        	customTabName = null;
-        	customTabInfo = null;
-        	customFieldName = null;
-        	customFieldInfo = null;	
-        }
-        
-
         // Use endVisit(..) methods to get information from specs because when
         // visit(..)ed they don't yet have the info that's needed
-        
-        
-        @Override
-        public void endVisit(generalSpecList genSpecs)
-        {
-        	// Process general spec as part of a custom rule, if processing a custom rule
-        	if (customTabName != null) {
-        		isEditableSpec editableSpec= findSpec(genSpecs, isEditableSpec.class);
-                if (editableSpec != null)
-	        		customFieldInfo.setIsEditable(editableSpec.getbooleanValue().toString().equals("true"));
 
-                isRemovableSpec removableSpec= findSpec(genSpecs, isRemovableSpec.class);
-                if (removableSpec != null) {
-                    String removableValue= removableSpec.getbooleanValue().toString();
-                    if (removableValue.equals("true")) {
-                        createErrorMarker("Illegal removable specification.", removableSpec);
-                        customFieldInfo.setIsRemovable(false);
-                    } else {
-                        customFieldInfo.setIsRemovable(false);
-                    }
-                }
-        	}
-        }
-        
-        
-        @Override
-        public void endVisit(booleanSpecialSpec specialSpec)
-        {
-        	// Process special spec as part of a boolean custom spec,
-        	// if processing a custom rule
-        	// If the specialSpec is not null, then the field has a special spec
-        	// and the value of that spec is the special value for the field
-        	if (customTabName != null) {
-        		// Don't think the boolean value can be null if we have a specialSpec	
-        		((ConcreteBooleanFieldInfo)customFieldInfo).setSpecialValue(specialSpec.getbooleanValue().toString().equals("true"));
-        	}
-        }
-        
-        
-        @Override
-        public void endVisit(stringSpecialSpec specialSpec)
-        {
-        	// Process special spec as part of a string custom spec,
-        	// if processing a custom rule
-        	// If the specialSpec is not null, then the field has a special spec
-        	// and the value of that spec is the special value for the field
-        	if (customTabName != null) {
-        		// Don't think the boolean value can be null if we have a specialSpec	
-        		((ConcreteStringFieldInfo)customFieldInfo).setSpecialValue(specialSpec.getstringValue().getSTRING_LITERAL().toString());
-        	}
-        }
-        
-
-        
         /*
          * For processing of conditional rules
          */
@@ -1273,15 +1083,14 @@ public class PrefspecsCompiler {
          */
         @Override
         public boolean visit(conditionalSpec__identifier_WITH_identifier rule) {
-        	
         	String conditionalFieldName = rule.getidentifier().toString();
         	String conditionFieldName = rule.getidentifier3().toString();
-        	VirtualFieldInfo conditionalFieldInfo = null;
-        	VirtualFieldInfo conditionFieldInfo = null;
+        	FieldInfo conditionalFieldInfo = null;
+        	FieldInfo conditionFieldInfo = null;
         	
-        	Iterator<VirtualFieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
+        	Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
         	while (virtualFieldInfos.hasNext()) {
-        		VirtualFieldInfo next = virtualFieldInfos.next();
+        		FieldInfo next = virtualFieldInfos.next();
         		String nextName = next.getName();
         		if (nextName.equals(conditionalFieldName)) {
         			conditionalFieldInfo = next;
@@ -1296,26 +1105,24 @@ public class PrefspecsCompiler {
         	// if we're compiling, then the AST should be correct,
         	// in which case the condition field should always be
         	// a boolean field
-        	conditionalFieldInfo.setConditionField((VirtualBooleanFieldInfo)conditionFieldInfo);
+        	conditionalFieldInfo.setConditionField((BooleanFieldInfo)conditionFieldInfo);
         	
         	return false;
         }
-        
-        
+
         /*
          * For "against" condition rules
          */
         @Override
         public boolean visit(conditionalSpec__identifier_AGAINST_identifier rule) {
-        	
         	String conditionalFieldName = rule.getidentifier().toString();
         	String conditionFieldName = rule.getidentifier3().toString();
-        	VirtualFieldInfo conditionalFieldInfo = null;
-        	VirtualFieldInfo conditionFieldInfo = null;
+        	FieldInfo conditionalFieldInfo = null;
+        	FieldInfo conditionFieldInfo = null;
         	
-        	Iterator<VirtualFieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
+        	Iterator<FieldInfo> virtualFieldInfos = fPageInfo.getVirtualFieldInfos();	
         	while (virtualFieldInfos.hasNext()) {
-        		VirtualFieldInfo next = virtualFieldInfos.next();
+        		FieldInfo next = virtualFieldInfos.next();
         		String nextName = next.getName();
         		if (nextName.equals(conditionalFieldName)) {
         			conditionalFieldInfo = next;
@@ -1330,41 +1137,36 @@ public class PrefspecsCompiler {
         	// if we're compiling, then the AST should be correct,
         	// in which case the condition field should always be
         	// a boolean field
-        	conditionalFieldInfo.setConditionField((VirtualBooleanFieldInfo)conditionFieldInfo);
+        	conditionalFieldInfo.setConditionField((BooleanFieldInfo)conditionFieldInfo);
         	
         	return false;
         }
-        
-        
-        
-        @Override
-        public void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON spec) {
-        	propagateConditionsToConcreteSpecs();
-        }
-        
-        
-        @Override
-        public void endVisit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON spec) {
-        	propagateConditionsToConcreteSpecs();
-        }
-        
-        
-        protected void propagateConditionsToConcreteSpecs()
-        {
-        	Iterator<VirtualFieldInfo> vFieldInfos = fPageInfo.getVirtualFieldInfos();
-        	while (vFieldInfos.hasNext()) {
-        		VirtualFieldInfo vInfo = vFieldInfos.next();
-        		if (vInfo.getIsConditional()) {
-        			Iterator<ConcreteFieldInfo> cFieldInfos = vInfo.getConcreteFieldInfos();
-        			while (cFieldInfos.hasNext()) {
-        				ConcreteFieldInfo cInfo = cFieldInfos.next();
-        				cInfo.setIsConditional(true);
-        				cInfo.setConditionalWith(vInfo.getConditionalWith());
-        				cInfo.setConditionField(vInfo.getConditionField());
-        			}
-        		}
-        	}	
-        }
+
+//        @Override
+//        public void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON spec) {
+//        	propagateConditionsToConcreteSpecs();
+//        }
+//
+//        @Override
+//        public void endVisit(conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON spec) {
+//        	propagateConditionsToConcreteSpecs();
+//        }
+
+//        protected void propagateConditionsToConcreteSpecs() {
+//        	Iterator<VirtualFieldInfo> vFieldInfos = fPageInfo.getVirtualFieldInfos();
+//        	while (vFieldInfos.hasNext()) {
+//        		VirtualFieldInfo vInfo = vFieldInfos.next();
+//        		if (vInfo.getIsConditional()) {
+//        			Iterator<ConcreteFieldInfo> cFieldInfos = vInfo.getConcreteFieldInfos();
+//        			while (cFieldInfos.hasNext()) {
+//        				ConcreteFieldInfo cInfo = cFieldInfos.next();
+//        				cInfo.setIsConditional(true);
+//        				cInfo.setConditionalWith(vInfo.getConditionalWith());
+//        				cInfo.setConditionField(vInfo.getConditionField());
+//        			}
+//        		}
+//        	}	
+//        }
     }
 
     
@@ -1428,7 +1230,6 @@ public class PrefspecsCompiler {
         }
     }
 
-
     public void compile(final IFile specFile, final IProgressMonitor mon) {
 	    this.fSpecFile = specFile;
 
@@ -1442,15 +1243,19 @@ public class PrefspecsCompiler {
 
 				IProject project = specFile.getProject();
 				IPluginModel pluginModel = getPluginModel(project);
-				
-				// Load the IMP way to get the complete model
-    	    	ExtensionEnabler.loadImpExtensionsModel(pluginModel, project);
-		    	IExtensions pmExtensions = pluginModel.getExtensions();
-		    	IPluginExtension[] pluginExtensions = pmExtensions.getExtensions();
 
-		    	removeOldPageExtensions(pmExtensions, pluginExtensions);
+				if (pluginModel == null) {
+				    createMarker("Unable to read plugin.xml; possibly it or MANIFEST.MF is missing?", 1, 0, 0, IMarker.SEVERITY_WARNING);
+				} else {
+				    // Load the IMP way to get the complete model
+				    ExtensionEnabler.loadImpExtensionsModel(pluginModel, project);
+				    IExtensions pmExtensions = pluginModel.getExtensions();
+				    IPluginExtension[] pluginExtensions = pmExtensions.getExtensions();
 
-		    	ExtensionEnabler.saveAndRefresh(pluginModel);
+				    removeOldPageExtensions(pmExtensions, pluginExtensions);
+
+				    ExtensionEnabler.saveAndRefresh(pluginModel);
+                }
 
                 generateCodeStubs(specFile, mon);
 
@@ -1599,36 +1404,28 @@ public class PrefspecsCompiler {
 	public void generateCodeStubs(IFile specFile, IProgressMonitor mon) throws CoreException {
 		IProject fProject = specFile.getProject();
         Map<String,String> subs= getStandardSubstitutions(fProject);
-
-        subs.put("$PREFS_CLASS_NAME$", fPageClassNameBase);
-
-//            subs.put("$PREFS_ALTERNATIVE_MESSAGE$", fAlternativeMessage);
-//            IFile pageSrc = createFileFromTemplate(fClassNamePrefix + ".java", "preferencesPageAlternative.java", fPackageFolder, subs, fProject, mon);
-//            editFile(mon, pageSrc);
-//            return;
-//        }	
-        
-        // Generating a full tabbed preference page
-
         List<PreferencesPageInfo> pageInfos = getPreferencesPageInfos(specFile);
 
         // Abort before code gen if there are any errors
-        if (specFile.findMarkers(PROBLEM_MARKER_ID, true, 0).length > 0) {
+        if (specFile.findMaxProblemSeverity(PROBLEM_MARKER_ID, true, 0) >= IMarker.SEVERITY_ERROR) {
             return;
         }
+
+        ISourceProject sourceProject = null;
+    	try {
+    		sourceProject = ModelFactory.open(fProject);
+    	} catch (ModelException me) {
+            fConsoleStream.println("PrefspecsCompiler.generateCodeStubs(..): exception opening source project:\n" + me.getMessage() + "\nReturning without parsing");
+            return;
+    	}
+
         fPageClassNameBase = pageInfos.get(0).getPageName();
         String constantsClassName = fPageClassNameBase + "Constants";
         String initializerClassName = fPageClassNameBase + "Initializer";
 
-		ISourceProject sourceProject = null;
-    	try {
-    		sourceProject = ModelFactory.open(fProject);
-    	} catch (ModelException me) {
-            fConsoleStream.println("PrefspecsCompiler.generateCodeStubs(..): Model exception:\n" + me.getMessage() + "\nReturning without parsing");
-            return;
-    	}
-
+        subs.put("$PREFS_CLASS_NAME$", fPageClassNameBase);
         subs.put("$PREFS_PACKAGE_NAME$", fPagePackageName);
+        subs.put("$PREFS_INIT_CLASS_NAME$", initializerClassName);
 
         PreferencesFactory prefFactory= new PreferencesFactory(fConsoleStream);
 
@@ -1636,50 +1433,58 @@ public class PrefspecsCompiler {
         String pluginPkgName= getPluginPackageName(fProject, null);
         String pluginClassName= getPluginClassName(fProject, null);
 
-        prefFactory.generatePreferencesConstants(pageInfos, sourceProject, projectSourceLoc, fPagePackageName, constantsClassName, mon);
+        prefFactory.generatePreferenceConstantsClass(pageInfos, sourceProject, projectSourceLoc, fPagePackageName, constantsClassName, mon);
 
-        prefFactory.generatePreferencesInitializers(pageInfos,
+        prefFactory.generatePreferenceInitializerClass(pageInfos,
         		pluginPkgName, pluginClassName, constantsClassName,	
-        		sourceProject, projectSourceLoc, fPagePackageName, fPageClassNameBase + "Initializer",  mon);
-
-        subs.put("$PREFS_INIT_CLASS_NAME$", fPageClassNameBase + "Initializer");
+        		sourceProject, projectSourceLoc, fPagePackageName, initializerClassName,  mon);
 
         for(PreferencesPageInfo pageInfo: pageInfos) {
             final String javaPageName= pageInfo.getPageName().replaceAll("\\.", "");
 
             subs.put("$PREFS_CLASS_NAME$", javaPageName);
 
-            prefFactory.generatePreferencesPage(pageInfo, pluginPkgName, pluginClassName,
+            prefFactory.generatePreferencePageClass(pageInfo, pluginPkgName, pluginClassName,
                     constantsClassName, initializerClassName, sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "PreferencePage", mon);
 
-            if (pageInfo.getTabInfo(IPreferencesService.DEFAULT_LEVEL).getIsUsed()) {
-                prefFactory.generateDefaultTab(
+            PreferencesTabInfo defTabInfo= findTabInfo(IPreferencesService.DEFAULT_LEVEL, pageInfo);
+            if (defTabInfo != null && defTabInfo.getIsUsed()) {
+                prefFactory.generateDefaultTabClass(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName, initializerClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "DefaultTab",  mon);
             }
-            if (pageInfo.getTabInfo(IPreferencesService.CONFIGURATION_LEVEL).getIsUsed()) {
-                prefFactory.generateConfigurationTab(
+            PreferencesTabInfo confTabInfo= findTabInfo(IPreferencesService.CONFIGURATION_LEVEL, pageInfo);
+            if (confTabInfo != null && confTabInfo.getIsUsed()) {
+                prefFactory.generateConfigurationTabClass(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "ConfigurationTab",  mon);
             }
-            if (pageInfo.getTabInfo(IPreferencesService.INSTANCE_LEVEL).getIsUsed()) {
-                prefFactory.generateInstanceTab(
+            PreferencesTabInfo instTabInfo= findTabInfo(IPreferencesService.INSTANCE_LEVEL, pageInfo);
+            if (instTabInfo != null && instTabInfo.getIsUsed()) {
+                prefFactory.generateInstanceTabClass(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "InstanceTab",  mon);
             }
-            if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL).getIsUsed()) {
-                prefFactory.generateProjectTab(
+            PreferencesTabInfo projTabInfo= findTabInfo(IPreferencesService.PROJECT_LEVEL, pageInfo);
+            if (projTabInfo != null && projTabInfo.getIsUsed()) {
+                prefFactory.generateProjectTabClass(
             		pageInfo,
             		pluginPkgName, pluginClassName, constantsClassName,
             		sourceProject, projectSourceLoc, fPagePackageName, javaPageName + "ProjectTab",  mon);
             }
         }
 	}
-    
 
+	private PreferencesTabInfo findTabInfo(String tabName, IPreferenceTabContainer tabContainer) {
+	    PreferencesTabInfo result= tabContainer.getTabInfo(tabName);
+	    if (result == null) {
+	        result= fPreferencesInfo.getTabInfo(tabName);
+	    }
+	    return result;
+	}
 
     /**
      * Get the name of the package in which a plugin class is defined

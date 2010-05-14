@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 98:  booleanSpecificSpecs ::= booleanSpecificSpec
- *<li>Rule 99:  booleanSpecificSpecs ::= booleanSpecificSpecs booleanSpecificSpec
+ *<li>Rule 94:  booleanSpecificSpecs ::= booleanSpecificSpec
+ *<li>Rule 95:  booleanSpecificSpecs ::= booleanSpecificSpecs booleanSpecificSpec
  *</b>
  */
 public class booleanSpecificSpecList extends AbstractASTNodeList implements IbooleanSpecificSpecs

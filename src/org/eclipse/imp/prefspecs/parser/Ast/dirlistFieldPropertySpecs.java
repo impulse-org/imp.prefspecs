@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 74:  dirlistFieldPropertySpecs ::= $Empty
+ *<li>Rule 72:  dirlistFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 75:  dirlistFieldPropertySpecs ::= {$ stringSpecificSpecs }$
+ *<li>Rule 73:  dirlistFieldPropertySpecs ::= {$ stringSpecificSpecs }$
  *</b>
  */
 public class dirlistFieldPropertySpecs extends ASTNode implements IdirlistFieldPropertySpecs

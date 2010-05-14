@@ -23,9 +23,6 @@ import org.eclipse.imp.parser.SimpleLPGParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParseController;
 import org.eclipse.imp.prefspecs.parser.PrefspecsParsersym;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
-import org.eclipse.imp.prefspecs.parser.Ast.IbooleanSpecificSpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.IcolorSpecificSpecs;
-import org.eclipse.imp.prefspecs.parser.Ast.IcomboSpecificSpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.ItopLevelItem;
@@ -35,7 +32,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.colorFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.directoryFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.dirlistFieldPropertySpecs;
@@ -46,7 +42,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.fileFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fontFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.intFieldPropertySpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.optionalSpecs;
 import org.eclipse.imp.prefspecs.parser.Ast.pageBody;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.prefSpecs;
@@ -410,7 +405,7 @@ public class PrefspecsContentProposer implements IContentProposer {
         pageSpec ps= getPageAtOffset(prefSpecs, offset);
         if (ps != null) {
             pageBody pb= ps.getpageBody();
-            final optionalSpecs optSpecs= pb.getoptionalSpecs();
+            final conditionalsSpec condsSpec= pb.getoptionalSpecs();
 
             tabsSpec ts= pb.gettabsSpec();
             startTabs= (ts != null) ? ts.getLeftIToken().getStartOffset() : 0;
@@ -420,11 +415,11 @@ public class PrefspecsContentProposer implements IContentProposer {
             startFields= fs.getLeftIToken().getStartOffset();
             endFields= fs.getRightIToken().getEndOffset();
 
-            customSpec cso= optSpecs.getcustomSpecOption();
-            startCustom= (cso != null ? cso.getLeftIToken().getStartOffset() : 0);
-            endCustom= (cso != null ? cso.getRightIToken().getEndOffset() : 0);
+//          customSpec cso= optSpecs.getcustomSpecOption();
+            startCustom= 0; // (cso != null ? cso.getLeftIToken().getStartOffset() : 0);
+            endCustom= 0; // (cso != null ? cso.getRightIToken().getEndOffset() : 0);
 
-            conditionalsSpec condsSpec= optSpecs.getconditionalsSpecOption();
+//          conditionalsSpec condsSpec= optSpecs.getconditionalsSpecOption();
             startConditionals= (condsSpec != null ? condsSpec.getLeftIToken().getStartOffset() : 0);
             endConditionals= (condsSpec != null ? condsSpec.getRightIToken().getEndOffset() : 0);
         }

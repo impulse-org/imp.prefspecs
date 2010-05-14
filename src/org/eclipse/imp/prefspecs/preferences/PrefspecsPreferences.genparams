@@ -1,0 +1,6 @@
+PagePackage=org.eclipse.imp.prefspecs.preferences
+PageClassNameBase=PrefspecsPreferences
+PageName=Preference Specifications
+PageId=org.eclipse.imp.prefspecs.preferences
+PageMenuItem=TOP
+AlternativeMessage=Message omitted.

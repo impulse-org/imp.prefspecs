@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 104:  booleanDefValueSpec ::= DEFVALUE$ booleanValue ;$
+ *<li>Rule 100:  booleanDefValueSpec ::= DEFVALUE$ booleanValue ;$
  *</b>
  */
 public class booleanDefValueSpec extends ASTNode implements IbooleanDefValueSpec

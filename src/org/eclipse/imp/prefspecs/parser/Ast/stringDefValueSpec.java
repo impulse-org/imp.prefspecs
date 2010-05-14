@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 168:  stringDefValueSpec ::= DEFVALUE$ stringValue ;$
+ *<li>Rule 162:  stringDefValueSpec ::= DEFVALUE$ stringValue ;$
  *</b>
  */
 public class stringDefValueSpec extends ASTNode implements IstringDefValueSpec

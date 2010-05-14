@@ -7,11 +7,9 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.documentationProvider;
-
 
 import java.util.ArrayList;
 
@@ -25,8 +23,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customRule;
-import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
@@ -39,9 +35,7 @@ import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.IDocumentationProvider;
 
-
 public class PrefspecsNodeDocumentationProvider implements IDocumentationProvider, ILanguageService {
-
     public String getDocumentation(Object target, IParseController parseController) {
     	Object node = target;
 	
@@ -86,12 +80,6 @@ public class PrefspecsNodeDocumentationProvider implements IDocumentationProvide
 	   		return "Specify attributes for a string field:   four optional, semicolon-separated attributes, " +
 	   				"in this order:  'iseditable' (boolean), 'isremovable' (boolean), 'hasspecial' (string), " +
 	   				"and 'emptyallowed' (boolean--plus a string if 'true')";
-        } else if (node instanceof customSpec) {
-    		return "In this section provide property values that apply to specific fields on specific tabs.  " +
-    				"Field names should have been introduced in the 'fields' section.  " +
-    				"Specific tab-field combinations may appear multiple times. ";
-        } else if (node instanceof customRule) {
-        	return "Designate a field by 'tab-name' 'field-name'; list properties within '{' ... '}' according to type of field.";  	
         } else if (node instanceof conditionalsSpec) {
     		return "In this section list fields of any type whose enabled state depends on the state " +
     				"of another field of boolean type";
@@ -114,8 +102,7 @@ public class PrefspecsNodeDocumentationProvider implements IDocumentationProvide
 		"can be removed (triggering inheritance).  When both are used 'iseditable' " +
 		"must appear first.  Each should be followed by a ';'.";
    
-	protected ASTNode getFieldSpecNode(ASTNode node)
-	{
+	protected ASTNode getFieldSpecNode(ASTNode node) {
    		ASTNode grandParentNode = (ASTNode) node.getParent().getParent();
    		int nodeOffset = node.getLeftIToken().getStartOffset();
    		int specOffset = 0;
@@ -134,7 +121,6 @@ public class PrefspecsNodeDocumentationProvider implements IDocumentationProvide
    		}
    		return spec;
 	}
-
 
     public static String getSubstring(IParseController parseController, int start, int end) {
         return new String(((SimpleLPGParseController) parseController).getParser().getIPrsStream().getInputChars(),

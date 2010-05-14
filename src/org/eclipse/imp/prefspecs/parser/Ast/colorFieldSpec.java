@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 56:  colorFieldSpec ::= COLOR$ identifier colorFieldPropertySpecs optConditionalSpec
+ *<li>Rule 54:  colorFieldSpec ::= COLOR$ identifier colorFieldPropertySpecs optConditionalSpec
  *</b>
  */
 public class colorFieldSpec extends ASTNode implements IcolorFieldSpec

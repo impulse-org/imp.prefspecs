@@ -25,12 +25,12 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 41:  fieldSpecs ::= $Empty
- *<li>Rule 42:  fieldSpecs ::= fieldSpec
+ *<li>Rule 39:  fieldSpecs ::= $Empty
+ *<li>Rule 40:  fieldSpecs ::= fieldSpec
  *</em>
  *<p>
  *<b>
- *<li>Rule 43:  fieldSpecs ::= fieldSpecs fieldSpec
+ *<li>Rule 41:  fieldSpecs ::= fieldSpecs fieldSpec
  *</b>
  */
 public class fieldSpecs extends ASTNode implements IfieldSpecs

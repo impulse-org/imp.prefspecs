@@ -64,9 +64,6 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(pageBody n) { unimplementedVisitor("visit(pageBody)"); return true; }
     public void endVisit(pageBody n) { unimplementedVisitor("endVisit(pageBody)"); }
 
-    public boolean visit(optionalSpecs n) { unimplementedVisitor("visit(optionalSpecs)"); return true; }
-    public void endVisit(optionalSpecs n) { unimplementedVisitor("endVisit(optionalSpecs)"); }
-
     public boolean visit(tabsSpec n) { unimplementedVisitor("visit(tabsSpec)"); return true; }
     public void endVisit(tabsSpec n) { unimplementedVisitor("endVisit(tabsSpec)"); }
 
@@ -157,9 +154,6 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(stringFieldPropertySpecs n) { unimplementedVisitor("visit(stringFieldPropertySpecs)"); return true; }
     public void endVisit(stringFieldPropertySpecs n) { unimplementedVisitor("endVisit(stringFieldPropertySpecs)"); }
 
-    public boolean visit(generalSpecList n) { unimplementedVisitor("visit(generalSpecList)"); return true; }
-    public void endVisit(generalSpecList n) { unimplementedVisitor("endVisit(generalSpecList)"); }
-
     public boolean visit(isEditableSpec n) { unimplementedVisitor("visit(isEditableSpec)"); return true; }
     public void endVisit(isEditableSpec n) { unimplementedVisitor("endVisit(isEditableSpec)"); }
 
@@ -241,9 +235,6 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(stringSpecificSpecList n) { unimplementedVisitor("visit(stringSpecificSpecList)"); return true; }
     public void endVisit(stringSpecificSpecList n) { unimplementedVisitor("endVisit(stringSpecificSpecList)"); }
 
-    public boolean visit(stringSpecialSpec n) { unimplementedVisitor("visit(stringSpecialSpec)"); return true; }
-    public void endVisit(stringSpecialSpec n) { unimplementedVisitor("endVisit(stringSpecialSpec)"); }
-
     public boolean visit(stringDefValueSpec n) { unimplementedVisitor("visit(stringDefValueSpec)"); return true; }
     public void endVisit(stringDefValueSpec n) { unimplementedVisitor("endVisit(stringDefValueSpec)"); }
 
@@ -258,18 +249,6 @@ public abstract class AbstractVisitor implements Visitor
 
     public boolean visit(stringValue n) { unimplementedVisitor("visit(stringValue)"); return true; }
     public void endVisit(stringValue n) { unimplementedVisitor("endVisit(stringValue)"); }
-
-    public boolean visit(customSpec n) { unimplementedVisitor("visit(customSpec)"); return true; }
-    public void endVisit(customSpec n) { unimplementedVisitor("endVisit(customSpec)"); }
-
-    public boolean visit(customRules n) { unimplementedVisitor("visit(customRules)"); return true; }
-    public void endVisit(customRules n) { unimplementedVisitor("endVisit(customRules)"); }
-
-    public boolean visit(customRule n) { unimplementedVisitor("visit(customRule)"); return true; }
-    public void endVisit(customRule n) { unimplementedVisitor("endVisit(customRule)"); }
-
-    public boolean visit(newPropertySpecs n) { unimplementedVisitor("visit(newPropertySpecs)"); return true; }
-    public void endVisit(newPropertySpecs n) { unimplementedVisitor("endVisit(newPropertySpecs)"); }
 
     public boolean visit(conditionalsSpec n) { unimplementedVisitor("visit(conditionalsSpec)"); return true; }
     public void endVisit(conditionalsSpec n) { unimplementedVisitor("endVisit(conditionalsSpec)"); }
@@ -331,24 +310,6 @@ public abstract class AbstractVisitor implements Visitor
     public boolean visit(sign__MINUS n) { unimplementedVisitor("visit(sign__MINUS)"); return true; }
     public void endVisit(sign__MINUS n) { unimplementedVisitor("endVisit(sign__MINUS)"); }
 
-    public boolean visit(tab__DEFAULT n) { unimplementedVisitor("visit(tab__DEFAULT)"); return true; }
-    public void endVisit(tab__DEFAULT n) { unimplementedVisitor("endVisit(tab__DEFAULT)"); }
-
-    public boolean visit(tab__CONFIGURATION n) { unimplementedVisitor("visit(tab__CONFIGURATION)"); return true; }
-    public void endVisit(tab__CONFIGURATION n) { unimplementedVisitor("endVisit(tab__CONFIGURATION)"); }
-
-    public boolean visit(tab__INSTANCE n) { unimplementedVisitor("visit(tab__INSTANCE)"); return true; }
-    public void endVisit(tab__INSTANCE n) { unimplementedVisitor("endVisit(tab__INSTANCE)"); }
-
-    public boolean visit(tab__PROJECT n) { unimplementedVisitor("visit(tab__PROJECT)"); return true; }
-    public void endVisit(tab__PROJECT n) { unimplementedVisitor("endVisit(tab__PROJECT)"); }
-
-    public boolean visit(typeCustomSpecs__intRangeSpec_intSpecialSpec n) { unimplementedVisitor("visit(typeCustomSpecs__intRangeSpec_intSpecialSpec)"); return true; }
-    public void endVisit(typeCustomSpecs__intRangeSpec_intSpecialSpec n) { unimplementedVisitor("endVisit(typeCustomSpecs__intRangeSpec_intSpecialSpec)"); }
-
-    public boolean visit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n) { unimplementedVisitor("visit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec)"); return true; }
-    public void endVisit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n) { unimplementedVisitor("endVisit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec)"); }
-
     public boolean visit(conditionalSpecs__conditionalSpec_SEMICOLON n) { unimplementedVisitor("visit(conditionalSpecs__conditionalSpec_SEMICOLON)"); return true; }
     public void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON n) { unimplementedVisitor("endVisit(conditionalSpecs__conditionalSpec_SEMICOLON)"); }
 
@@ -375,7 +336,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof pageName) return visit((pageName) n);
         else if (n instanceof pagePath) return visit((pagePath) n);
         else if (n instanceof pageBody) return visit((pageBody) n);
-        else if (n instanceof optionalSpecs) return visit((optionalSpecs) n);
         else if (n instanceof tabsSpec) return visit((tabsSpec) n);
         else if (n instanceof tabSpecList) return visit((tabSpecList) n);
         else if (n instanceof defaultTabSpec) return visit((defaultTabSpec) n);
@@ -406,7 +366,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof intFieldPropertySpecs) return visit((intFieldPropertySpecs) n);
         else if (n instanceof radioFieldPropertySpecs) return visit((radioFieldPropertySpecs) n);
         else if (n instanceof stringFieldPropertySpecs) return visit((stringFieldPropertySpecs) n);
-        else if (n instanceof generalSpecList) return visit((generalSpecList) n);
         else if (n instanceof isEditableSpec) return visit((isEditableSpec) n);
         else if (n instanceof isRemovableSpec) return visit((isRemovableSpec) n);
         else if (n instanceof optLabelSpec) return visit((optLabelSpec) n);
@@ -434,16 +393,11 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof labelledStringValueList) return visit((labelledStringValueList) n);
         else if (n instanceof labelledStringValue) return visit((labelledStringValue) n);
         else if (n instanceof stringSpecificSpecList) return visit((stringSpecificSpecList) n);
-        else if (n instanceof stringSpecialSpec) return visit((stringSpecialSpec) n);
         else if (n instanceof stringDefValueSpec) return visit((stringDefValueSpec) n);
         else if (n instanceof stringValidatorSpec) return visit((stringValidatorSpec) n);
         else if (n instanceof optConditionalSpec) return visit((optConditionalSpec) n);
         else if (n instanceof identifier) return visit((identifier) n);
         else if (n instanceof stringValue) return visit((stringValue) n);
-        else if (n instanceof customSpec) return visit((customSpec) n);
-        else if (n instanceof customRules) return visit((customRules) n);
-        else if (n instanceof customRule) return visit((customRule) n);
-        else if (n instanceof newPropertySpecs) return visit((newPropertySpecs) n);
         else if (n instanceof conditionalsSpec) return visit((conditionalsSpec) n);
         else if (n instanceof onOff__ON) return visit((onOff__ON) n);
         else if (n instanceof onOff__OFF) return visit((onOff__OFF) n);
@@ -464,12 +418,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof signedNumber__sign_INTEGER) return visit((signedNumber__sign_INTEGER) n);
         else if (n instanceof sign__PLUS) return visit((sign__PLUS) n);
         else if (n instanceof sign__MINUS) return visit((sign__MINUS) n);
-        else if (n instanceof tab__DEFAULT) return visit((tab__DEFAULT) n);
-        else if (n instanceof tab__CONFIGURATION) return visit((tab__CONFIGURATION) n);
-        else if (n instanceof tab__INSTANCE) return visit((tab__INSTANCE) n);
-        else if (n instanceof tab__PROJECT) return visit((tab__PROJECT) n);
-        else if (n instanceof typeCustomSpecs__intRangeSpec_intSpecialSpec) return visit((typeCustomSpecs__intRangeSpec_intSpecialSpec) n);
-        else if (n instanceof typeCustomSpecs__stringSpecialSpec_stringEmptySpec) return visit((typeCustomSpecs__stringSpecialSpec_stringEmptySpec) n);
         else if (n instanceof conditionalSpecs__conditionalSpec_SEMICOLON) return visit((conditionalSpecs__conditionalSpec_SEMICOLON) n);
         else if (n instanceof conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) return visit((conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) n);
         else if (n instanceof conditionalSpec__identifier_WITH_identifier) return visit((conditionalSpec__identifier_WITH_identifier) n);
@@ -489,7 +437,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof pageName) endVisit((pageName) n);
         else if (n instanceof pagePath) endVisit((pagePath) n);
         else if (n instanceof pageBody) endVisit((pageBody) n);
-        else if (n instanceof optionalSpecs) endVisit((optionalSpecs) n);
         else if (n instanceof tabsSpec) endVisit((tabsSpec) n);
         else if (n instanceof tabSpecList) endVisit((tabSpecList) n);
         else if (n instanceof defaultTabSpec) endVisit((defaultTabSpec) n);
@@ -520,7 +467,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof intFieldPropertySpecs) endVisit((intFieldPropertySpecs) n);
         else if (n instanceof radioFieldPropertySpecs) endVisit((radioFieldPropertySpecs) n);
         else if (n instanceof stringFieldPropertySpecs) endVisit((stringFieldPropertySpecs) n);
-        else if (n instanceof generalSpecList) endVisit((generalSpecList) n);
         else if (n instanceof isEditableSpec) endVisit((isEditableSpec) n);
         else if (n instanceof isRemovableSpec) endVisit((isRemovableSpec) n);
         else if (n instanceof optLabelSpec) endVisit((optLabelSpec) n);
@@ -548,16 +494,11 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof labelledStringValueList) endVisit((labelledStringValueList) n);
         else if (n instanceof labelledStringValue) endVisit((labelledStringValue) n);
         else if (n instanceof stringSpecificSpecList) endVisit((stringSpecificSpecList) n);
-        else if (n instanceof stringSpecialSpec) endVisit((stringSpecialSpec) n);
         else if (n instanceof stringDefValueSpec) endVisit((stringDefValueSpec) n);
         else if (n instanceof stringValidatorSpec) endVisit((stringValidatorSpec) n);
         else if (n instanceof optConditionalSpec) endVisit((optConditionalSpec) n);
         else if (n instanceof identifier) endVisit((identifier) n);
         else if (n instanceof stringValue) endVisit((stringValue) n);
-        else if (n instanceof customSpec) endVisit((customSpec) n);
-        else if (n instanceof customRules) endVisit((customRules) n);
-        else if (n instanceof customRule) endVisit((customRule) n);
-        else if (n instanceof newPropertySpecs) endVisit((newPropertySpecs) n);
         else if (n instanceof conditionalsSpec) endVisit((conditionalsSpec) n);
         else if (n instanceof onOff__ON) endVisit((onOff__ON) n);
         else if (n instanceof onOff__OFF) endVisit((onOff__OFF) n);
@@ -578,12 +519,6 @@ public abstract class AbstractVisitor implements Visitor
         else if (n instanceof signedNumber__sign_INTEGER) endVisit((signedNumber__sign_INTEGER) n);
         else if (n instanceof sign__PLUS) endVisit((sign__PLUS) n);
         else if (n instanceof sign__MINUS) endVisit((sign__MINUS) n);
-        else if (n instanceof tab__DEFAULT) endVisit((tab__DEFAULT) n);
-        else if (n instanceof tab__CONFIGURATION) endVisit((tab__CONFIGURATION) n);
-        else if (n instanceof tab__INSTANCE) endVisit((tab__INSTANCE) n);
-        else if (n instanceof tab__PROJECT) endVisit((tab__PROJECT) n);
-        else if (n instanceof typeCustomSpecs__intRangeSpec_intSpecialSpec) endVisit((typeCustomSpecs__intRangeSpec_intSpecialSpec) n);
-        else if (n instanceof typeCustomSpecs__stringSpecialSpec_stringEmptySpec) endVisit((typeCustomSpecs__stringSpecialSpec_stringEmptySpec) n);
         else if (n instanceof conditionalSpecs__conditionalSpec_SEMICOLON) endVisit((conditionalSpecs__conditionalSpec_SEMICOLON) n);
         else if (n instanceof conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) endVisit((conditionalSpecs__conditionalSpecs_conditionalSpec_SEMICOLON) n);
         else if (n instanceof conditionalSpec__identifier_WITH_identifier) endVisit((conditionalSpec__identifier_WITH_identifier) n);

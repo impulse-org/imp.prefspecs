@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 26:  tabsSpec ::= $Empty
+ *<li>Rule 24:  tabsSpec ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 27:  tabsSpec ::= TABS$ {$ tabSpecs }$
+ *<li>Rule 25:  tabsSpec ::= TABS$ {$ tabSpecs }$
  *</b>
  */
 public class tabsSpec extends ASTNode implements ItabsSpec

@@ -17,12 +17,10 @@ import org.eclipse.imp.language.ILanguageService;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
-import org.eclipse.imp.prefspecs.parser.Ast.Itab;
 import org.eclipse.imp.prefspecs.parser.Ast.booleanFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.comboFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.configurationTabSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.defaultTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.dirListFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
@@ -33,17 +31,12 @@ import org.eclipse.imp.prefspecs.parser.Ast.intFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.projectTabSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.radioFieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.stringFieldSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__CONFIGURATION;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__DEFAULT;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__INSTANCE;
-import org.eclipse.imp.prefspecs.parser.Ast.tab__PROJECT;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
 import org.eclipse.imp.services.IReferenceResolver;
 
 public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguageService {
 
-    public PrefspecsReferenceResolver () {
-    }
+    public PrefspecsReferenceResolver () { }
 
     /**
       * Get the text associated with a given node for use in a link
@@ -59,8 +52,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
       * Get the target for a given source node in the AST represented by a
       * given Parse Controller.
       */
-    public Object getLinkTarget(Object node, IParseController controller)
-    {
+    public Object getLinkTarget(Object node, IParseController controller) {
     	if (controller.getCurrentAst() != null) {
     		buildScopeAndDeclStructures(controller);
     	}
@@ -69,58 +61,26 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
     	    ASTNode bindingTarget = findDeclForIdentifier((identifier)node);
     	    return bindingTarget;
         }
-        if (node instanceof Itab) {
-            ASTNode bindingTarget = findDeclForTab((Itab)node);
-            return bindingTarget;
-        }
         
         return null;
     }
-    
-    
-    protected ASTNode findDeclForTab(Itab node)
-    {
-    	if (node instanceof tab__DEFAULT) {
-    		return tabDecls.get(((tab__DEFAULT) node).getDEFAULT().toString());
-    	}
-    	if (node instanceof tab__CONFIGURATION) {
-    		return tabDecls.get(((tab__CONFIGURATION) node).getCONFIGURATION().toString());
-    	}
-    	if (node instanceof tab__INSTANCE) {
-    		return tabDecls.get(((tab__INSTANCE) node).getINSTANCE().toString());
-    	}
-    	if (node instanceof tab__PROJECT) {
-    		ASTNode res = tabDecls.get(((tab__PROJECT) node).getPROJECT().toString());
-    		return res;
-    	}
-    	System.err.println("PrefspecsReferenceResolver.findDeclForTab:  got tab of unknown type, returning null");
-    	return null;
-    }
-    
-    
-    protected ASTNode findDeclForIdentifier(identifier node)
-    {
+
+    protected ASTNode findDeclForIdentifier(identifier node) {
     	return fieldDecls.get(node.getIDENTIFIER().toString());
     }
 
-    
-    
+
 	private HashMap<String,ASTNode> tabDecls = null;
 	private HashMap<String,ASTNode> fieldDecls = null;
-//	private List customTabs = null;
-//	private List customFields = null;
-    
-    protected void buildScopeAndDeclStructures(IParseController controller)
-    {
+
+
+    protected void buildScopeAndDeclStructures(IParseController controller) {
     	tabDecls = new HashMap<String,ASTNode>();
     	fieldDecls = new HashMap<String,ASTNode>();
-//    	customTabs = new ArrayList();
-//    	customFields = new ArrayList();
     	
 		PageVisitor visitor = new PageVisitor();
 		ASTNode ast = (ASTNode) controller.getCurrentAst();
 		ast.accept(visitor);
-    
     }
     
     
@@ -128,18 +88,9 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
 	 * A visitor for ASTs that records information about scopes,
 	 * declarations and identifiers.
 	 */
-	public class PageVisitor extends AbstractVisitor
-	{
-  	
+	public class PageVisitor extends AbstractVisitor {
        	PageVisitor() { }
-   			
-       	
-       	
-       	//private String logging message(String methodName, String stackName, String action)
-       	
-  
-       	// Visit methods
-       	
+
        	public void unimplementedVisitor(String s) {
        	    //System.out.println("ScopeAndDeclVisitor:  Unimplemented visitor:  " + s);
        	}
@@ -147,55 +98,46 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        	
        	boolean inTabsSpec = false;
        	boolean inFieldsSpec = false;
-       	boolean inCustomSpec = false;
        	boolean inConditionalsSpec = false;
        	
         
        	// Spec visits
-       	
+       	@Override
        	public boolean visit(tabsSpec node) {
     		inTabsSpec = true;	
        		return true;
        	}
        	
-       	
+        @Override
        	public void endVisit(tabsSpec node) {
        		inTabsSpec = false;
        	}
  
-       	
+        @Override
        	public boolean visit(fieldsSpec node) {
        		inFieldsSpec = true;
        		return true;
        	}
-       	
+
+        @Override
        	public void endVisit(fieldsSpec node) {
        		inFieldsSpec = false;
        	}
        	
-       	
-       	public boolean visit(customSpec node) {
-       		inCustomSpec = true;
-       		return true;
-       	}
-       	
-       	public void endVisit(customSpec node) {
-       		inCustomSpec = false;
-       	}
-       	
-       	
+        @Override
        	public boolean visit(conditionalsSpec node) {
        		inConditionalsSpec = true;
        		return true;
        	}
        	
+        @Override
        	public void endVisit(conditionalsSpec node) {
        		inConditionalsSpec = false;
        	}
 
        	
        	// Tab spec visits
-       	
+        @Override
        	public boolean visit(defaultTabSpec node) {
        		if (inTabsSpec) {
        			tabDecls.put("DEFAULT", node);
@@ -203,6 +145,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(configurationTabSpec node) {
        		if (inTabsSpec) {
        			tabDecls.put("CONFIGURATION", node);
@@ -210,6 +153,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(instanceTabSpec node) {
        		if (inTabsSpec) {
        			tabDecls.put("INSTANCE", node);
@@ -217,6 +161,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(projectTabSpec node) {
        		if (inTabsSpec) {
        			tabDecls.put("PROJECT", node);
@@ -225,7 +170,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        	}
        	
        	// Field spec visits
-       	
+        @Override
        	public boolean visit(booleanFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
@@ -233,6 +178,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(comboFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
@@ -240,6 +186,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(dirListFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
@@ -247,6 +194,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(fileFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
@@ -254,6 +202,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(intFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
@@ -261,6 +210,7 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(radioFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
@@ -268,43 +218,12 @@ public class PrefspecsReferenceResolver implements IReferenceResolver, ILanguage
        		return true;	
        	}
        	
+        @Override
        	public boolean visit(stringFieldSpec node) {
        		if (inFieldsSpec) {
        			fieldDecls.put(node.getidentifier().getIDENTIFIER().toString(), node);
        		}
        		return true;	
        	}
-       	
-       	
-       	// Tab visits
-       	
-       	public boolean visit(tab__DEFAULT node) {
-       		if (inTabsSpec) {
-       			tabDecls.put(node.getDEFAULT().toString(), node);
-       		}
-       		return false;	
-       	}
-
-       	public boolean visit(tab__CONFIGURATION node) {
-       		if (inTabsSpec) {
-       			tabDecls.put(node.getCONFIGURATION().toString(), node);
-       		}
-       		return false;	
-       	}
-       	
-       	public boolean visit(tab__INSTANCE node) {
-       		if (inTabsSpec) {
-       			tabDecls.put(node.getINSTANCE().toString(), node);
-       		}
-       		return false;	
-       	}
-       	
-       	public boolean visit(tab__PROJECT node) {
-       		if (inTabsSpec) {
-       			tabDecls.put(node.getPROJECT().toString(), node);
-       		}
-       		return false;	
-       	}
-     	
 	}		// End PageVisitor
 }

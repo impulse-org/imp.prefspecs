@@ -52,7 +52,7 @@
 %End
 
 %Rules
-    prefSpecs ::= optPackageSpec optDetailsSpec topLevelItems
+    prefSpecs ::= optPackageSpec optDetailsSpec tabsSpec topLevelItems
 
     optPackageSpec ::= %empty | PACKAGE$ packageName ';'$
 
@@ -81,10 +81,7 @@
     pageBody ::= %empty
                | tabsSpec fieldsSpec optionalSpecs
 
-    optionalSpecs ::= customSpecOption conditionalsSpecOption
-
-    customSpecOption ::= %empty
-                       | customSpec
+    optionalSpecs ::= conditionalsSpecOption
 
     conditionalsSpecOption ::= %empty
                              | conditionalsSpec
@@ -96,18 +93,15 @@
     tabSpecs$$tabSpec ::= %empty | tabSpecs tabSpec
     tabSpec ::= defaultTabSpec | configurationTabSpec | instanceTabSpec | projectTabSpec
 
-    defaultTabSpec       ::= DEFAULT$       inout '{'$ generalSpecs '}'$
+    defaultTabSpec       ::= DEFAULT$       inout '{'$ '}'$
 
-    configurationTabSpec ::= CONFIGURATION$ inout '{'$ generalSpecs '}'$
+    configurationTabSpec ::= CONFIGURATION$ inout '{'$ '}'$
 
-    instanceTabSpec      ::= INSTANCE$      inout '{'$ generalSpecs '}'$
+    instanceTabSpec      ::= INSTANCE$      inout '{'$ '}'$
 
-    projectTabSpec       ::= PROJECT$       inout '{'$ generalSpecs '}'$
-
-    --tabPropertySpecs ::= isEditableSpec isRemovableSpec
+    projectTabSpec       ::= PROJECT$       inout '{'$ '}'$
 
     inout ::= IN | OUT
-
 
     -- Rules for the "fields" section
     
@@ -156,7 +150,6 @@
     stringFieldPropertySpecs    ::= %empty | '{'$ stringSpecificSpecs   '}'$
 
     -- Rules for specifications used in various parts
-    generalSpecs$$generalSpec ::= %empty | generalSpecs generalSpec
     generalSpec ::= isEditableSpec | isRemovableSpec | optLabelSpec | optToolTipSpec
 
     isEditableSpec  ::= ISEDITABLE$ booleanValue ';'$
@@ -216,8 +209,7 @@
 
 
     stringSpecificSpecs$$stringSpecificSpec ::= stringSpecificSpec | stringSpecificSpecs stringSpecificSpec
-    stringSpecificSpec  ::= stringDefValueSpec | stringValidatorSpec | stringSpecialSpec | stringEmptySpec | generalSpec
-    stringSpecialSpec   ::= HASSPECIAL$ stringValue ';'$
+    stringSpecificSpec  ::= stringDefValueSpec | stringValidatorSpec | stringEmptySpec | generalSpec
     stringEmptySpec     ::= EMPTYALLOWED$ FALSE ';'$
                           | EMPTYALLOWED$ TRUE stringValue ';'$
     stringDefValueSpec  ::= DEFVALUE$ stringValue ';'$
@@ -239,26 +231,6 @@
     signedNumber ::= INTEGER | sign INTEGER
 
     sign ::= PLUS | MINUS
-
-    -- Rules for the "custom" section
-     
-    customSpec ::= CUSTOM$ '{'$ customRules '}'$
-
-    customRules ::= %empty
-                       |  customRule
-                       |  customRules customRule
-
-    tab ::= DEFAULT | CONFIGURATION | INSTANCE | PROJECT
-    
-    customRule ::= tab identifier '{'$ newPropertySpecs '}'$
-
-    newPropertySpecs ::= generalSpecs 
-                       | generalSpecs typeCustomSpecs
-
-    typeCustomSpecs ::=  booleanSpecialSpec
-                     |   intRangeSpec intSpecialSpec
-                     |   stringSpecialSpec stringEmptySpec
-
 
     -- Rules for the "conditionals" section
 
@@ -289,11 +261,6 @@
         public static List<String> fieldNames = new ArrayList<String>();        
         public static List<String> booleanFields = new ArrayList<String>();
         public static HashMap<String,String> fieldTypes = new HashMap<String,String>();
-
-        public static void reportError(String msg) {
-            System.err.println(msg);
-        }
-
 
         //////////////////////////////////////////////////////////////////
         //
@@ -379,11 +346,13 @@
             
             protected boolean inDefaultTabSpec = false;
        
+            @Override
             public boolean visit(defaultTabSpec n) {
             inDefaultTabSpec = true;
             return true;
             }
         
+            @Override
             public void endVisit(defaultTabSpec n) {
                 inDefaultTabSpec = false;
             }
@@ -392,24 +361,20 @@
             //
             // Visitors for properties
             //
-            
+            @Override
             public boolean visit(isRemovableSpec n) {
                 if (n.getbooleanValue() instanceof booleanValue__TRUE) {
-                    if (inDefaultTabSpec || inCustomSpecForDefaultTab) {
+                    if (inDefaultTabSpec) {
                         emitError(n, "Field values on default tab are not removable");
                     }
                 }
                 return true;
             }
-        
-            public void endVisit(isRemovableSpec n) { }
-              
-  
-
 
             //
             // Visitors for field specs
             //
+            @Override
             public boolean visit(booleanFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
@@ -421,9 +386,7 @@
                 return true;
             }
         
-            public void endVisit(booleanFieldSpec n) { }
-            
-            
+            @Override
             public boolean visit(comboFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
@@ -434,10 +397,8 @@
                 return true;
             }
         
-            public void endVisit(comboFieldSpec n) { }
-            
-            
-             public boolean visit(dirListFieldSpec n) {
+            @Override
+            public boolean visit(dirListFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
                         emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
@@ -446,10 +407,8 @@
                 fieldTypes.put(id, DIRLIST_TYPE);
                 return true;
             }
-        
-            public void endVisit(dirListFieldSpec n) { }
-
             
+            @Override
             public boolean visit(fileFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
@@ -460,9 +419,7 @@
                 return true;
             }
         
-            public void endVisit(fileFieldSpec n) { }
-            
-            
+            @Override
             public boolean visit(intFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
@@ -473,10 +430,8 @@
                 return true;
             }
         
-            public void endVisit(intFieldSpec n) { }
-            
-            
-             public boolean visit(radioFieldSpec n) {
+            @Override
+            public boolean visit(radioFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
                         emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
@@ -486,10 +441,8 @@
                 return true;
             }
         
-            public void endVisit(radioFieldSpec n) { }
-  
-  
-               public boolean visit(stringFieldSpec n) {
+            @Override
+            public boolean visit(stringFieldSpec n) {
                 String id = n.getidentifier().toString();
                 if (fieldNames.contains(id)) {
                         emitError(n.getidentifier().getIToken(), "Duplicate identifier (not allowed)");
@@ -498,63 +451,12 @@
                 fieldTypes.put(id, STRING_TYPE);
                 return true;
             }
-        
-            public void endVisit(stringFieldSpec n) { }
-  
- 
-             //
-             // Visitors for custom rule and conditional specs
-             //
-             
-             protected boolean inCustomSpecForDefaultTab = false;	
-              
-             public boolean visit(customRule n) {
-                String id = n.getidentifier().toString();
-                if (!fieldNames.contains(id)) {
-                    emitError(n.getidentifier().getIToken(), "Field identifier not decleared");
-                }
 
-                // Check whether properties are appropriate to field type
-                // (Note:  Only inappropriate type-specific properties can be invalid for a typed field)
-                String fieldType = fieldTypes.get(id);
-                if (fieldType != null) {
-                    newPropertySpecs propertySpecs = (newPropertySpecs) n.getnewPropertySpecs();
-                    ItypeCustomSpecs typeCustomSpecs = propertySpecs.gettypeCustomSpecs();
-                    if (typeCustomSpecs != null) {
-                            //if ((fieldType.equals(BOOLEAN_TYPE) && !(typeCustomSpecs instanceof booleanCustomSpec)) ||
-                            if ((fieldType.equals(BOOLEAN_TYPE) && !(typeCustomSpecs instanceof booleanSpecialSpec)) ||
-                                (fieldType.equals(COMBO_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
-                                (fieldType.equals(DIRLIST_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
-                                (fieldType.equals(FILE_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)) ||
-                                (fieldType.equals(INT_TYPE) && !(typeCustomSpecs instanceof IintCustomSpec)) ||
-                                //(fieldType.equals(RADIO_TYPE) && !(typeCustomSpecs instanceof radioCustomSpec)) ||
-                                (fieldType.equals(STRING_TYPE) && !(typeCustomSpecs instanceof IstringCustomSpec)))
-                            {
-                                String propertyMsg = "Property specification not consistent with field type";
+            //
+            // Visitors for conditional specs
+            //
 
-                                emitError((ASTNode) typeCustomSpecs, propertyMsg);
-                                //int startOffset = n.getidentifier().getIToken().getStartOffset();
-                                //int endOffset = n.getRIGHTBRACE().getIToken().getEndOffset();
-                                //emitError(startOffset, endOffset, "Property specification not consistent with field type");
-                            }
-                    }
-                }
-                
-                if (n.gettab() instanceof tab__DEFAULT) {
-                    // Have a the default tab
-                    inCustomSpecForDefaultTab = true;
-                }
-            
-                return true;
-            }
-
-
-            public void endVisit(customRule n) { 
-                inCustomSpecForDefaultTab = false;
-            }
-        
-        
-        
+            @Override
             public boolean visit(conditionalSpec__identifier_WITH_identifier n) {
                 String id = n.getidentifier().toString();
                 if (!fieldNames.contains(id)) {
@@ -569,10 +471,8 @@
                 return true;
             }
 
-            public void endVisit(conditionalSpec__identifier_WITH_identifier n) { }
- 
- 
-             public boolean visit(conditionalSpec__identifier_AGAINST_identifier n) {
+            @Override
+            public boolean visit(conditionalSpec__identifier_AGAINST_identifier n) {
                 String id = n.getidentifier().toString();
                 if (!fieldNames.contains(id)) {
                     emitError(n.getidentifier().getIToken(), "Identifier does not represent a declared field");
@@ -585,14 +485,6 @@
                 }
                 return true;
             }
-
-            public void endVisit(conditionalSpec__identifier_AGAINST_identifier n) { }
-  
-  
-            
-
-
         } // End SymbolTableVisitor
-        
     ./
 %End

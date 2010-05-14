@@ -28,8 +28,9 @@ import java.util.HashMap;
  *<b>
  *<ul>
  *<li>booleanSpecialSpec
- *<li>typeCustomSpecs__intRangeSpec_intSpecialSpec
- *<li>typeCustomSpecs__stringSpecialSpec_stringEmptySpec
+ *<li>typeCustomSpecs
+ *<li>stringEmptySpec0
+ *<li>stringEmptySpec1
  *</ul>
  *</b>
  */

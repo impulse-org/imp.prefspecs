@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 78:  fileFieldPropertySpecs ::= $Empty
+ *<li>Rule 76:  fileFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 79:  fileFieldPropertySpecs ::= {$ stringSpecificSpecs }$
+ *<li>Rule 77:  fileFieldPropertySpecs ::= {$ stringSpecificSpecs }$
  *</b>
  */
 public class fileFieldPropertySpecs extends ASTNode implements IfileFieldPropertySpecs

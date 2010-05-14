@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 153:  labelledStringValueList ::= labelledStringValue
- *<li>Rule 154:  labelledStringValueList ::= labelledStringValueList ,$ labelledStringValue
+ *<li>Rule 149:  labelledStringValueList ::= labelledStringValue
+ *<li>Rule 150:  labelledStringValueList ::= labelledStringValueList ,$ labelledStringValue
  *</b>
  */
 public class labelledStringValueList extends AbstractASTNodeList implements IlabelledStringValueList

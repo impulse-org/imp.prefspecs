@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 201:  conditionalSpec ::= identifier AGAINST identifier
+ *<li>Rule 181:  conditionalSpec ::= identifier AGAINST identifier
  *</b>
  */
 public class conditionalSpec__identifier_AGAINST_identifier extends ASTNode implements IconditionalSpec

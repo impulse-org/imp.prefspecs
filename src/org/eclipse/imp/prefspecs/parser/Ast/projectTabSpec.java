@@ -25,27 +25,22 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 37:  projectTabSpec ::= PROJECT$ inout {$ generalSpecs }$
+ *<li>Rule 35:  projectTabSpec ::= PROJECT$ inout {$ }$
  *</b>
  */
 public class projectTabSpec extends ASTNode implements IprojectTabSpec
 {
     private Iinout _inout;
-    private generalSpecList _generalSpecs;
 
     public Iinout getinout() { return _inout; }
-    public generalSpecList getgeneralSpecs() { return _generalSpecs; }
 
     public projectTabSpec(IToken leftIToken, IToken rightIToken,
-                          Iinout _inout,
-                          generalSpecList _generalSpecs)
+                          Iinout _inout)
     {
         super(leftIToken, rightIToken);
 
         this._inout = _inout;
         ((ASTNode) _inout).setParent(this);
-        this._generalSpecs = _generalSpecs;
-        ((ASTNode) _generalSpecs).setParent(this);
         initialize();
     }
 
@@ -56,7 +51,6 @@ public class projectTabSpec extends ASTNode implements IprojectTabSpec
     {
         java.util.ArrayList list = new java.util.ArrayList();
         list.add(_inout);
-        list.add(_generalSpecs);
         return list;
     }
 
@@ -67,7 +61,6 @@ public class projectTabSpec extends ASTNode implements IprojectTabSpec
         if (! super.equals(o)) return false;
         projectTabSpec other = (projectTabSpec) o;
         if (! _inout.equals(other._inout)) return false;
-        if (! _generalSpecs.equals(other._generalSpecs)) return false;
         return true;
     }
 
@@ -75,7 +68,6 @@ public class projectTabSpec extends ASTNode implements IprojectTabSpec
     {
         int hash = super.hashCode();
         hash = hash * 31 + (_inout.hashCode());
-        hash = hash * 31 + (_generalSpecs.hashCode());
         return hash;
     }
 
@@ -90,10 +82,7 @@ public class projectTabSpec extends ASTNode implements IprojectTabSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-        {
             _inout.accept(v);
-            _generalSpecs.accept(v);
-        }
         v.endVisit(this);
     }
 }

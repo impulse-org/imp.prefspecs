@@ -61,9 +61,6 @@ public interface Visitor extends IAstVisitor
     boolean visit(pageBody n);
     void endVisit(pageBody n);
 
-    boolean visit(optionalSpecs n);
-    void endVisit(optionalSpecs n);
-
     boolean visit(tabsSpec n);
     void endVisit(tabsSpec n);
 
@@ -154,9 +151,6 @@ public interface Visitor extends IAstVisitor
     boolean visit(stringFieldPropertySpecs n);
     void endVisit(stringFieldPropertySpecs n);
 
-    boolean visit(generalSpecList n);
-    void endVisit(generalSpecList n);
-
     boolean visit(isEditableSpec n);
     void endVisit(isEditableSpec n);
 
@@ -238,9 +232,6 @@ public interface Visitor extends IAstVisitor
     boolean visit(stringSpecificSpecList n);
     void endVisit(stringSpecificSpecList n);
 
-    boolean visit(stringSpecialSpec n);
-    void endVisit(stringSpecialSpec n);
-
     boolean visit(stringDefValueSpec n);
     void endVisit(stringDefValueSpec n);
 
@@ -255,18 +246,6 @@ public interface Visitor extends IAstVisitor
 
     boolean visit(stringValue n);
     void endVisit(stringValue n);
-
-    boolean visit(customSpec n);
-    void endVisit(customSpec n);
-
-    boolean visit(customRules n);
-    void endVisit(customRules n);
-
-    boolean visit(customRule n);
-    void endVisit(customRule n);
-
-    boolean visit(newPropertySpecs n);
-    void endVisit(newPropertySpecs n);
 
     boolean visit(conditionalsSpec n);
     void endVisit(conditionalsSpec n);
@@ -327,24 +306,6 @@ public interface Visitor extends IAstVisitor
 
     boolean visit(sign__MINUS n);
     void endVisit(sign__MINUS n);
-
-    boolean visit(tab__DEFAULT n);
-    void endVisit(tab__DEFAULT n);
-
-    boolean visit(tab__CONFIGURATION n);
-    void endVisit(tab__CONFIGURATION n);
-
-    boolean visit(tab__INSTANCE n);
-    void endVisit(tab__INSTANCE n);
-
-    boolean visit(tab__PROJECT n);
-    void endVisit(tab__PROJECT n);
-
-    boolean visit(typeCustomSpecs__intRangeSpec_intSpecialSpec n);
-    void endVisit(typeCustomSpecs__intRangeSpec_intSpecialSpec n);
-
-    boolean visit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n);
-    void endVisit(typeCustomSpecs__stringSpecialSpec_stringEmptySpec n);
 
     boolean visit(conditionalSpecs__conditionalSpec_SEMICOLON n);
     void endVisit(conditionalSpecs__conditionalSpec_SEMICOLON n);

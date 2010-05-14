@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 38:  inout ::= IN
+ *<li>Rule 36:  inout ::= IN
  *</b>
  */
 public class inout__IN extends ASTNodeToken implements Iinout

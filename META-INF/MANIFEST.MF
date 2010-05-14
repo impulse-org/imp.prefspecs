@@ -19,7 +19,8 @@ Require-Bundle: lpg.runtime.java;bundle-version="2.0.17",
  org.eclipse.ui,
  org.eclipse.ui.console,
  org.eclipse.ui.editors,
- org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.imp.runtime
 Provide-Package: org.eclipse.imp.prefspecs,
  org.eclipse.imp.prefspecs.actions,
  org.eclipse.imp.prefspecs.builders,

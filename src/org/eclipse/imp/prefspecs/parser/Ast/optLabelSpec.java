@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 96:  optLabelSpec ::= LABEL$ STRING_LITERAL ;$
+ *<li>Rule 92:  optLabelSpec ::= LABEL$ STRING_LITERAL ;$
  *</b>
  */
 public class optLabelSpec extends ASTNode implements IoptLabelSpec

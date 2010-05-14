@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 72:  directoryFieldPropertySpecs ::= $Empty
+ *<li>Rule 70:  directoryFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 73:  directoryFieldPropertySpecs ::= {$ stringSpecificSpecs }$
+ *<li>Rule 71:  directoryFieldPropertySpecs ::= {$ stringSpecificSpecs }$
  *</b>
  */
 public class directoryFieldPropertySpecs extends ASTNode implements IdirectoryFieldPropertySpecs

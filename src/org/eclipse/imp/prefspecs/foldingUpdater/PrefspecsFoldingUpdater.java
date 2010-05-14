@@ -7,7 +7,6 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.foldingUpdater;
@@ -19,7 +18,6 @@ import org.eclipse.imp.prefspecs.parser.Ast.ASTNode;
 import org.eclipse.imp.prefspecs.parser.Ast.AbstractVisitor;
 import org.eclipse.imp.prefspecs.parser.Ast.IfieldSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.conditionalsSpec;
-import org.eclipse.imp.prefspecs.parser.Ast.customSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.fieldsSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.pageSpec;
 import org.eclipse.imp.prefspecs.parser.Ast.tabsSpec;
@@ -36,15 +34,13 @@ import org.eclipse.imp.services.base.FolderBase;
  *
  */
 public class PrefspecsFoldingUpdater extends FolderBase {
-
 	/*
 	 * A visitor for ASTs.  Its purpose is to create ProjectionAnnotations
 	 * for regions of text corresponding to various types of AST node or to
 	 * text ranges computed from AST nodes.  Projection annotations appear
 	 * in the editor as the widgets that control folding.
 	 */
-	private class FoldingVisitor extends AbstractVisitor
-	{
+	private class FoldingVisitor extends AbstractVisitor {
 	    public void unimplementedVisitor(String s) { }
 	    
 		// START_HERE
@@ -58,38 +54,29 @@ public class PrefspecsFoldingUpdater extends FolderBase {
 	    // is explicitly provided.  An example is shown below ...
 	    
 	    // Create annotations for the folding of blocks (for example)
-	    	public boolean visit(pageSpec n) {
+        @Override
+    	public boolean visit(pageSpec n) {
 			makeAnnotation(n);
 			return true;
 		}
 		
+	        @Override
 		public boolean visit(tabsSpec n) {
 			makeAnnotation(n);
 			return true;
 		}
 		
+        @Override
 		public boolean visit(fieldsSpec n) {
 			makeAnnotation(n);
 			return true;
 		}
-		
-		public boolean visit(customSpec n) {
-			makeAnnotation(n);
-			return true;
-		}
-	
+
+        @Override
 		public boolean visit(conditionalsSpec n) {
 			makeAnnotation(n);
 			return true;
 		}	
-		
-		public boolean visit(IfieldSpec n) {
-			makeAnnotation(n);
-			return true;
-		}	
-		
-		
-		
 	};
    
 	

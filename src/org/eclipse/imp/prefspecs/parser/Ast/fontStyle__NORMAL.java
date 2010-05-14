@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 129:  fontStyle ::= NORMAL
+ *<li>Rule 125:  fontStyle ::= NORMAL
  *</b>
  */
 public class fontStyle__NORMAL extends ASTNodeToken implements IfontStyle
