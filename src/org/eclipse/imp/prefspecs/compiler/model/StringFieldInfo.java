@@ -9,7 +9,7 @@
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler.pageinfo;
+package org.eclipse.imp.prefspecs.compiler.model;
 
 import org.eclipse.ui.console.MessageConsoleStream;
 

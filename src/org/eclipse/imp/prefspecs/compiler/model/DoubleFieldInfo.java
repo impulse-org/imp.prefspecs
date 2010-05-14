@@ -7,18 +7,21 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
+
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler.pageinfo;
+package org.eclipse.imp.prefspecs.compiler.model;
 
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class IntFieldInfo extends FieldInfo {
+public class DoubleFieldInfo extends FieldInfo {
 	/**
 	 * The default value associated with this field
+	 * (used to set the value of the concrete instance of
+	 * this field on the default level)
 	 */
-	protected int defaultValue = 0;
-
+	protected double defaultValue = 0.0;
+		
 	/**
 	 * True iff this field has a range specification; if false, rangeHigh and rangeLow
 	 * are irrelevant and should be ignored.
@@ -29,55 +32,59 @@ public class IntFieldInfo extends FieldInfo {
 	 * Values that delimit the range that the field may
 	 * take on
 	 */
-	protected int rangeHigh = Integer.MAX_VALUE;
-	protected int rangeLow 	= Integer.MIN_VALUE;
+	protected double rangeHigh = Double.MAX_VALUE;
+	protected double rangeLow = Double.MIN_VALUE;
 
-	public IntFieldInfo(PreferencesPageInfo parentPage, String name) {
+
+
+	public DoubleFieldInfo(PreferencesPageInfo parentPage, String name) {
 		super(parentPage, name);
 	}
-
-	public IntFieldInfo(PreferencesPageInfo parentPage, String name, int defValue) {
+	
+	public DoubleFieldInfo(PreferencesPageInfo parentPage, String name, double defValue) {
 		this(parentPage, name);
 		this.defaultValue = defValue;
 	}
 
-	public void setDefaultValue(int i) {
-		if (i < getRangeLow() || i > getRangeHigh())
-			throw new IllegalArgumentException(
-				"IntFieldInfo.setDefaultValue(int):  attempt to set default value = " + i +
-				" outside of range = " + getRangeLow() + ".." + getRangeHigh());
-		defaultValue = i;
-	}
 
-	public int getDefaultValue() {
-		return defaultValue;
+	public void setDefaultValue(double d) {
+		if (d < getRangeLow() || d > getRangeHigh())
+			throw new IllegalArgumentException(
+				"VirtualDoubleFieldInfo.setDefaultValue(double):  attempt to set default value = " + d +
+				" outside of range = " + getRangeLow() + ".." + getRangeHigh());
+		defaultValue = d;
+	}
+	
+	public double getDefaultValue() {
+		return defaultValue;	
 	}
 
 	public boolean hasRangeSpec() {
 	    return hasRangeSpec;
 	}
 
-	public void setRange(int low, int high) {
+	public void setRange(double low, double high) {
 		if (high < low) {
 			throw new IllegalArgumentException(
-				"IntFieldInfo.setRange(int,int):  given high value = " + high +
+				"VirtualDoubleFieldInfo.setRange(double,double):  given high value = " + high +
 				" is less than low value " + low);
 		}
 		hasRangeSpec = true;
 		rangeLow = low;
 		rangeHigh = high;
 	}
-
-	public int getRangeHigh() {
+	
+	public double getRangeHigh() {
 		return rangeHigh;
 	}
-
-	public int getRangeLow() {
+	
+	public double getRangeLow() {
 		return rangeLow;
 	}
 
+
 	/*
-	 * For reporting on the contents of the field
+	 * For reporting on the contents of the virtual field
 	 */
 	public void dump(String prefix, MessageConsoleStream out) {
 		super.dump(prefix, out);

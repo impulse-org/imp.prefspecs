@@ -9,14 +9,12 @@
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler;
+package org.eclipse.imp.prefspecs.compiler.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.imp.prefspecs.compiler.pageinfo.IPreferenceTabContainer;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.PreferencesTabInfo;
 
 public class PreferenceTabContainerBase implements IPreferenceTabContainer {
     protected List<PreferencesTabInfo> fTabs;

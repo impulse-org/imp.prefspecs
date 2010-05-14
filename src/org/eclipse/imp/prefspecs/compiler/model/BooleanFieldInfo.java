@@ -10,7 +10,7 @@
 
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler.pageinfo;
+package org.eclipse.imp.prefspecs.compiler.model;
 
 import org.eclipse.ui.console.MessageConsoleStream;
 

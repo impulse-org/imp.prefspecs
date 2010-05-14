@@ -7,18 +7,14 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
+
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler.pageinfo;
+package org.eclipse.imp.prefspecs.compiler.model;
 
-import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
 
-public class ComboFieldInfo extends EnumFieldInfo {
-    public ComboFieldInfo(PreferencesPageInfo parentPage, String name) {
-        super(parentPage, name);
-    }
+public interface IPreferencesGeneratorData {
 
-    public ComboFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
-        super(parentPage, name, valueSource);
-    }
+	public PreferencesPageInfo getPageInfo();	
+	
 }

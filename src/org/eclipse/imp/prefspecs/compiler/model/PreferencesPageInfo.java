@@ -9,13 +9,12 @@
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler.pageinfo;
+package org.eclipse.imp.prefspecs.compiler.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.imp.prefspecs.compiler.PreferenceTabContainerBase;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class PreferencesPageInfo extends PreferenceTabContainerBase {

@@ -25,27 +25,27 @@ import org.eclipse.imp.preferences.PreferencesService;
 import org.eclipse.imp.prefspecs.compiler.DynamicEnumValueSource;
 import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
 import org.eclipse.imp.prefspecs.compiler.LiteralEnumValueSource;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.PreferencesPageInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.PreferencesTabInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.BooleanFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.ColorFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.ComboFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.DirListFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.DirectoryFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.DoubleFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.EnumFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.FieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.FileFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.FontFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.IntFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.RadioFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.pageinfo.StringFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.BooleanFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.ColorFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.ComboFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.DirListFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.DirectoryFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.DoubleFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.EnumFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.FieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.FileFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.FontFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.IntFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PreferencesTabInfo;
+import org.eclipse.imp.prefspecs.compiler.model.RadioFieldInfo;
+import org.eclipse.imp.prefspecs.compiler.model.StringFieldInfo;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class PreferencesFactory {
+public class CodeGenerator {
 	private final MessageConsoleStream fConsoleStream;
 
-    public PreferencesFactory(MessageConsoleStream consoleStream) {
+    public CodeGenerator(MessageConsoleStream consoleStream) {
         this.fConsoleStream= consoleStream;
     }
 

@@ -9,14 +9,16 @@
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.imp.prefspecs.compiler.pageinfo;
+package org.eclipse.imp.prefspecs.compiler.model;
 
-public class DirectoryFieldInfo extends StringFieldInfo {
-    public DirectoryFieldInfo(PreferencesPageInfo parentPage, String name) {
+import org.eclipse.imp.prefspecs.compiler.IEnumValueSource;
+
+public class RadioFieldInfo extends EnumFieldInfo {
+    public RadioFieldInfo(PreferencesPageInfo parentPage, String name) {
         super(parentPage, name);
     }
 
-    public DirectoryFieldInfo(PreferencesPageInfo parentPage, String name, String defValue) {
-        super(parentPage, name, defValue);
+    public RadioFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
+        super(parentPage, name, valueSource);
     }
 }
