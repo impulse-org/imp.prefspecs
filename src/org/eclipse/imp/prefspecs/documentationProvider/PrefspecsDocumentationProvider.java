@@ -41,8 +41,6 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         	case PrefspecsParsersym.TK_FIELDS:
         		return "Introduces required section for specifying fields for tabs on the preference page " +
 						"and optionally specifying certain properties of those fields";
-        	case PrefspecsParsersym.TK_CUSTOM:
-        		return "Introduces optional section for specifying fiel-property values that apply to specific fields on specific tabs.";
         	case PrefspecsParsersym.TK_CONDITIONALS:
         		return "Introduces optional section for specifying fields that are enabled depending on the states other fields.";
  
@@ -79,9 +77,6 @@ public class PrefspecsDocumentationProvider implements IDocumentationProvider, I
         				"an 'empty' value; this attribute takes a boolean value; if 'true' then a value " +
            				"of the field type must be provided (to serve as the 'empty' value); " +
         				"if 'false', then no other argument is needed";
-        	case PrefspecsParsersym.TK_HASSPECIAL:
-        		return "'hasspecial' requires a value of the type of the field that " +
-        				"will serve as a distinguished value; omit if no such value";
         	case PrefspecsParsersym.TK_ISEDITABLE:
         		return "'iseditable' takes a boolean value:  'true' indicates that the field " +
         				"can be edited (normal case); false indicates that it cannot (field is 'read only')";

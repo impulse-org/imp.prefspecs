@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 93:  optToolTipSpec ::= TOOLTIP$ STRING_LITERAL ;$
+ *<li>Rule 94:  optToolTipSpec ::= TOOLTIP$ STRING_LITERAL ;$
  *</b>
  */
 public class optToolTipSpec extends ASTNode implements IoptToolTipSpec

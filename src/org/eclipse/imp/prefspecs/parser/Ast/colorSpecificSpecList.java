@@ -25,8 +25,8 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 101:  colorSpecificSpecs ::= colorSpecificSpec
- *<li>Rule 102:  colorSpecificSpecs ::= colorSpecificSpecs colorSpecificSpec
+ *<li>Rule 100:  colorSpecificSpecs ::= colorSpecificSpec
+ *<li>Rule 101:  colorSpecificSpecs ::= colorSpecificSpecs colorSpecificSpec
  *</b>
  */
 public class colorSpecificSpecList extends AbstractASTNodeList implements IcolorSpecificSpecs

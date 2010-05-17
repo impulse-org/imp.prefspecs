@@ -32,9 +32,6 @@ public class fieldsSpec extends ASTNode implements IfieldsSpec
 {
     private IfieldSpecs _fieldSpecs;
 
-    /**
-     * The value returned by <b>getfieldSpecs</b> may be <b>null</b>
-     */
     public IfieldSpecs getfieldSpecs() { return _fieldSpecs; }
 
     public fieldsSpec(IToken leftIToken, IToken rightIToken,
@@ -43,7 +40,7 @@ public class fieldsSpec extends ASTNode implements IfieldsSpec
         super(leftIToken, rightIToken);
 
         this._fieldSpecs = _fieldSpecs;
-        if (_fieldSpecs != null) ((ASTNode) _fieldSpecs).setParent(this);
+        ((ASTNode) _fieldSpecs).setParent(this);
         initialize();
     }
 
@@ -63,17 +60,14 @@ public class fieldsSpec extends ASTNode implements IfieldsSpec
         if (! (o instanceof fieldsSpec)) return false;
         if (! super.equals(o)) return false;
         fieldsSpec other = (fieldsSpec) o;
-        if (_fieldSpecs == null)
-            if (other._fieldSpecs != null) return false;
-            else; // continue
-        else if (! _fieldSpecs.equals(other._fieldSpecs)) return false;
+        if (! _fieldSpecs.equals(other._fieldSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_fieldSpecs == null ? 0 : _fieldSpecs.hashCode());
+        hash = hash * 31 + (_fieldSpecs.hashCode());
         return hash;
     }
 
@@ -88,7 +82,7 @@ public class fieldsSpec extends ASTNode implements IfieldsSpec
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            if (_fieldSpecs != null) _fieldSpecs.accept(v);
+            _fieldSpecs.accept(v);
         v.endVisit(this);
     }
 }

@@ -118,6 +118,9 @@ public interface Visitor extends IAstVisitor
     boolean visit(stringFieldSpec n);
     void endVisit(stringFieldSpec n);
 
+    boolean visit(groupSpec n);
+    void endVisit(groupSpec n);
+
     boolean visit(booleanFieldPropertySpecs n);
     void endVisit(booleanFieldPropertySpecs n);
 
@@ -166,9 +169,6 @@ public interface Visitor extends IAstVisitor
     boolean visit(booleanSpecificSpecList n);
     void endVisit(booleanSpecificSpecList n);
 
-    boolean visit(booleanSpecialSpec n);
-    void endVisit(booleanSpecialSpec n);
-
     boolean visit(booleanDefValueSpec n);
     void endVisit(booleanDefValueSpec n);
 
@@ -204,9 +204,6 @@ public interface Visitor extends IAstVisitor
 
     boolean visit(intRangeSpec n);
     void endVisit(intRangeSpec n);
-
-    boolean visit(intSpecialSpec n);
-    void endVisit(intSpecialSpec n);
 
     boolean visit(intDefValueSpec n);
     void endVisit(intDefValueSpec n);

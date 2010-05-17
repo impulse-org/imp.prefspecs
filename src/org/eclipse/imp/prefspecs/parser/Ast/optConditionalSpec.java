@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 164:  optConditionalSpec ::= $Empty
+ *<li>Rule 161:  optConditionalSpec ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 165:  optConditionalSpec ::= conditionType identifier
+ *<li>Rule 162:  optConditionalSpec ::= conditionType identifier
  *</b>
  */
 public class optConditionalSpec extends ASTNode implements IoptConditionalSpec

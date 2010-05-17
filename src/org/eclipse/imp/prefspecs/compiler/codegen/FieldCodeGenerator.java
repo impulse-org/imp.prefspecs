@@ -3,7 +3,7 @@ package org.eclipse.imp.prefspecs.compiler.codegen;
 import java.util.List;
 
 import org.eclipse.imp.prefspecs.compiler.model.FieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 
 public abstract class FieldCodeGenerator {
     protected final FieldInfo fFieldInfo;
@@ -31,16 +31,16 @@ public abstract class FieldCodeGenerator {
      * @param pageInfo the PageInfo for the page to which this field belongs
      * @param tabLevel the preference tab/level (default, instance, workspace, project) in
      * which this field resides
-     * @see CodeGenerator#generateTabFields(PreferencesPageInfo, String, StringBuilder, String)
+     * @see CodeGenerator#generateTabFields(PageInfo, String, StringBuilder, String)
      */
-    public abstract void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel);
+    public abstract void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite);
 
     /**
      * Generate the Java source text to enable/disable this field, given that this field is
      * conditional on some boolean field.
      * @param srcText the StringBuilder to which to append
      * @param enablementExpr the expression that determines whether the field should be enabled
-     * @see CodeGenerator#regenerateEndOfProjectTab(PreferencesPageInfo, StringBuilder)
+     * @see CodeGenerator#regenerateEndOfProjectTab(PageInfo, StringBuilder)
      */
     public void genTextToEnableField(StringBuilder srcText, String enablementExpr) {
         String fieldName= fFieldInfo.getName();

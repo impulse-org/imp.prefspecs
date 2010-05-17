@@ -18,8 +18,8 @@ import java.util.List;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class PreferencesTabInfo {
-	private IPreferenceTabContainer parent = null;
+public class TabInfo {
+	private ITabContainer parent = null;
 	private String name = null;
 
 //	private List<ConcreteFieldInfo> concreteFields = new ArrayList<ConcreteFieldInfo>();
@@ -39,7 +39,7 @@ public class PreferencesTabInfo {
 	 */
 	private boolean isUsed = true;
 
-	public PreferencesTabInfo(IPreferenceTabContainer parent, String name) {
+	public TabInfo(ITabContainer parent, String name) {
 //		// All tabInfos must have a parentInfo
 //		if (parent == null) {
 //			throw new IllegalArgumentException("PreferencesTabInfo(..): parent page is null; not allowed");		
@@ -85,7 +85,7 @@ public class PreferencesTabInfo {
 	// so only "get" methods are defined for those
 	//
 
-	public IPreferenceTabContainer getParent() {
+	public ITabContainer getParent() {
 		return parent;
 	}
 

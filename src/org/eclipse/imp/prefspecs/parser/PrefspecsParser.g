@@ -17,18 +17,18 @@
 %Define
     $ast_class /.Object./
     $additional_interfaces /., IParser./
-%End        
+%End
 
 %Terminals
-         COMMA ::= ','
-         DOT   ::= '.'
-         SEMICOLON ::= ';'
-         PLUS ::= '+'
-         MINUS ::= '-'
-         LEFTPAREN ::= '('
-         RIGHTPAREN ::= ')'
-         LEFTBRACE ::= '{'
-         RIGHTBRACE ::= '}'
+	COMMA ::= ','
+	DOT   ::= '.'
+	SEMICOLON ::= ';'
+	PLUS ::= '+'
+	MINUS ::= '-'
+	LEFTPAREN ::= '('
+	RIGHTPAREN ::= ')'
+	LEFTBRACE ::= '{'
+	RIGHTBRACE ::= '}'
 %End
 
 %Start
@@ -107,8 +107,7 @@
     
     fieldsSpec ::= FIELDS$ '{'$ fieldSpecs '}'$
 
-    fieldSpecs ::= %empty
-                 | fieldSpec
+    fieldSpecs ::= fieldSpec
                  | fieldSpecs fieldSpec
                     
     fieldSpec ::= booleanFieldSpec
@@ -122,6 +121,7 @@
                 | intFieldSpec
                 | radioFieldSpec
                 | stringFieldSpec
+				| groupSpec
 
 
     booleanFieldSpec   ::= BOOLEAN$   identifier booleanFieldPropertySpecs   optConditionalSpec
@@ -136,6 +136,7 @@
     radioFieldSpec     ::= RADIO$     identifier radioFieldPropertySpecs     optConditionalSpec
     stringFieldSpec    ::= STRING$    identifier stringFieldPropertySpecs    optConditionalSpec
 
+	groupSpec ::= GROUP$ STRING_LITERAL '{'$ fieldSpecs '}'$
 
     booleanFieldPropertySpecs   ::= %empty | '{'$ booleanSpecificSpecs  '}'$
     colorFieldPropertySpecs     ::= %empty | '{'$ colorSpecificSpecs    '}'$
@@ -159,8 +160,7 @@
 
 
     booleanSpecificSpecs$$booleanSpecificSpec ::= booleanSpecificSpec | booleanSpecificSpecs booleanSpecificSpec
-    booleanSpecificSpec ::= booleanSpecialSpec | booleanDefValueSpec | generalSpec
-    booleanSpecialSpec  ::= HASSPECIAL$ booleanValue ';'$
+    booleanSpecificSpec ::= booleanDefValueSpec | generalSpec
     booleanDefValueSpec ::= DEFVALUE$ booleanValue ';'$
 
 
@@ -188,9 +188,8 @@
 
 
     intSpecificSpecs$$intSpecificSpec ::= intSpecificSpec | intSpecificSpecs intSpecificSpec
-    intSpecificSpec ::= intRangeSpec | intSpecialSpec | intDefValueSpec | generalSpec
+    intSpecificSpec ::= intRangeSpec | intDefValueSpec | generalSpec
     intRangeSpec    ::= RANGE$ signedNumber$low DOTS$ signedNumber$high ';'$
-    intSpecialSpec  ::= HASSPECIAL$ signedNumber ';'$
     intDefValueSpec ::= DEFVALUE$ signedNumber ';'$
 
 

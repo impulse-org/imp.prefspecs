@@ -13,7 +13,7 @@ package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import org.eclipse.imp.preferences.PreferencesService;
 import org.eclipse.imp.prefspecs.compiler.model.ColorFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 
 /**
  * @author rfuhrer@watson.ibm.com
@@ -42,7 +42,7 @@ public class ColorFieldCodeGenerator extends FieldCodeGenerator {
     }
 
     @Override
-    public void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel) {
+    public void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite) {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fFieldInfo.getLabel() != null) ? fFieldInfo.getLabel() : createLabelFor(fFieldInfo.getName());
         String toolTip = fFieldInfo.getToolTipText();
@@ -53,7 +53,7 @@ public class ColorFieldCodeGenerator extends FieldCodeGenerator {
         srcText.append("\t\t\tpage, this, fPrefService,\n");
         srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fFieldInfo.getName() + "\", \"" + label + "\",\n");
         srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\tparent,\n");
+        srcText.append("\t\t\t" + parentComposite + ",\n");
         srcText.append("\t\t\t" + editable + ", " + editable + ",\n");
         srcText.append("\t\t\t" + fFieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
 

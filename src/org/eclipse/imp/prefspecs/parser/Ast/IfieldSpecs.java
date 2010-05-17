@@ -39,6 +39,7 @@ import java.util.HashMap;
  *<li>intFieldSpec
  *<li>radioFieldSpec
  *<li>stringFieldSpec
+ *<li>groupSpec
  *</ul>
  *</b>
  */

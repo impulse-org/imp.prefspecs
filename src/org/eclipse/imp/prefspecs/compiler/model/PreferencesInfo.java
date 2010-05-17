@@ -11,6 +11,6 @@
 
 package org.eclipse.imp.prefspecs.compiler.model;
 
-public class PreferencesInfo extends PreferenceTabContainerBase {
+public class PreferencesInfo extends TabContainerBase {
 
 }

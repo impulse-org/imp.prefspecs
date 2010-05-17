@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 148:  columnsSpec ::= COLUMNS$ INTEGER ;$
+ *<li>Rule 145:  columnsSpec ::= COLUMNS$ INTEGER ;$
  *</b>
  */
 public class columnsSpec extends ASTNode implements IcolumnsSpec

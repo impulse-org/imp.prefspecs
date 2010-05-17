@@ -24,19 +24,13 @@ public class BooleanFieldInfo extends FieldInfo {
 	 */
 	protected boolean defaultValue = false;
 
-	public BooleanFieldInfo(PreferencesPageInfo parentPage, String name) {
-		super(parentPage, name);
+	public BooleanFieldInfo(IPageMemberContainer parent, String name) {
+		super(parent, name);
 	}
 	
-	public BooleanFieldInfo(PreferencesPageInfo parentPage, String name, boolean defValue) {
+	public BooleanFieldInfo(PageInfo parentPage, String name, boolean defValue) {
 		this(parentPage, name);
 		this.defaultValue = defValue;
-	}
-
-	public BooleanFieldInfo(PreferencesPageInfo parentPage, String name,
-			boolean defValue, boolean hasSpecialValue, boolean specialValue)
-	{
-		this(parentPage, name, defValue);
 	}
 
     @Override

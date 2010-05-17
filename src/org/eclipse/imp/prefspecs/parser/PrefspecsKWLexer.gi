@@ -9,7 +9,6 @@
 %End
 
 %Export
-
     -- List all the keywords the kwlexer will export to the lexer and parser
 
     -- For parts of specs
@@ -19,7 +18,7 @@
     FIELDS
     CONDITIONALS
     CHOICETYPE
-    CUSTOM
+	GROUP
 
     -- For page options
     DETAILS
@@ -48,16 +47,12 @@
     RADIO
     STRING
 
-    -- For field specifications
-    --SPECIAL
-    
     -- For attributes
     BOLD
     COLUMNS
     DEFVALUE
     DYNAMIC
     EMPTYALLOWED
-    HASSPECIAL
     ISEDITABLE
     ISREMOVABLE
     ITALIC
@@ -102,13 +97,11 @@
 //
 //Contributors:
 //    Philippe Charles (pcharles@us.ibm.com) - initial API and implementation
-
 ////////////////////////////////////////////////////////////////////////////////
 ./
 %End
 
 %Rules
-
     -- The Goal for the parser is a single Keyword
 
     Keyword ::= a g a i n s t
@@ -162,12 +155,6 @@
     Keyword ::= c o n f i g u r a t i o n
         /.$BeginAction
             $setResult($_CONFIGURATION);
-          $EndAction
-        ./
-
-    Keyword ::= c u s t o m
-        /.$BeginAction
-            $setResult($_CUSTOM);
           $EndAction
         ./
 
@@ -243,9 +230,9 @@
           $EndAction
         ./
 
-    Keyword ::= h a s s p e c i a l
+    Keyword ::= g r o u p
         /.$BeginAction
-            $setResult($_HASSPECIAL);
+            $setResult($_GROUP);
           $EndAction
         ./
 
@@ -351,12 +338,6 @@
           $EndAction
         ./
 
-    --Keyword ::= s p e c i a l
-    --    /.$BeginAction
-    --        $setResult($_SPECIAL);
-    --      $EndAction
-    --    ./
-
     Keyword ::= s t r i n g
         /.$BeginAction
             $setResult($_STRING);
@@ -410,5 +391,4 @@
             $setResult($_WITH);
           $EndAction
         ./
-
 %End

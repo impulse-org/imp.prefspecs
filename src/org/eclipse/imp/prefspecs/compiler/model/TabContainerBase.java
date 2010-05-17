@@ -16,35 +16,35 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class PreferenceTabContainerBase implements IPreferenceTabContainer {
-    protected List<PreferencesTabInfo> fTabs;
+public class TabContainerBase implements ITabContainer {
+    protected List<TabInfo> fTabs;
 
-    public PreferenceTabContainerBase() {
-        fTabs = new ArrayList<PreferencesTabInfo>(4);
+    public TabContainerBase() {
+        fTabs = new ArrayList<TabInfo>(4);
     }
 
-    public void addTabInfo(PreferencesTabInfo tab) {
+    public void addTabInfo(TabInfo tab) {
         if (tab == null || fTabs.contains(tab))
             return;
         fTabs.add(tab);
     }
     
-    public void removeTabInfo(PreferencesTabInfo tab) {
+    public void removeTabInfo(TabInfo tab) {
         if (tab == null)
             return;
         fTabs.remove(tab);
     }
     
-    public Iterator<PreferencesTabInfo> getTabInfos() {
+    public Iterator<TabInfo> getTabInfos() {
         return fTabs.iterator(); 
     }
 
-    public PreferencesTabInfo getTabInfo(String name) {
+    public TabInfo getTabInfo(String name) {
         if (name == null) {
             throw new IllegalArgumentException("PreferencePageInfo.getTab(String): given tab name is null; not allowed");
         }
         for (int i = 0; i < fTabs.size(); i++) {
-            PreferencesTabInfo tab = fTabs.get(i);
+            TabInfo tab = fTabs.get(i);
             if (tab == null) continue;
             String tabName = tab.getName();
             if (name.equals(tabName))
@@ -58,19 +58,12 @@ public class PreferenceTabContainerBase implements IPreferenceTabContainer {
             throw new IllegalArgumentException("PreferencePageInfo.hasTab(String): given tab name is null; not allowed");
         }   
         for (int i = 0; i < fTabs.size(); i++) {
-            PreferencesTabInfo tab = fTabs.get(i);
+            TabInfo tab = fTabs.get(i);
             if (tab == null) continue;
             String tabName = tab.getName();
             if (name.equals(tabName))
                 return true;
         }
         return false;
-    }
-
-    public boolean hasTabInfo(PreferencesTabInfo tab) {
-        if (tab == null) {
-            throw new IllegalArgumentException("PreferencePageInfo.hasTabInfo(): given tab is null; not allowed");
-        }
-        return fTabs.contains(tab);
     }
 }

@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 68:  comboFieldPropertySpecs ::= $Empty
+ *<li>Rule 69:  comboFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 69:  comboFieldPropertySpecs ::= {$ comboSpecificSpecs }$
+ *<li>Rule 70:  comboFieldPropertySpecs ::= {$ comboSpecificSpecs }$
  *</b>
  */
 public class comboFieldPropertySpecs extends ASTNode implements IcomboFieldPropertySpecs

@@ -27,11 +27,11 @@ public abstract class EnumFieldInfo extends FieldInfo {
 
     private boolean hasNumCols= false;
 
-    public EnumFieldInfo(PreferencesPageInfo parentPage, String name) {
-        super(parentPage, name);
+    public EnumFieldInfo(IPageMemberContainer parentPage, String name) {
+        this(parentPage, name, null);
     }
 
-    public EnumFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
+    public EnumFieldInfo(IPageMemberContainer parentPage, String name, IEnumValueSource valueSource) {
         super(parentPage, name);
         fValueSource= valueSource;
     }

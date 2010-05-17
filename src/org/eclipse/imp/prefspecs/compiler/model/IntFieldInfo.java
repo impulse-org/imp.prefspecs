@@ -34,12 +34,12 @@ public class IntFieldInfo extends FieldInfo {
 	protected int rangeHigh = Integer.MAX_VALUE;
 	protected int rangeLow 	= Integer.MIN_VALUE;
 
-	public IntFieldInfo(PreferencesPageInfo parentPage, String name) {
-		super(parentPage, name);
+	public IntFieldInfo(IPageMemberContainer parentPage, String name) {
+		this(parentPage, name, 0);
 	}
 
-	public IntFieldInfo(PreferencesPageInfo parentPage, String name, int defValue) {
-		this(parentPage, name);
+	public IntFieldInfo(IPageMemberContainer parentPage, String name, int defValue) {
+		super(parentPage, name);
 		this.defaultValue = defValue;
 	}
 
@@ -51,7 +51,7 @@ public class IntFieldInfo extends FieldInfo {
 	public void setDefaultValue(int i) {
 		if (i < getRangeLow() || i > getRangeHigh())
 			throw new IllegalArgumentException(
-				"IntFieldInfo.setDefaultValue(int):  attempt to set default value = " + i +
+				"IntFieldInfo.setDefaultValue(int): attempt to set default value = " + i +
 				" outside of range = " + getRangeLow() + ".." + getRangeHigh());
 		defaultValue = i;
 	}
@@ -67,8 +67,8 @@ public class IntFieldInfo extends FieldInfo {
 	public void setRange(int low, int high) {
 		if (high < low) {
 			throw new IllegalArgumentException(
-				"IntFieldInfo.setRange(int,int):  given high value = " + high +
-				" is less than low value " + low);
+				"IntFieldInfo.setRange(int,int): range upper bound = " + high +
+				" is less than lower bound = " + low);
 		}
 		hasRangeSpec = true;
 		rangeLow = low;

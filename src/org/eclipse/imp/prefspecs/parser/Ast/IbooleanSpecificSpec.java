@@ -31,7 +31,6 @@ import java.util.HashMap;
  *<li>isRemovableSpec
  *<li>optLabelSpec
  *<li>optToolTipSpec
- *<li>booleanSpecialSpec
  *<li>booleanDefValueSpec
  *</ul>
  *</b>

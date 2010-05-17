@@ -17,7 +17,6 @@ import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class ColorFieldInfo extends FieldInfo {
-
 	/**
 	 * The default value associated with this field
 	 * (used to set the value of the concrete instance of
@@ -25,12 +24,12 @@ public class ColorFieldInfo extends FieldInfo {
 	 */
 	protected String defaultColor= ColorFieldEditor.COLOR_DEFAULT_SPEC;
 
-	public ColorFieldInfo(PreferencesPageInfo parentPage, String name) {
-		super(parentPage, name);
+	public ColorFieldInfo(IPageMemberContainer parentPage, String name) {
+		this(parentPage, name, null);
 	}
 	
-	public ColorFieldInfo(PreferencesPageInfo parentPage, String name, String defColor) {
-		this(parentPage, name);
+	public ColorFieldInfo(IPageMemberContainer parentPage, String name, String defColor) {
+		super(parentPage, name);
 		this.defaultColor= defColor;
 	}
 

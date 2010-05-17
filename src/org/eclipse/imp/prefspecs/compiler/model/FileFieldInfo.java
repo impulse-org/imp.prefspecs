@@ -18,11 +18,11 @@ import org.eclipse.imp.prefspecs.compiler.codegen.FileFieldCodeGenerator;
  * @author sutton
  */
 public class FileFieldInfo extends StringFieldInfo {
-    public FileFieldInfo(PreferencesPageInfo parentPage, String name) {
-        super(parentPage, name);
+    public FileFieldInfo(IPageMemberContainer parentPage, String name) {
+        this(parentPage, name, null);
     }
 
-    public FileFieldInfo(PreferencesPageInfo parentPage, String name, String defValue) {
+    public FileFieldInfo(IPageMemberContainer parentPage, String name, String defValue) {
         super(parentPage, name, defValue);
     }
 

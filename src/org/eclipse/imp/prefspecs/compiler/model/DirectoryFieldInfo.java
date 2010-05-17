@@ -15,13 +15,14 @@ import org.eclipse.imp.prefspecs.compiler.codegen.DirectoryFieldCodeGenerator;
 import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 
 public class DirectoryFieldInfo extends StringFieldInfo {
-    public DirectoryFieldInfo(PreferencesPageInfo parentPage, String name) {
-        super(parentPage, name);
+    public DirectoryFieldInfo(IPageMemberContainer parentPage, String name) {
+        this(parentPage, name, null);
     }
 
-    public DirectoryFieldInfo(PreferencesPageInfo parentPage, String name, String defValue) {
+    public DirectoryFieldInfo(IPageMemberContainer parentPage, String name, String defValue) {
         super(parentPage, name, defValue);
     }
+
     @Override
     public FieldCodeGenerator getCodeGenerator() {
         return new DirectoryFieldCodeGenerator(this);

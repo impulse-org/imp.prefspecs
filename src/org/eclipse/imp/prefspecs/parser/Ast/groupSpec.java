@@ -25,22 +25,27 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 141:  typeOrValuesSpec ::= valuesSpec ;$
+ *<li>Rule 64:  groupSpec ::= GROUP$ STRING_LITERAL {$ fieldSpecs }$
  *</b>
  */
-public class typeOrValuesSpec__valuesSpec_SEMICOLON extends ASTNode implements ItypeOrValuesSpec
+public class groupSpec extends ASTNode implements IgroupSpec
 {
-    private valuesSpec _valuesSpec;
+    private ASTNodeToken _STRING_LITERAL;
+    private IfieldSpecs _fieldSpecs;
 
-    public valuesSpec getvaluesSpec() { return _valuesSpec; }
+    public ASTNodeToken getSTRING_LITERAL() { return _STRING_LITERAL; }
+    public IfieldSpecs getfieldSpecs() { return _fieldSpecs; }
 
-    public typeOrValuesSpec__valuesSpec_SEMICOLON(IToken leftIToken, IToken rightIToken,
-                                                  valuesSpec _valuesSpec)
+    public groupSpec(IToken leftIToken, IToken rightIToken,
+                     ASTNodeToken _STRING_LITERAL,
+                     IfieldSpecs _fieldSpecs)
     {
         super(leftIToken, rightIToken);
 
-        this._valuesSpec = _valuesSpec;
-        ((ASTNode) _valuesSpec).setParent(this);
+        this._STRING_LITERAL = _STRING_LITERAL;
+        ((ASTNode) _STRING_LITERAL).setParent(this);
+        this._fieldSpecs = _fieldSpecs;
+        ((ASTNode) _fieldSpecs).setParent(this);
         initialize();
     }
 
@@ -50,24 +55,27 @@ public class typeOrValuesSpec__valuesSpec_SEMICOLON extends ASTNode implements I
     public java.util.ArrayList getAllChildren()
     {
         java.util.ArrayList list = new java.util.ArrayList();
-        list.add(_valuesSpec);
+        list.add(_STRING_LITERAL);
+        list.add(_fieldSpecs);
         return list;
     }
 
     public boolean equals(Object o)
     {
         if (o == this) return true;
-        if (! (o instanceof typeOrValuesSpec__valuesSpec_SEMICOLON)) return false;
+        if (! (o instanceof groupSpec)) return false;
         if (! super.equals(o)) return false;
-        typeOrValuesSpec__valuesSpec_SEMICOLON other = (typeOrValuesSpec__valuesSpec_SEMICOLON) o;
-        if (! _valuesSpec.equals(other._valuesSpec)) return false;
+        groupSpec other = (groupSpec) o;
+        if (! _STRING_LITERAL.equals(other._STRING_LITERAL)) return false;
+        if (! _fieldSpecs.equals(other._fieldSpecs)) return false;
         return true;
     }
 
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_valuesSpec.hashCode());
+        hash = hash * 31 + (_STRING_LITERAL.hashCode());
+        hash = hash * 31 + (_fieldSpecs.hashCode());
         return hash;
     }
 
@@ -82,7 +90,10 @@ public class typeOrValuesSpec__valuesSpec_SEMICOLON extends ASTNode implements I
     {
         boolean checkChildren = v.visit(this);
         if (checkChildren)
-            _valuesSpec.accept(v);
+        {
+            _STRING_LITERAL.accept(v);
+            _fieldSpecs.accept(v);
+        }
         v.endVisit(this);
     }
 }

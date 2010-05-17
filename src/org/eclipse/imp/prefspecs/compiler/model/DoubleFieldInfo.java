@@ -34,12 +34,12 @@ public class DoubleFieldInfo extends FieldInfo {
 	protected double rangeHigh = Double.MAX_VALUE;
 	protected double rangeLow = Double.MIN_VALUE;
 
-	public DoubleFieldInfo(PreferencesPageInfo parentPage, String name) {
-		super(parentPage, name);
+	public DoubleFieldInfo(IPageMemberContainer parentPage, String name) {
+		this(parentPage, name, 0.0);
 	}
 	
-	public DoubleFieldInfo(PreferencesPageInfo parentPage, String name, double defValue) {
-		this(parentPage, name);
+	public DoubleFieldInfo(IPageMemberContainer parentPage, String name, double defValue) {
+		super(parentPage, name);
 		this.defaultValue = defValue;
 	}
 
@@ -51,7 +51,7 @@ public class DoubleFieldInfo extends FieldInfo {
 	public void setDefaultValue(double d) {
 		if (d < getRangeLow() || d > getRangeHigh())
 			throw new IllegalArgumentException(
-				"DoubleFieldInfo.setDefaultValue(double):  attempt to set default value = " + d +
+				"DoubleFieldInfo.setDefaultValue(double): attempt to set default value = " + d +
 				" outside of range = " + getRangeLow() + ".." + getRangeHigh());
 		defaultValue = d;
 	}
@@ -67,8 +67,8 @@ public class DoubleFieldInfo extends FieldInfo {
 	public void setRange(double low, double high) {
 		if (high < low) {
 			throw new IllegalArgumentException(
-				"DoubleFieldInfo.setRange(double,double):  given high value = " + high +
-				" is less than low value " + low);
+				"DoubleFieldInfo.setRange(double,double): range upper bound = " + high +
+				" is less than lower bound = " + low);
 		}
 		hasRangeSpec = true;
 		rangeLow = low;

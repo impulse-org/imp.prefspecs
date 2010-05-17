@@ -32,7 +32,6 @@ import java.util.HashMap;
  *<li>optLabelSpec
  *<li>optToolTipSpec
  *<li>intRangeSpec
- *<li>intSpecialSpec
  *<li>intDefValueSpec
  *</ul>
  *</b>

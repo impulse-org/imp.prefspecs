@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 112:  enumDefValueSpec ::= DEFVALUE$ identifier ;$
+ *<li>Rule 111:  enumDefValueSpec ::= DEFVALUE$ identifier ;$
  *</b>
  */
 public class enumDefValueSpec extends ASTNode implements IenumDefValueSpec

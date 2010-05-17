@@ -16,11 +16,11 @@ import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.imp.prefspecs.compiler.codegen.RadioFieldCodeGenerator;
 
 public class RadioFieldInfo extends EnumFieldInfo {
-    public RadioFieldInfo(PreferencesPageInfo parentPage, String name) {
-        super(parentPage, name);
+    public RadioFieldInfo(IPageMemberContainer parentPage, String name) {
+        this(parentPage, name, null);
     }
 
-    public RadioFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
+    public RadioFieldInfo(IPageMemberContainer parentPage, String name, IEnumValueSource valueSource) {
         super(parentPage, name, valueSource);
     }
 

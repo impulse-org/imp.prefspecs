@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 147:  staticOrDynamicValues ::= labelledStringValueList
+ *<li>Rule 144:  staticOrDynamicValues ::= labelledStringValueList
  *</em>
  *<p>
  *<b>
- *<li>Rule 146:  staticOrDynamicValues ::= DYNAMIC$ stringValue$qualClassName
+ *<li>Rule 143:  staticOrDynamicValues ::= DYNAMIC$ stringValue$qualClassName
  *</b>
  */
 public class staticOrDynamicValues extends ASTNode implements IstaticOrDynamicValues

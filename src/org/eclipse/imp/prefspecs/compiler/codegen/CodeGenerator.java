@@ -14,6 +14,7 @@ package org.eclipse.imp.prefspecs.compiler.codegen;
 import java.io.ByteArrayInputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -22,9 +23,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.preferences.PreferencesService;
+import org.eclipse.imp.prefspecs.compiler.model.FieldAndGroupVisitor;
+import org.eclipse.imp.prefspecs.compiler.model.FieldGroup;
 import org.eclipse.imp.prefspecs.compiler.model.FieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesTabInfo;
+import org.eclipse.imp.prefspecs.compiler.model.FieldVisitor;
+import org.eclipse.imp.prefspecs.compiler.model.IPageMember;
+import org.eclipse.imp.prefspecs.compiler.model.ITabContainer;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.TabInfo;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class CodeGenerator {
@@ -39,7 +45,7 @@ public class CodeGenerator {
         this.fConsoleStream= consoleStream;
     }
 
-	public IFile generatePreferenceConstantsClass(List<PreferencesPageInfo> pageInfos, ISourceProject project,
+	public IFile generatePreferenceConstantsClass(List<PageInfo> pageInfos, ISourceProject project,
 	                                              String projectSourceLocation, String packageName, String className,
 	                                              IProgressMonitor mon)
 	{
@@ -54,7 +60,7 @@ public class CodeGenerator {
 		return constantsFile;
 	}
 
-	public IFile generatePreferenceInitializerClass(List<PreferencesPageInfo> pageInfos, String pluginPkgName,
+	public IFile generatePreferenceInitializerClass(List<PageInfo> pageInfos, String pluginPkgName,
 	                                                String pluginClassName, String constantsClassName,
 	                                                ISourceProject project, String projectSourceLocation,
 	                                                String packageName, String className, IProgressMonitor mon)
@@ -71,16 +77,17 @@ public class CodeGenerator {
 		
 	}
 
-	public IFile generatePreferencePageClass(PreferencesPageInfo pageInfo, String pluginPkgName, String pluginClassName,
-	                                         String constantsClassName, String initializerClassName,
-	                                         ISourceProject project, String projectSourceLocation,
-	                                         String packageName, String className, IProgressMonitor mon)
+	public IFile generatePreferencePageClass(PageInfo pageInfo, ITabContainer tabContainer,
+	        String pluginPkgName, String pluginClassName,
+	        String constantsClassName, String initializerClassName,
+	        ISourceProject project, String projectSourceLocation,
+	        String packageName, String className, IProgressMonitor mon)
 	{
 	    StringBuilder sb= new StringBuilder();
 
         sb.append(GEN_FILE_WARNING);
 	    generatePageBeforeTabs(sb, pluginPkgName, pluginClassName, packageName, className);
-	    generateTabs(sb, pageInfo);
+	    generateTabs(sb, pageInfo, tabContainer);
 	    generatePageAfterTabs(sb, initializerClassName);
 
 	    IFile prefPageFile = createFileWithText(sb.toString(), project, projectSourceLocation, packageName, className, mon);
@@ -105,7 +112,6 @@ public class CodeGenerator {
         srcText.append("\n\n/**\n");
         srcText.append(" * A preference page class.\n");
         srcText.append(" */\n");
-        srcText.append("\n\n");
         srcText.append("public class " + className + " extends TabbedPreferencesPage {\n");
 
         srcText.append("\tpublic " + className + "() {\n");
@@ -117,25 +123,25 @@ public class CodeGenerator {
         srcText.append("\t\tTabbedPreferencesPage page, TabFolder tabFolder) {\n");
     }
 
-    private static void generateTabs(StringBuilder srcText, PreferencesPageInfo pageInfo) {
+    private static void generateTabs(StringBuilder srcText, PageInfo pageInfo, ITabContainer tabContainer) {
         int tabCount= 0;
 
-        Iterator<PreferencesTabInfo> tabIter= pageInfo.getTabInfos();
+        Iterator<TabInfo> tabIter= tabContainer.getTabInfos();
         while (tabIter.hasNext()) {
-            PreferencesTabInfo tab= tabIter.next();
+            TabInfo tab= tabIter.next();
             if (tab.getIsUsed()) {
                 tabCount++;
             }
         }
-        String pageName= pageInfo.getPageName();
+        String pageName= pageInfo.getName();
 
         srcText.append("\t\tPreferencesTab[] tabs = new PreferencesTab[" + tabCount + "];\n");
         srcText.append("\n");
 
-        tabIter= pageInfo.getTabInfos();
+        tabIter= tabContainer.getTabInfos();
         int tabIdx= 0;
         while (tabIter.hasNext()) {
-            PreferencesTabInfo tab= tabIter.next();
+            TabInfo tab= tabIter.next();
             if (tab.getIsUsed()) {
                 String tabName= tab.getName();
                 String upperTab= Character.toUpperCase(tabName.charAt(0)) + tabName.substring(1);
@@ -161,28 +167,28 @@ public class CodeGenerator {
     }
 
     // TODO These methods should take a single Map arg to contain all codegen params, rather than taking each one as an individual arg
-    public IFile generateDefaultTabClass(PreferencesPageInfo pageInfo, String pluginPkgName, String pluginClassName,
+    public IFile generateDefaultTabClass(PageInfo pageInfo, String pluginPkgName, String pluginClassName,
                                          String constantsClassName, String initializerClassName, ISourceProject project,
                                          String projectSourceLocation, String packageName, String className, IProgressMonitor mon) {
         return generateTabClass(pageInfo, IPreferencesService.DEFAULT_LEVEL, pluginPkgName, pluginClassName,
                 constantsClassName, project, projectSourceLocation, packageName, className, initializerClassName, mon);
 	}
 
-	public IFile generateConfigurationTabClass(PreferencesPageInfo pageInfo, String pluginPkgName, String pluginClassName,
+	public IFile generateConfigurationTabClass(PageInfo pageInfo, String pluginPkgName, String pluginClassName,
 	                                           String constantsClassName, ISourceProject project, String projectSourceLocation,
 	                                           String packageName, String className, IProgressMonitor mon) {
 	    return generateTabClass(pageInfo, IPreferencesService.CONFIGURATION_LEVEL, pluginPkgName, pluginClassName,
 	                            constantsClassName, project, projectSourceLocation, packageName, className, null, mon);
 	}
 
-	public IFile generateInstanceTabClass(PreferencesPageInfo pageInfo, String pluginPkgName, String pluginClassName,
+	public IFile generateInstanceTabClass(PageInfo pageInfo, String pluginPkgName, String pluginClassName,
 	                                      String constantsClassName, ISourceProject project, String projectSourceLocation,
 	                                      String packageName, String className, IProgressMonitor mon) {
         return generateTabClass(pageInfo, IPreferencesService.INSTANCE_LEVEL, pluginPkgName, pluginClassName,
                 constantsClassName, project, projectSourceLocation, packageName, className, null, mon);
 	}
 
-    private IFile generateTabClass(PreferencesPageInfo pageInfo, String pageLevel, String pluginPkgName, String pluginClassName,
+    private IFile generateTabClass(PageInfo pageInfo, String pageLevel, String pluginPkgName, String pluginClassName,
             String constantsClassName, ISourceProject project, String projectSourceLocation,
             String packageName, String className, String initializerClassName, IProgressMonitor mon) {
 //        if (pageInfo.getTabInfo(pageLevel) == null) {
@@ -200,7 +206,7 @@ public class CodeGenerator {
         return srcFile;
     }
 
-	public IFile generateProjectTabClass(PreferencesPageInfo pageInfo, String pluginPkgName, String pluginClassName,
+	public IFile generateProjectTabClass(PageInfo pageInfo, String pluginPkgName, String pluginClassName,
 	                                     String constantsClassName, ISourceProject project, String projectSourceLocation,
 	                                     String packageName, String className, IProgressMonitor mon) {
 //	    if (pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL) == null) {
@@ -235,15 +241,16 @@ public class CodeGenerator {
 		srcText.append("public class " + className + " {\n");
 	}
 
-	protected static void generateConstantsFields(StringBuilder srcText, List<PreferencesPageInfo> pageInfos) {
-	    for(PreferencesPageInfo pageInfo: pageInfos) {
-	        Iterator<FieldInfo> fields = pageInfo.getFieldInfos();
-    		while (fields.hasNext()) {
-    			FieldInfo field = fields.next();
-    			FieldCodeGenerator fcg = field.getCodeGenerator();
+	protected static void generateConstantsFields(final StringBuilder srcText, List<PageInfo> pageInfos) {
+	    for(PageInfo pageInfo: pageInfos) {
+	        new FieldVisitor() {
+                @Override
+                public void visitField(FieldInfo fieldInfo) {
+                    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 
-    			srcText.append("\tpublic static final String " + fcg.getPreferenceKey() + " = \"" + field.getName() + "\""+ ";\n");
-    		}
+                    srcText.append("\tpublic static final String " + fcg.getPreferenceKey() + " = \"" + fieldInfo.getName() + "\""+ ";\n");
+                }
+            }.visit(pageInfo);
 	    }
 	}
 
@@ -281,15 +288,16 @@ public class CodeGenerator {
 		srcText.append("\t\tIPreferencesService service = " + pluginClassName + ".getInstance().getPreferencesService();\n\n");
 	}
 
-	protected static void generateInitializersFields(StringBuilder srcText, List<PreferencesPageInfo> pageInfos, String constantsClassName) {
-	    for(PreferencesPageInfo pageInfo: pageInfos) {
-	        Iterator<FieldInfo> fields = pageInfo.getFieldInfos();
-    		while (fields.hasNext()) {
-    			FieldInfo vField = fields.next();
-    			FieldCodeGenerator fcg = vField.getCodeGenerator();
+	protected static void generateInitializersFields(final StringBuilder srcText, List<PageInfo> pageInfos, final String constantsClassName) {
+	    for(PageInfo pageInfo: pageInfos) {
+	        new FieldVisitor() {
+                @Override
+                public void visitField(FieldInfo fieldInfo) {
+                    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 
-    			fcg.genPreferenceInitializer(srcText, constantsClassName);
-    		}
+                    fcg.genPreferenceInitializer(srcText, constantsClassName);
+                }
+            }.visit(pageInfo);
 	    }
 	}
 
@@ -311,7 +319,7 @@ public class CodeGenerator {
 	 */
 
 	protected static void generateTabBeforeFields(StringBuilder srcText,
-			PreferencesPageInfo pageInfo, String pluginPackageName, String pluginClassName, String packageName, String className, String initializerClassName, String levelName)
+			PageInfo pageInfo, String pluginPackageName, String pluginClassName, String packageName, String className, String initializerClassName, String levelName)
 	{
 		if (className.endsWith(".java")) {
 			className = className.substring(0, className.length()-5);
@@ -323,8 +331,13 @@ public class CodeGenerator {
 		srcText.append("import java.util.List;\n");
 		srcText.append("import java.util.ArrayList;\n");
 		srcText.append("import org.eclipse.core.runtime.preferences.IEclipsePreferences;\n");
+        srcText.append("import org.eclipse.swt.SWT;\n");
+        srcText.append("import org.eclipse.swt.layout.GridData;\n");
+        srcText.append("import org.eclipse.swt.layout.GridLayout;\n");
 		srcText.append("import org.eclipse.swt.widgets.Composite;\n");
 		srcText.append("import org.eclipse.swt.widgets.Link;\n");
+        srcText.append("import org.eclipse.swt.widgets.Group;\n");
+
 		srcText.append("import org.eclipse.imp.preferences.*;\n");
 		srcText.append("import org.eclipse.imp.preferences.fields.*;\n");
 		srcText.append("import org.osgi.service.prefs.Preferences;\n");
@@ -364,21 +377,52 @@ public class CodeGenerator {
 		srcText.append("\t\tList<FieldEditor> fields = new ArrayList<FieldEditor>();\n");
 	}
 
-	protected static void generateTabFields(PreferencesPageInfo pageInfo, String constantsClassName, StringBuilder srcText, String tabLevel) {
-		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(tabLevel);
-		Iterator<FieldInfo> fields = pageInfo.getFieldInfos();
+    private static int sGroupIdx = 0;
 
-		while (fields.hasNext()) {
-			FieldInfo fieldInfo = (FieldInfo) fields.next();
-			FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
+	protected static void generateTabFields(final PageInfo pageInfo, String constantsClassName, final StringBuilder srcText, final String tabLevel) {
+	    final Stack<String> parentComposite = new Stack<String>();
+	    parentComposite.push("parent");
+	    sGroupIdx= 1;
+	    new FieldAndGroupVisitor() {
+            @Override
+            public void visitField(FieldInfo fieldInfo) {
+                FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
 
-			fcg.genTextToCreateField(srcText, pageInfo, tabLevel);
+                fcg.genTextToCreateField(srcText, pageInfo, tabLevel, parentComposite.peek());
 
-			if (fieldInfo.getIsConditional()) {
-				generateFieldToggleText(fieldInfo, srcText, tabLevel);
-			}
-		}
+                if (fieldInfo.getIsConditional()) {
+                    generateFieldToggleText(fieldInfo, srcText, tabLevel);
+                }
+            }
+
+            @Override
+            public void visit(FieldGroup group) {
+                parentComposite.push(generateFieldGroup(group, parentComposite.peek(), srcText));
+            }
+
+            @Override
+            public void endVisit(FieldGroup groupInfo) {
+                parentComposite.pop();
+            }
+        }.visit(pageInfo);
 	}	
+
+	protected static String generateFieldGroup(FieldGroup fieldGroup, String parentComposite, StringBuilder srcText) {
+	    String groupLocalVarName = "group" + sGroupIdx;
+	    String gridLayoutLocalVarName = "layout" + sGroupIdx;
+	    String gridDataLocalVarName = "gd" + sGroupIdx++;
+
+	    srcText.append("\t\tGridLayout " + gridLayoutLocalVarName + " = new GridLayout();\n");
+	    srcText.append("\t\t" + gridLayoutLocalVarName + ".numColumns = 2;\n");
+	    srcText.append("\t\tGroup " + groupLocalVarName + " = new Group(" + parentComposite + ", SWT.NONE);\n");
+	    srcText.append("\t\t" + groupLocalVarName + ".setText(" + fieldGroup.getLabel() + ");\n");
+	    srcText.append("\t\tGridData " + gridDataLocalVarName + " = new GridData(GridData.FILL, GridData.FILL, true, false);\n");
+	    srcText.append("\t\t" + gridDataLocalVarName + ".horizontalSpan = 2;\n");
+	    srcText.append("\t\t" + groupLocalVarName + ".setLayoutData(" + gridDataLocalVarName + ");\n");
+	    srcText.append("\t\t" + groupLocalVarName + ".setLayout(" + gridLayoutLocalVarName + ");\n");
+
+	    return groupLocalVarName;
+	}
 
 	protected static void generateFieldToggleText(FieldInfo fieldInfo, StringBuilder srcText, String levelName) {
 		boolean onProjectLevel = levelName.equals(PreferencesService.PROJECT_LEVEL);
@@ -418,50 +462,6 @@ public class CodeGenerator {
 		*/
 	}
 
-    private static String createLabelFor(String name) {
-        StringBuilder sb= new StringBuilder();
-        int from= 0;
-        for(int i= 0; i < name.length(); i++) {
-            if (Character.isUpperCase(name.charAt(i))) {
-                if (i < name.length() - 1 && Character.isUpperCase(name.charAt(i+1))) {
-                    sb.append(name.charAt(from));
-                    from= i;
-                    continue;
-                }
-                if (i == from) {
-                    continue;
-                }
-                if (i > 0 && from > 0) {
-                    sb.append(' ');
-                }
-                if (from > 0 && i > from + 1) {
-                    appendLowerWord(name, from, i, sb);
-                } else {
-                    sb.append(name.substring(from, i));
-                }
-                from= i;
-            }
-        }
-        if (from < name.length()) {
-            if (from > 0) {
-                sb.append(' ');
-                appendLowerWord(name, from, name.length(), sb);
-            } else {
-                sb.append(name.substring(from, name.length()));
-            }
-        }
-        return sb.toString();
-    }
-
-    private static void appendLowerWord(String s, int from, int to, StringBuilder sb) {
-        if (from > 0 && to > from + 1) {
-            sb.append(Character.toLowerCase(s.charAt(from)));
-        } else {
-            sb.append(s.charAt(from));
-        }
-        sb.append(s.substring(from+1, to));
-    }
-
 	protected static void generateTabAfterFields(StringBuilder srcText) {
 		srcText.append("\t\treturn fields.toArray(new FieldEditor[fields.size()]);\n");
 		
@@ -470,7 +470,7 @@ public class CodeGenerator {
 	}
 
 	
-	protected static void regenerateEndOfProjectTab(PreferencesPageInfo pageInfo, StringBuilder srcText) {
+	protected static void regenerateEndOfProjectTab(PageInfo pageInfo, final StringBuilder srcText) {
 		// Assume that the given text represents a complete class, and "erase" the closing brace
 		srcText.deleteCharAt(srcText.lastIndexOf("}"));
 		srcText.append("\n\n");
@@ -500,18 +500,20 @@ public class CodeGenerator {
 		// (to simplify subsequent references)
 		
 		srcText.append("\t\t// Declare local references to the fields\n");
-		PreferencesTabInfo tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		Iterator fields = pageInfo.getFieldInfos();
-		int i = 0;
-		while (fields.hasNext()) {
-		    FieldInfo fieldInfo = (FieldInfo) fields.next();
-		    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
-			String fieldTypeName = fcg.getFieldEditorTypeName();
 
-			srcText.append("\t\t" + fieldTypeName + " " + fieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + i + "];\n");
-			srcText.append("\t\tLink " +  fieldInfo.getName() + "DetailsLink" + " = (Link) fDetailsLinks.get(" + i + ");\n");
-			i++;
-		}	
+		final int[] idx = new int[1];
+		idx[0]= 0;
+		new FieldVisitor() {
+            @Override
+            public void visitField(FieldInfo fieldInfo) {
+                FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
+                String fieldTypeName = fcg.getFieldEditorTypeName();
+
+                srcText.append("\t\t" + fieldTypeName + " " + fieldInfo.getName() + " = (" + fieldTypeName + ") fFields[" + idx[0] + "];\n");
+                srcText.append("\t\tLink " +  fieldInfo.getName() + "DetailsLink" + " = (Link) fDetailsLinks.get(" + idx[0] + ");\n");
+                idx[0]++;
+            }
+        }.visit(pageInfo);
 		srcText.append("\n");
 
 		// Generate next block of field-independent text
@@ -536,34 +538,34 @@ public class CodeGenerator {
 		srcText.append("\t\t\t\t// overwritten by values set here--so the values set here should be consistent\n");
 		srcText.append("\t\t\t\t// with what the listener would set.\n\n");
 		
-		// Generate code for the (field-specific) initialization and enabling of each field
-		// For conditionally enabled fields, attempts to account for the conditionally enabling
-		// field
-		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		fields = pageInfo.getFieldInfos();
-		while (fields.hasNext()) {
-		    FieldInfo fieldInfo = (FieldInfo) fields.next();
-		    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
-			String fieldName = fieldInfo.getName();
-			String enablementExpr = null; // source text for a Boolean expr that evaluates to true if the field should be enabled
+		// Generate code for the (field-specific) initialization and enabling of each field.
+		// For conditionally enabled fields, attempts to account for the conditionally enabling field.
+		new FieldVisitor() {
+            @Override
+            public void visitField(FieldInfo fieldInfo) {
+                FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
+                String fieldName = fieldInfo.getName();
+                String enablementExpr = null; // source text for a Boolean expr that evaluates to true if the field should be enabled
 
-			if (!fieldInfo.getIsConditional()) {
-				// simple case--enabled state is what it is
-				enablementExpr = "true"; // RMF 14 May 2010 - RHS was Boolean.toString(cFieldInfo.getIsEditable());
-			} else {
-				// have to represent the setting with or against the condition field
-				enablementExpr = fieldInfo.getConditionField().getName() + ".getBooleanValue()";
-				if (!fieldInfo.getConditionalWith())
-					enablementExpr = "!" + enablementExpr;
-			}
+                if (!fieldInfo.getIsConditional()) {
+                    // simple case--enabled state is what it is
+                    enablementExpr = "true"; // RMF 14 May 2010 - RHS was Boolean.toString(cFieldInfo.getIsEditable());
+                } else {
+                    // have to represent the setting with or against the condition field
+                    enablementExpr = fieldInfo.getConditionField().getName() + ".getBooleanValue()";
+                    if (!fieldInfo.getConditionalWith())
+                        enablementExpr = "!" + enablementExpr;
+                }
 
-            srcText.append("\t\t\t\tfPrefUtils.setField(" + fieldName    + ", " + fieldName + ".getHolder());\n");
+                srcText.append("\t\t\t\tfPrefUtils.setField(" + fieldName    + ", " + fieldName + ".getHolder());\n");
 
-            fcg.genTextToEnableField(srcText, enablementExpr);
+                fcg.genTextToEnableField(srcText, enablementExpr);
 
-            // enable (or not) the details link, regardless of the type of field
-			srcText.append("\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectCombo.getText().length() > 0);\n\n");
-		}	
+                // enable (or not) the details link, regardless of the type of field
+                srcText.append("\t\t\t\t" + fieldName + "DetailsLink.setEnabled(selectedProjectCombo.getText().length() > 0);\n\n");
+            }
+        }.visit(pageInfo);
+
 		srcText.append("\t\t\t\tclearModifiedMarksOnLabels();\n"); 
 		srcText.append("\t\t\t}\n\n");	// closes if not disposed ...
 		
@@ -571,16 +573,17 @@ public class CodeGenerator {
 		// Generate code to create a property-change listener for each field
 
 		srcText.append("\t\t\t// Add property change listeners\n");
-		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		fields = pageInfo.getFieldInfos();
-		while (fields.hasNext()) {
-		    FieldInfo fieldInfo = (FieldInfo) fields.next();
-			String fieldName = fieldInfo.getName();
-            // TODO RMF 5/26/2009 - is it really possible for getHolder() to be null? should it be?
-			srcText.append(
-				"\t\t\tif (" + fieldName + ".getHolder() != null) addProjectPreferenceChangeListeners(" + 
-								fieldName + ", \"" + fieldName + "\", " + fieldName + ".getHolder());\n");
-		}
+
+		new FieldVisitor() {
+            @Override
+            public void visitField(FieldInfo fieldInfo) {
+                String fieldName = fieldInfo.getName();
+                // TODO RMF 5/26/2009 - is it really possible for getHolder() to be null? should it be?
+                srcText.append(
+                    "\t\t\tif (" + fieldName + ".getHolder() != null) addProjectPreferenceChangeListeners(" + 
+                                    fieldName + ", \"" + fieldName + "\", " + fieldName + ".getHolder());\n");
+            }
+        }.visit(pageInfo);
 		
 		srcText.append("\n\t\t\thaveCurrentListeners = true;\n");
 		srcText.append("\t\t}\n\n");
@@ -599,15 +602,16 @@ public class CodeGenerator {
 		srcText.append("\t\t\tif (!composite.isDisposed()) {\n");
 					
 		// Generate field-dependent code for disabling fields
-		tabInfo = pageInfo.getTabInfo(IPreferencesService.PROJECT_LEVEL);
-		fields = pageInfo.getFieldInfos();
-		while (fields.hasNext()) {
-		    FieldInfo fieldInfo = (FieldInfo) fields.next();
-		    FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
-			String fieldName = fieldInfo.getName();
 
-			fcg.genTextToEnableField(srcText, "false");
-		}
+		new FieldVisitor() {
+            @Override
+            public void visitField(FieldInfo fieldInfo) {
+                FieldCodeGenerator fcg = fieldInfo.getCodeGenerator();
+
+                fcg.genTextToEnableField(srcText, "false");
+            }
+        }.visit(pageInfo);
+
 		srcText.append("\t\t\t}\n\n");
 		
 		

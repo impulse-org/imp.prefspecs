@@ -14,7 +14,7 @@ package org.eclipse.imp.prefspecs.compiler.codegen;
 import org.eclipse.imp.preferences.PreferencesService;
 import org.eclipse.imp.prefspecs.compiler.DynamicEnumValueSource;
 import org.eclipse.imp.prefspecs.compiler.model.ComboFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 
 /**
  * @author rfuhrer@watson.ibm.com
@@ -43,7 +43,7 @@ public class ComboFieldCodeGenerator extends EnumFieldCodeGenerator {
     }
 
     @Override
-    public void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel) {
+    public void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite) {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fFieldInfo.getLabel() != null) ? fFieldInfo.getLabel() : createLabelFor(fFieldInfo.getName());
         String toolTip = fFieldInfo.getToolTipText();
@@ -62,7 +62,7 @@ public class ComboFieldCodeGenerator extends EnumFieldCodeGenerator {
         srcText.append("\t\t\t" + fComboFieldInfo.getNumColumns() + ",\n");
         srcText.append("\t\t\t" + getValueStringsExpr(fComboFieldInfo.getValueSource()) + ",\n"); // values
         srcText.append("\t\t\t" + getLabelStringsExpr(fComboFieldInfo.getValueSource()) + ",\n"); // labels
-        srcText.append("\t\t\tparent,\n");
+        srcText.append("\t\t\t" + parentComposite + ",\n");
         srcText.append("\t\t\t" + editable + ",\n");
         srcText.append("\t\t\t" + fFieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
         srcText.append("\t\tfields.add(" + fFieldInfo.getName() + ");\n\n");

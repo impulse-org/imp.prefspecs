@@ -13,7 +13,7 @@ package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import org.eclipse.imp.preferences.PreferencesService;
 import org.eclipse.imp.prefspecs.compiler.DynamicEnumValueSource;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 import org.eclipse.imp.prefspecs.compiler.model.RadioFieldInfo;
 
 /**
@@ -45,7 +45,8 @@ public class RadioFieldCodeGenerator extends EnumFieldCodeGenerator {
         return "RadioGroupFieldEditor";
     }
 
-    public void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel) {
+    @Override
+    public void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite) {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fFieldInfo.getLabel() != null) ? fFieldInfo.getLabel() : createLabelFor(fFieldInfo.getName());
         String toolTip = fFieldInfo.getToolTipText();
@@ -64,7 +65,7 @@ public class RadioFieldCodeGenerator extends EnumFieldCodeGenerator {
         srcText.append("\t\t\t" + fRadioFieldInfo.getNumColumns() + ",\n");
         srcText.append("\t\t\t" + getValueStringsExpr(fRadioFieldInfo.getValueSource()) + ",\n");
         srcText.append("\t\t\t" + getLabelStringsExpr(fRadioFieldInfo.getValueSource()) + ",\n");
-        srcText.append("\t\t\tparent,\n");
+        srcText.append("\t\t\t" + parentComposite + ",\n");
         srcText.append("\t\t\ttrue,\n");
         srcText.append("\t\t\t" + editable + ",\n");
         srcText.append("\t\t\t" + fFieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others

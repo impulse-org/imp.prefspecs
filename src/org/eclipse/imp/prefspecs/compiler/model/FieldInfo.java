@@ -14,62 +14,62 @@ package org.eclipse.imp.prefspecs.compiler.model;
 import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public abstract class FieldInfo {
+public abstract class FieldInfo implements IPageMember {
 	/**
 	 * The preferences page with which this field
 	 * is associated
 	 */
-	protected PreferencesPageInfo parentPage = null;
+	protected IPageMemberContainer fParent = null;
 	
 	/**
 	 * The name of the field
 	 */
-	protected String name = null;
+	protected String fName = null;
 
 	/**
 	 * If non-null, the text to be displayed as a tooltip for this field
 	 */
-	protected String toolTipText = null;
+	protected String fToolTipText = null;
 
     /**
      * True iff this field has an "is removable" specification; if false,
      * the value of isRemovable is irrelevant.
      */
-    protected boolean hasRemovableSpec = false;
+    protected boolean fHasRemovableSpec = false;
 
 	/**
 	 * Whether concrete instances of this field be removed by default
 	 */
-	protected boolean isRemovable = false;
+	protected boolean fIsRemovable = false;
 
 	/**
 	 * If non-null, the label to use for the widget corresponding to this field
 	 */
-	protected String optLabel = null;
+	protected String fOptLabel = null;
 
 	/**
 	 * Whether this field is enabled conditionally based on another
 	 * (boolean) field
 	 */
-	protected boolean isConditional = false;
+	protected boolean fIsConditional = false;
 
 	/**
 	 * Whether this field, if isConditional, is is enabled when the
 	 * condition field is true (if false implies that this field is
 	 * enabled when the condition field is false)
 	 */	
-	protected boolean conditionalWith = true;
+	protected boolean fConditionalWith = true;
 
 	/**
 	 * The boolean field based on which this field is enabled (or not),
 	 * if isConditional and depending on conditionalWith
 	 */
-	protected BooleanFieldInfo conditionField = null;
+	protected BooleanFieldInfo fConditionField = null;
 
-	public FieldInfo(PreferencesPageInfo parentPage, String name) {
-		// All fields must have a parent page
-		if (parentPage == null) {
-			throw new IllegalArgumentException("FieldInfo(..): parent page is null; not allowed");		
+	public FieldInfo(IPageMemberContainer parent, String name) {
+		// All fields must have a parent
+		if (parent == null) {
+			throw new IllegalArgumentException("FieldInfo(..): parent is null; not allowed");		
 		}
 
 		// All fields must have a non-null name
@@ -80,10 +80,9 @@ public abstract class FieldInfo {
 		// Don't worry about other conditions, such as uniqueness of field
 		// name within page; may be checked before or after this point
 		
-		// Okay
-		this.parentPage = parentPage;
-		this.name = name;
-		parentPage.addVirtualFieldInfo(this);
+		this.fParent = parent;
+		this.fName = name;
+		this.fParent.addChild(this);
 	}
 
 	public abstract FieldCodeGenerator getCodeGenerator();
@@ -93,16 +92,16 @@ public abstract class FieldInfo {
 	// so only "get" methods are defined for those
 	//
 	
-	public PreferencesPageInfo getParentPage() {
-		return parentPage;
+	public IPageMemberContainer getParent() {
+		return fParent;
 	}
 	
 	public String getName() {
-		return name;
+		return fName;
 	}
 
 	public boolean hasRemovableSpec() {
-	    return this.hasRemovableSpec;
+	    return this.fHasRemovableSpec;
 	}
 
 	/**
@@ -115,55 +114,55 @@ public abstract class FieldInfo {
 	 * @return	False for the default tab; the set value of isUsed otherwise
 	 */
 	public boolean getIsRemovable() {
-		return isRemovable;
+		return fIsRemovable;
 	}
 
 	/**
 	 * @param isRemovable
 	 */
 	public void setIsRemovable(boolean isRemovable) {
-		this.isRemovable = isRemovable;
-		this.hasRemovableSpec = true;
+		this.fIsRemovable = isRemovable;
+		this.fHasRemovableSpec = true;
 	}
 
 	public String getLabel() {
-	    return optLabel;
+	    return fOptLabel;
 	}
 
 	public void setLabel(String newLabel) {
-	    this.optLabel = newLabel;
+	    this.fOptLabel = newLabel;
 	}
 
 	public String getToolTipText() {
-        return toolTipText;
+        return fToolTipText;
     }
 
     public void setToolTipText(String toolTipText) {
-        this.toolTipText= toolTipText;
+        this.fToolTipText= toolTipText;
     }
 
 	public boolean getIsConditional() {
-		return isConditional;
+		return fIsConditional;
 	}
 	
 	public void setIsConditional(boolean b) {
-		isConditional = b;
+		fIsConditional = b;
 	}
 
 	public boolean getConditionalWith() {
-		return conditionalWith;
+		return fConditionalWith;
 	}
 	
 	public void setConditionalWith(boolean b) {
-		conditionalWith = b;
+		fConditionalWith = b;
 	}
 
 	public BooleanFieldInfo getConditionField() {
-		return conditionField;
+		return fConditionField;
 	}
 	
 	public void setConditionField(BooleanFieldInfo vbf) {
-		conditionField = vbf;
+		fConditionField = vbf;
 	}
 
 	//
@@ -172,12 +171,17 @@ public abstract class FieldInfo {
 	public void dump(String prefix, MessageConsoleStream out) {
 		String indent = prefix + "  ";
 		out.println(prefix + "Field '" + getName() + "'");
-		out.println(indent + "parent page = " + getParentPage().getPageName());
-		out.println(indent + "isRemovable = " + isRemovable);
-		if (isConditional) {
-			out.println(indent + "isConditional " + (conditionalWith ? "with" : "against") + " " + (conditionField != null ? conditionField.getName() : "<unknown>"));
+		out.println(indent + "parent = " + getParent().getName());
+		out.println(indent + "isRemovable = " + fIsRemovable);
+		if (fIsConditional) {
+			out.println(indent + "isConditional " + (fConditionalWith ? "with" : "against") + " " + (fConditionField != null ? fConditionField.getName() : "<unknown>"));
 		} else {
 			out.println(indent + "isConditional  = false");
 		}
+	}
+
+	@Override
+	public String toString() {
+	    return "field " + getName();
 	}
 }

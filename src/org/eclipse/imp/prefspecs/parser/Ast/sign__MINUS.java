@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 175:  sign ::= MINUS
+ *<li>Rule 172:  sign ::= MINUS
  *</b>
  */
 public class sign__MINUS extends ASTNodeToken implements Isign

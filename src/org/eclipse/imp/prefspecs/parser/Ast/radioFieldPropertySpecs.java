@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 82:  radioFieldPropertySpecs ::= $Empty
+ *<li>Rule 83:  radioFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 83:  radioFieldPropertySpecs ::= {$ radioSpecificSpecs }$
+ *<li>Rule 84:  radioFieldPropertySpecs ::= {$ radioSpecificSpecs }$
  *</b>
  */
 public class radioFieldPropertySpecs extends ASTNode implements IradioFieldPropertySpecs

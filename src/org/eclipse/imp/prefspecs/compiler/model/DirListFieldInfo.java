@@ -18,19 +18,13 @@ import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
  * @author sutton
  */
 public class DirListFieldInfo extends StringFieldInfo {
-	public DirListFieldInfo(PreferencesPageInfo parentPage, String name) {
-		super(parentPage, name);
+	public DirListFieldInfo(IPageMemberContainer parentPage, String name) {
+		this(parentPage, name, null);
 	}
 	
-	public DirListFieldInfo(PreferencesPageInfo parentPage, String name, String defValue) {
-		this(parentPage, name);
+	public DirListFieldInfo(IPageMemberContainer parentPage, String name, String defValue) {
+		super(parentPage, name);
 		this.defaultValue = defValue;
-	}
-
-	public DirListFieldInfo(PreferencesPageInfo parentPage, String name,
-			String defValue, boolean hasSpecial, String special)
-	{
-		this(parentPage, name, defValue);
 	}
 
 	@Override

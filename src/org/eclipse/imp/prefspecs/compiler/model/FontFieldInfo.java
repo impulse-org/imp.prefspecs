@@ -26,11 +26,11 @@ public class FontFieldInfo extends FieldInfo {
 
 	protected int defaultStyle= SWT.NORMAL;
 
-	public FontFieldInfo(PreferencesPageInfo parentPage, String name) {
+	public FontFieldInfo(IPageMemberContainer parentPage, String name) {
 		super(parentPage, name);
 	}
 	
-	public FontFieldInfo(PreferencesPageInfo parentPage, String name, String defName, int defHeight, int defStyle) {
+	public FontFieldInfo(IPageMemberContainer parentPage, String name, String defName, int defHeight, int defStyle) {
 		this(parentPage, name);
 		this.defaultName= defName;
 		this.defaultHeight= defHeight;

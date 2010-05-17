@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 74:  doubleFieldPropertySpecs ::= $Empty
+ *<li>Rule 75:  doubleFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 75:  doubleFieldPropertySpecs ::= {$ doubleSpecificSpecs }$
+ *<li>Rule 76:  doubleFieldPropertySpecs ::= {$ doubleSpecificSpecs }$
  *</b>
  */
 public class doubleFieldPropertySpecs extends ASTNode implements IdoubleFieldPropertySpecs

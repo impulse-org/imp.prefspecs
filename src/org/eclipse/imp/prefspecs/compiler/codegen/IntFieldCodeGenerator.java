@@ -12,7 +12,7 @@
 package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import org.eclipse.imp.prefspecs.compiler.model.IntFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 
 /**
  * @author rfuhrer@watson.ibm.com
@@ -44,7 +44,7 @@ public class IntFieldCodeGenerator extends ScalarFieldCodeGenerator {
     }
 
     @Override
-    public void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel) {
-        genTextToCreateScalarField(srcText, pageInfo, tabLevel, "\"0\"", "IntegerField", ".getTextControl().getParent()");
+    public void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite) {
+        genTextToCreateScalarField(srcText, pageInfo, tabLevel, parentComposite, "\"0\"", "IntegerField", ".getTextControl().getParent()");
     }
 }

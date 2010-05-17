@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 /**
  *<b>
- *<li>Rule 91:  isRemovableSpec ::= ISREMOVABLE$ booleanValue ;$
+ *<li>Rule 92:  isRemovableSpec ::= ISREMOVABLE$ booleanValue ;$
  *</b>
  */
 public class isRemovableSpec extends ASTNode implements IisRemovableSpec

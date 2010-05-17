@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 80:  intFieldPropertySpecs ::= $Empty
+ *<li>Rule 81:  intFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 81:  intFieldPropertySpecs ::= {$ intSpecificSpecs }$
+ *<li>Rule 82:  intFieldPropertySpecs ::= {$ intSpecificSpecs }$
  *</b>
  */
 public class intFieldPropertySpecs extends ASTNode implements IintFieldPropertySpecs

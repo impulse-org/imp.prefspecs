@@ -25,12 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 39:  fieldSpecs ::= $Empty
- *<li>Rule 40:  fieldSpecs ::= fieldSpec
+ *<li>Rule 39:  fieldSpecs ::= fieldSpec
  *</em>
  *<p>
  *<b>
- *<li>Rule 41:  fieldSpecs ::= fieldSpecs fieldSpec
+ *<li>Rule 40:  fieldSpecs ::= fieldSpecs fieldSpec
  *</b>
  */
 public class fieldSpecs extends ASTNode implements IfieldSpecs
@@ -38,9 +37,6 @@ public class fieldSpecs extends ASTNode implements IfieldSpecs
     private IfieldSpecs _fieldSpecs;
     private IfieldSpec _fieldSpec;
 
-    /**
-     * The value returned by <b>getfieldSpecs</b> may be <b>null</b>
-     */
     public IfieldSpecs getfieldSpecs() { return _fieldSpecs; }
     public IfieldSpec getfieldSpec() { return _fieldSpec; }
 
@@ -51,7 +47,7 @@ public class fieldSpecs extends ASTNode implements IfieldSpecs
         super(leftIToken, rightIToken);
 
         this._fieldSpecs = _fieldSpecs;
-        if (_fieldSpecs != null) ((ASTNode) _fieldSpecs).setParent(this);
+        ((ASTNode) _fieldSpecs).setParent(this);
         this._fieldSpec = _fieldSpec;
         ((ASTNode) _fieldSpec).setParent(this);
         initialize();
@@ -74,10 +70,7 @@ public class fieldSpecs extends ASTNode implements IfieldSpecs
         if (! (o instanceof fieldSpecs)) return false;
         if (! super.equals(o)) return false;
         fieldSpecs other = (fieldSpecs) o;
-        if (_fieldSpecs == null)
-            if (other._fieldSpecs != null) return false;
-            else; // continue
-        else if (! _fieldSpecs.equals(other._fieldSpecs)) return false;
+        if (! _fieldSpecs.equals(other._fieldSpecs)) return false;
         if (! _fieldSpec.equals(other._fieldSpec)) return false;
         return true;
     }
@@ -85,7 +78,7 @@ public class fieldSpecs extends ASTNode implements IfieldSpecs
     public int hashCode()
     {
         int hash = super.hashCode();
-        hash = hash * 31 + (_fieldSpecs == null ? 0 : _fieldSpecs.hashCode());
+        hash = hash * 31 + (_fieldSpecs.hashCode());
         hash = hash * 31 + (_fieldSpec.hashCode());
         return hash;
     }
@@ -102,7 +95,7 @@ public class fieldSpecs extends ASTNode implements IfieldSpecs
         boolean checkChildren = v.visit(this);
         if (checkChildren)
         {
-            if (_fieldSpecs != null) _fieldSpecs.accept(v);
+            _fieldSpecs.accept(v);
             _fieldSpec.accept(v);
         }
         v.endVisit(this);

@@ -16,11 +16,11 @@ import org.eclipse.imp.prefspecs.compiler.codegen.ComboFieldCodeGenerator;
 import org.eclipse.imp.prefspecs.compiler.codegen.FieldCodeGenerator;
 
 public class ComboFieldInfo extends EnumFieldInfo {
-    public ComboFieldInfo(PreferencesPageInfo parentPage, String name) {
-        super(parentPage, name);
+    public ComboFieldInfo(IPageMemberContainer parentPage, String name) {
+        this(parentPage, name, null);
     }
 
-    public ComboFieldInfo(PreferencesPageInfo parentPage, String name, IEnumValueSource valueSource) {
+    public ComboFieldInfo(IPageMemberContainer parentPage, String name, IEnumValueSource valueSource) {
         super(parentPage, name, valueSource);
     }
 

@@ -12,7 +12,7 @@
 package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import org.eclipse.imp.prefspecs.compiler.model.BooleanFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 
 /**
  * @author rfuhrer@watson.ibm.com
@@ -40,8 +40,8 @@ public class BooleanFieldCodeGenerator extends ScalarFieldCodeGenerator {
                 fBooleanFieldInfo.getDefaultValue() + ");\n");        // TODO Auto-generated method stub
     }
 
-    public void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel) {
-        genTextToCreateScalarField(srcText, pageInfo, tabLevel, "false", "BooleanField", ".getChangeControl().getParent()");
+    public void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite) {
+        genTextToCreateScalarField(srcText, pageInfo, tabLevel, parentComposite, "false", "BooleanField", ".getChangeControl().getParent()");
     }
 
     @Override

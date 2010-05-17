@@ -14,24 +14,8 @@
 package org.eclipse.imp.prefspecs.parser.Ast;
 
 /**
- * is implemented by:
- *<b>
- *<ul>
- *<li>booleanFieldSpec
- *<li>colorFieldSpec
- *<li>comboFieldSpec
- *<li>directoryFieldSpec
- *<li>dirListFieldSpec
- *<li>doubleFieldSpec
- *<li>fileFieldSpec
- *<li>fontFieldSpec
- *<li>intFieldSpec
- *<li>radioFieldSpec
- *<li>stringFieldSpec
- *<li>groupSpec
- *</ul>
- *</b>
+ * is implemented by <b>groupSpec</b>
  */
-public interface IfieldSpec extends IfieldSpecs {}
+public interface IgroupSpec extends IfieldSpec {}
 
 

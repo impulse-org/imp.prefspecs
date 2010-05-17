@@ -13,7 +13,7 @@ package org.eclipse.imp.prefspecs.compiler.codegen;
 
 import org.eclipse.imp.preferences.PreferencesService;
 import org.eclipse.imp.prefspecs.compiler.model.FontFieldInfo;
-import org.eclipse.imp.prefspecs.compiler.model.PreferencesPageInfo;
+import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 
 /**
  * @author rfuhrer@watson.ibm.com
@@ -44,7 +44,7 @@ public class FontFieldCodeGenerator extends FieldCodeGenerator {
         return "FontFieldEditor";
     }
 
-    public void genTextToCreateField(StringBuilder srcText, PreferencesPageInfo pageInfo, String tabLevel) {
+    public void genTextToCreateField(StringBuilder srcText, PageInfo pageInfo, String tabLevel, String parentComposite) {
         boolean editable = tabLevel.equals(PreferencesService.PROJECT_LEVEL) ? false : true;    //fieldInfo.getIsEditable();
         String label = (fFieldInfo.getLabel() != null) ? fFieldInfo.getLabel() : createLabelFor(fFieldInfo.getName());
         String toolTip = fFieldInfo.getToolTipText();
@@ -55,7 +55,7 @@ public class FontFieldCodeGenerator extends FieldCodeGenerator {
         srcText.append("\t\t\tpage, this, fPrefService,\n");
         srcText.append("\t\t\t\"" + tabLevel + "\", \"" + fFieldInfo.getName() + "\", \"" + label + "\",\n");
         srcText.append("\t\t\t\"" + (toolTip != null ? toolTip : "") + "\",\n");
-        srcText.append("\t\t\tparent,\n");
+        srcText.append("\t\t\t" + parentComposite + ",\n");
         srcText.append("\t\t\t" + editable + ", " + editable + ",\n");
         srcText.append("\t\t\t" + fFieldInfo.getIsRemovable() + ");\n");   // false for default tab but not necessarily any others
 
@@ -63,7 +63,7 @@ public class FontFieldCodeGenerator extends FieldCodeGenerator {
         
         if (!pageInfo.getNoDetails()) {
             String linkName = fFieldInfo.getName() + "DetailsLink";
-            srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(parent, " +
+            srcText.append("\t\tLink " + linkName + " = fPrefUtils.createDetailsLink(" + parentComposite + ", " +
                     fFieldInfo.getName() + ", " + fFieldInfo.getName() + ".getChangeControl().getParent()" + ", \"Details ...\");\n\n");
             srcText.append("\t\t" + linkName + ".setEnabled(" + editable + ");\n");
             srcText.append("\t\tfDetailsLinks.add(" + linkName + ");\n\n");

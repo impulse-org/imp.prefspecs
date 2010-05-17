@@ -20,7 +20,7 @@ public class StringFieldInfo extends FieldInfo {
 	 * The default value associated with this field
 	 */
 	protected String defaultValue = "\"\"";
-	
+
 	/**
 	 * True iff this field has an "empty value" specification; if not, the values of
 	 * emptyValueAllowed and emptyValue are irrelevant and should be ignored.
@@ -40,12 +40,12 @@ public class StringFieldInfo extends FieldInfo {
 
 	protected String validatorQualClass = null;
 
-	public StringFieldInfo(PreferencesPageInfo parentPage, String name) {
-		super(parentPage, name);
+	public StringFieldInfo(IPageMemberContainer parentPage, String name) {
+		this(parentPage, name, null);
 	}
-	
-	public StringFieldInfo(PreferencesPageInfo parentPage, String name, String defValue) {
-		this(parentPage, name);
+
+	public StringFieldInfo(IPageMemberContainer parentPage, String name, String defValue) {
+		super(parentPage, name);
 		this.defaultValue = defValue;
 	}
 
@@ -57,7 +57,7 @@ public class StringFieldInfo extends FieldInfo {
 	public void setDefaultValue(String s) {
 		defaultValue = s;
 	}
-	
+
 	public String getDefaultValue() {
 		return defaultValue;
 	}
@@ -70,7 +70,7 @@ public class StringFieldInfo extends FieldInfo {
 		emptyValueAllowed = b;
 		hasEmptyValueSpec = true;
 	}
-	
+
 	public boolean getEmptyValueAllowed() {
 		return emptyValueAllowed;
 	}

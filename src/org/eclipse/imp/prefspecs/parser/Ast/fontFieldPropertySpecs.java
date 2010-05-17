@@ -25,11 +25,11 @@ import java.util.HashMap;
 
 /**
  *<em>
- *<li>Rule 78:  fontFieldPropertySpecs ::= $Empty
+ *<li>Rule 79:  fontFieldPropertySpecs ::= $Empty
  *</em>
  *<p>
  *<b>
- *<li>Rule 79:  fontFieldPropertySpecs ::= {$ fontSpecificSpecs }$
+ *<li>Rule 80:  fontFieldPropertySpecs ::= {$ fontSpecificSpecs }$
  *</b>
  */
 public class fontFieldPropertySpecs extends ASTNode implements IfontFieldPropertySpecs
