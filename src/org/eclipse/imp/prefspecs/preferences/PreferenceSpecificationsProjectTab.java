@@ -1,13 +1,17 @@
 package org.eclipse.imp.prefspecs.preferences;
 
-import java.util.List;
 import java.util.ArrayList;
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import java.util.List;
+
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.imp.preferences.ProjectPreferencesTab;
+import org.eclipse.imp.preferences.TabbedPreferencesPage;
+import org.eclipse.imp.preferences.fields.BooleanFieldEditor;
+import org.eclipse.imp.preferences.fields.FieldEditor;
+import org.eclipse.imp.preferences.fields.IntegerFieldEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.imp.preferences.*;
-import org.eclipse.imp.preferences.fields.*;
 import org.osgi.service.prefs.Preferences;
 
 
