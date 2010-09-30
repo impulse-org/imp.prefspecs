@@ -27,7 +27,6 @@ import org.eclipse.imp.prefspecs.compiler.model.FieldAndGroupVisitor;
 import org.eclipse.imp.prefspecs.compiler.model.FieldGroup;
 import org.eclipse.imp.prefspecs.compiler.model.FieldInfo;
 import org.eclipse.imp.prefspecs.compiler.model.FieldVisitor;
-import org.eclipse.imp.prefspecs.compiler.model.IPageMember;
 import org.eclipse.imp.prefspecs.compiler.model.ITabContainer;
 import org.eclipse.imp.prefspecs.compiler.model.PageInfo;
 import org.eclipse.imp.prefspecs.compiler.model.TabInfo;
@@ -330,6 +329,7 @@ public class CodeGenerator {
 		srcText.append("package " + packageName + ";\n\n");
 		srcText.append("import java.util.List;\n");
 		srcText.append("import java.util.ArrayList;\n");
+		srcText.append("import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;\n");
 		srcText.append("import org.eclipse.core.runtime.preferences.IEclipsePreferences;\n");
         srcText.append("import org.eclipse.swt.SWT;\n");
         srcText.append("import org.eclipse.swt.layout.GridData;\n");
