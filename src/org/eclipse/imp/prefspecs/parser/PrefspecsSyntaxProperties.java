@@ -7,18 +7,13 @@
 *
 * Contributors:
 *    Robert Fuhrer (rfuhrer@watson.ibm.com) - initial API and implementation
-
 *******************************************************************************/
 
 package org.eclipse.imp.prefspecs.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.imp.services.base.LanguageSyntaxPropertiesBase;
 
-import org.eclipse.imp.services.ILanguageSyntaxProperties;
-
-public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
-
+public class PrefspecsSyntaxProperties extends LanguageSyntaxPropertiesBase {
     public String getBlockCommentEnd() {
         return null;
     }
@@ -32,7 +27,6 @@ public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
     }
 
     public String getBlockCommentContinuation() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -40,19 +34,6 @@ public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
         return new String[][] { { "{", "}" } };
     }
 
-    
-    /**
-     * This implementation returns a string that contains each of the
-     * characters that may appear in a Prefspecs identifier, without
-     * regard to restrictions on the kinds of characters that may appear
-     * in certain positions (i.e., no digits in the first position).
-     * Each character is represented once in the string.
-     */
-    public String getIdentifierConstituentChars() {
-        return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    }
-    
-    
     /**
      * Returns an array of integers that represents a "best guess" at the
      * starting positions of independently meaningful components within a
@@ -78,8 +59,7 @@ public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
      * 					an array of length > 0 in all other cases, in which the
      * 					first element will always be 0.
      */
-    public int[] getIdentifierComponents(String ident)
-    {
+    public int[] getIdentifierComponents(String ident) {
     	if (ident == null)
     		return new int[0];
     	if (ident.length() == 1)
@@ -130,8 +110,7 @@ public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
     	System.arraycopy(breaks, 0, result, 0, numBreakPositions);
     	return result;
     }
-    
-    
+
     public int[] addIfAbsent(int[] a, int i) {
     	int j = 0;
     	for (; j < a.length; j++) {
@@ -143,27 +122,23 @@ public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
     	a[j] = i;
     	return a;
     }
-    
-    
+
     public boolean isLower(String s, String l) {
     	boolean result = s.compareTo(l) == 0;
     	return result;
     }
-    
-    
+
     public boolean isUpper(String s, String l) {
     	boolean result = s.compareTo(l) < 0;
     	return result;
     }
-    
-    
+
     public boolean isDigit(String s, int pos) {
     	char c = s.charAt(pos);
     	boolean result = c >= '0' && c <= '9';
     	return result;
     }
-    
-    
+
     public boolean isSpecial(String s, int pos) {
     	char c = s.charAt(pos);
     	switch (c) {
@@ -173,9 +148,4 @@ public class PrefspecsSyntaxProperties implements ILanguageSyntaxProperties {
 	    	default:	return false;
     	}
     }
-    
-    
-    
-
-
 }
