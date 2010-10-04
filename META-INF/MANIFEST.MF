@@ -5,12 +5,12 @@ Bundle-Name: IMP Preference Specifications (Incubation)
 Bundle-Activator: org.eclipse.imp.prefspecs.PrefspecsPlugin
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
-Bundle-Version: 0.1.94.qualifier
+Bundle-Version: 0.2.1.qualifier
 Require-Bundle: lpg.runtime.java;bundle-version="2.0.18",
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.help.ui,
- org.eclipse.imp.runtime;bundle-version="0.1.107",
+ org.eclipse.imp.runtime;bundle-version="0.2.1",
  org.eclipse.imp.metatooling,
  org.eclipse.imp.smapifier,
  org.eclipse.jdt.core,
